@@ -26,13 +26,13 @@ push:
 	docker push ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PANEL_PORT=${PORT} ${IMAGEFULLNAME}
 
 run-it:
 	docker run -it ${IMAGEFULLNAME} /entry.sh /bin/sh
 
 run-development: 
-	docker run -d --name ${RUNNAME} -v shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e _PANEL_PORT=${PORT} ${IMAGEFULLNAME}
 
 stop: 
 	docker stop ${RUNNAME}
