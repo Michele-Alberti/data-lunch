@@ -1,3 +1,9 @@
+## v1.1.0 (2022-10-11)
+
+### Feat
+
+- add support for google cloud app engine
+
 ## v1.0.1 (2022-10-09)
 
 ### Fix
