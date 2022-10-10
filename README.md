@@ -15,6 +15,7 @@ The ultimate web app for a well organized lunch.
   - [3.1. Pre-commit hooks](#31-pre-commit-hooks)
   - [3.2. Commitizen](#32-commitizen)
 - [4. Release strategy from `development` to `main` branch](#4-release-strategy-from-development-to-main-branch)
+- [5. Deployment With Google Cloud App Engine](#5-deployment-with-google-cloud-app-engine)
 
 ## 2. Development environment setup
 
@@ -43,7 +44,7 @@ The following environment variables are required for running the _web app_ or th
 |----------|:------:|-------|
 `PANEL_APP` | _str_ | data-lunch-app
 `PANEL_ENV` | _str_ | development
-`PANEL_PORT` | _int_ | 5000
+`PORT` | _int_ | 5000
 `DOCKER_USERNAME` | _str_ | your _Docker Hub_ username
 
 ### 2.3. Install data-lunch CLI
@@ -185,3 +186,13 @@ git merge main --no-ff
 ```
 
 Use _"update files from last release"_ or the default text as commit message.
+
+## 5. Deployment With Google Cloud App Engine
+
+To deploy the repository on _Google's App Engine_ a requirement.txt is needed.  
+Use the following commands.
+
+```
+conda activate data-lunch
+pip list --format=freeze > requirements.txt
+```

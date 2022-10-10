@@ -7,7 +7,6 @@ VERSION=latest
 CONTAINERNAME=${IMAGENAME}
 IMAGEFULLNAME=${CONTAINERNAME}:${VERSION}
 PROJECTNAME=${USERNAME}_${APP}
-PORT=${PANEL_PORT}
 
 .PHONY: help build push all clean
 
@@ -26,13 +25,13 @@ push:
 	docker push ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PANEL_PORT=${PORT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/tmp/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} ${IMAGEFULLNAME}
 
 run-it:
 	docker run -it ${IMAGEFULLNAME} /entry.sh /bin/sh
 
 run-development: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e _PANEL_PORT=${PORT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e _PORT=${PORT} ${IMAGEFULLNAME}
 
 stop: 
 	docker stop ${RUNNAME}

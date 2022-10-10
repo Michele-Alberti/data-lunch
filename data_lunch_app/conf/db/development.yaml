@@ -1,5 +1,5 @@
 name: lunch
-url: sqlite:///shared_data/${db.name}.db
+url: sqlite:///${panel.shared_data_folder}/${db.name}.db
 engine:
   _target_: sqlalchemy.create_engine
   url: ${db.url}
