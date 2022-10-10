@@ -1,13 +1,12 @@
 #vars
-APP=data-lunch-app
-USERNAME=malberti
+APP=${PANEL_APP}
+USERNAME=${DOCKER_USERNAME}
 IMAGENAME=${USERNAME}/${APP}
 RUNNAME=${USERNAME}_${APP}
 VERSION=latest
 CONTAINERNAME=${IMAGENAME}
 IMAGEFULLNAME=${CONTAINERNAME}:${VERSION}
 PROJECTNAME=${USERNAME}_${APP}
-PORT=5000
 
 .PHONY: help build push all clean
 
@@ -22,17 +21,17 @@ help:
 build:
 	docker build -t ${IMAGEFULLNAME} -f docker/web/Dockerfile.web .
 
-#push:
-#	heroku container:push web -a ${APP} --context-path . --recursive
+push:
+	docker push ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/tmp/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} ${IMAGEFULLNAME}
 
 run-it:
 	docker run -it ${IMAGEFULLNAME} /entry.sh /bin/sh
 
 run-development: 
-	docker run -d --name ${RUNNAME} -v shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e _PORT=${PORT} ${IMAGEFULLNAME}
 
 stop: 
 	docker stop ${RUNNAME}

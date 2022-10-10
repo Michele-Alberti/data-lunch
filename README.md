@@ -7,12 +7,15 @@ The ultimate web app for a well organized lunch.
 - [1. Table of contents](#1-table-of-contents)
 - [2. Development environment setup](#2-development-environment-setup)
   - [2.1. Miniconda](#21-miniconda)
-  - [2.2. Install data-lunch CLI](#22-install-data-lunch-cli)
-  - [2.3. Developing with a dockerized Postgresql database](#23-developing-with-a-dockerized-postgresql-database)
+  - [2.2. Environment variables](#22-environment-variables)
+  - [2.3. Install data-lunch CLI](#23-install-data-lunch-cli)
+  - [2.4. Running the docker-compose system](#24-running-the-docker-compose-system)
+  - [2.5. Running a single container](#25-running-a-single-container)
 - [3. Additional installations before contributing](#3-additional-installations-before-contributing)
   - [3.1. Pre-commit hooks](#31-pre-commit-hooks)
   - [3.2. Commitizen](#32-commitizen)
 - [4. Release strategy from `development` to `main` branch](#4-release-strategy-from-development-to-main-branch)
+- [5. Deployment With Google Cloud App Engine](#5-deployment-with-google-cloud-app-engine)
 
 ## 2. Development environment setup
 
@@ -34,8 +37,17 @@ Activate the new _Conda_ environment with the following command.
 ```
 conda activate trails-app
 ```
+### 2.2. Environment variables
 
-### 2.2. Install data-lunch CLI
+The following environment variables are required for running the _web app_ or the _makefile_.
+| Variable | Type | Example Value |
+|----------|:------:|-------|
+`PANEL_APP` | _str_ | data-lunch-app
+`PANEL_ENV` | _str_ | development
+`PORT` | _int_ | 5000
+`DOCKER_USERNAME` | _str_ | your _Docker Hub_ username
+
+### 2.3. Install data-lunch CLI
 
 The CLI is distributed with setuptools instead of using Unix shebangs.  
 It is a very simple utility to initialize and delete the app database. There are different use cases:
@@ -66,7 +78,7 @@ data-lunch --version
 data-lunch --help
 ```
 
-### 2.3. Developing with a dockerized Postgresql database
+### 2.4. Running the docker-compose system
 
 Since this app will be deployed with an hosting service a _Dockerfile_ to build a container image is available.  
 The docker compose file (see `docker-compose.yaml`) builds the web app container along with a _load balancer_ (the _nginx_ container)
@@ -87,6 +99,18 @@ You can then access your web app at `http://localhost:4000`.
 
 > **Note:**  
 > You can also use `make up` to spin up the containers if you do not need to re-build any image.
+
+### 2.5. Running a single container
+
+It is possible to launch a single server by calling the following command.
+
+```
+make build
+
+make run
+```
+
+You can then access your web app at `http://localhost:5000`.
 
 ## 3. Additional installations before contributing
 
@@ -162,3 +186,13 @@ git merge main --no-ff
 ```
 
 Use _"update files from last release"_ or the default text as commit message.
+
+## 5. Deployment With Google Cloud App Engine
+
+To deploy the repository on _Google's App Engine_ a requirement.txt is needed.  
+Use the following commands.
+
+```
+conda activate data-lunch
+pip list --format=freeze > requirements.txt
+```

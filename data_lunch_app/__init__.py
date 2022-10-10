@@ -30,7 +30,7 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("starting initialization process")
 
     log.debug("create 'shared_data' folder")
-    pathlib.Path("shared_data").mkdir(exist_ok=True)
+    pathlib.Path(config.panel.shared_data_folder).mkdir(exist_ok=True)
 
     log.debug("initialize database")
     create_database(config)
@@ -90,7 +90,7 @@ def create_app(config: DictConfig) -> pn.Template:
         callback=lambda: core.download_dataframe(
             config, app, dataframe, [error_message, confirm_message]
         ),
-        filename="Ordine Edison.xlsx",
+        filename=config.panel.file_name,
     )
     # Sidebar tabs
     upload_text = """

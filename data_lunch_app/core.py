@@ -17,8 +17,6 @@ log = logging.getLogger(__name__)
 # OPTIONS AND DEFAULTS --------------------------------------------------------
 # App
 sidebar_width = 400
-# Names
-menu_image_filename = "shared_data/menu_image.png"
 
 
 # CLASS -----------------------------------------------------------------------
@@ -45,6 +43,11 @@ def build_menu(
     # Hide messages
     error_message.visible = False
     confirm_message.visible = False
+
+    # Build image path
+    menu_image_filename = str(
+        pathlib.Path(config.panel.shared_data_folder) / config.panel.image_name
+    )
 
     # Delete image if exist
     image_path = pathlib.Path(menu_image_filename)
@@ -185,9 +188,9 @@ def send_order(
             new_order = models.Orders(user=person.username, menu_item_id=index)
             session.add(new_order)
             session.commit()
-            confirm_message.object = "ORDER SENT"
-            confirm_message.visible = True
-            log.info(f"{person.name}'s order saved")
+        confirm_message.object = "ORDER SENT"
+        confirm_message.visible = True
+        log.info(f"{person.username}'s order saved")
     else:
         if not person.username:
             error_message.object = "PLEASE INSERT USER NAME"
