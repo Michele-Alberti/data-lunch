@@ -1,7 +1,7 @@
 import hydra
 import logging
-import sqlalchemy
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, event
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, relationship, Session
 from omegaconf import DictConfig
 
@@ -9,6 +9,17 @@ log = logging.getLogger(__name__)
 
 # Create database instance (with lazy loading)
 db = declarative_base()
+
+
+# EVENTS ----------------------------------------------------------------------
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
 
 # MODELS ----------------------------------------------------------------------
 
@@ -32,6 +43,7 @@ class Orders(db):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)
     user = Column(String(100), index=True, nullable=False)
+    lunch_time = Column(String(7), index=True, nullable=False)
     menu_item_id = Column(
         Integer,
         ForeignKey("menu.id", ondelete="CASCADE"),
@@ -40,13 +52,13 @@ class Orders(db):
     menu_item = relationship("Menu", back_populates="orders")
 
     def __repr__(self):
-        return f"<ORDER:{self.user}, {self.menu_item.name}>"
+        return f"<ORDER:{self.user}, {self.menu_item.item}>"
 
 
 # FUNCTIONS -------------------------------------------------------------------
 
 
-def create_engine(config: DictConfig) -> sqlalchemy.engine.Engine:
+def create_engine(config: DictConfig) -> Engine:
     """SQLAlchemy engine factory function"""
     engine = hydra.utils.instantiate(config.db.engine)
 
