@@ -1,3 +1,9 @@
+## v1.2.1 (2022-10-13)
+
+### Fix
+
+- **core.py**: fix non-relative path error in container
+
 ## v1.2.0 (2022-10-13)
 
 ### Fix
