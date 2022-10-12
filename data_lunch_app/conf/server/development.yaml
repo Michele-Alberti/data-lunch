@@ -1,5 +1,6 @@
 address: 0.0.0.0
 port: ${oc.decode:${oc.env:PORT, 5000}}
 websocket_origin: "*"
+xheaders: false
 verbose: true
 open: false

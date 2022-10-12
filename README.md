@@ -42,10 +42,11 @@ conda activate trails-app
 The following environment variables are required for running the _web app_ or the _makefile_.
 | Variable | Type | Example Value |
 |----------|:------:|-------|
-`PANEL_APP` | _str_ | data-lunch-app
+`PANEL_APP` | _str_ | data-lunch-app (used by `makefile`)
 `PANEL_ENV` | _str_ | development
 `PORT` | _int_ | 5000
-`DOCKER_USERNAME` | _str_ | your _Docker Hub_ username
+`DOCKER_USERNAME` | _str_ | your _Docker Hub_ username (used by `makefile`)
+`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile`)
 
 ### 2.3. Install data-lunch CLI
 

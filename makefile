@@ -4,8 +4,7 @@ USERNAME=${DOCKER_USERNAME}
 IMAGENAME=${USERNAME}/${APP}
 RUNNAME=${USERNAME}_${APP}
 VERSION=latest
-CONTAINERNAME=${IMAGENAME}
-IMAGEFULLNAME=${CONTAINERNAME}:${VERSION}
+IMAGEFULLNAME=${IMAGENAME}:${VERSION}
 PROJECTNAME=${USERNAME}_${APP}
 
 .PHONY: help build push all clean
@@ -20,6 +19,13 @@ help:
 
 build:
 	docker build -t ${IMAGEFULLNAME} -f docker/web/Dockerfile.web .
+
+gcp-build: build
+	docker tag ${IMAGEFULLNAME} us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION}
+	docker push us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION}
+
+gcp-deploy:
+	gcloud run deploy --image=us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION} --platform managed --project mic-datalunch-p-8o9w --update-env-vars PANEL_ENV=production,PANEL_APP=data-lunch-app
 
 push:
 	docker push ${IMAGEFULLNAME}

@@ -1,4 +1,3 @@
-from turtle import color
 import panel as pn
 import param
 import panel.widgets as pnw
@@ -101,47 +100,6 @@ def build_menu(
 
     # Open modal window
     app.open_modal()
-
-
-# def update_dataframe(event, template:pn.Template, scraper:ImmoScraper, dataframe_widget:pnw.DataFrame, download_button:pnw.Button, markdown_panel:pn.pane.Markdown, error_message:pn.pane.HTML) -> None:
-#    log.info(f"SELECTED URL: {scraper.url}")
-#
-#    # Remove error messages
-#    error_message.object = ""
-#    error_message.visible = False
-#
-#    # Open waitbar modal window
-#    template.open_modal()
-#
-#    #Update url in markdown object
-#    markdown_panel.object =  "**SELECTED URL:**  \n" + scraper.url
-#
-#    # Load data from every page
-#    properties = scraper.eat_soup()
-#
-#    # Build dataframe (if not empty)
-#    if properties:
-#        df = pd.concat([pd.DataFrame(property) for property in properties], axis="index", ignore_index=True)
-#        df_p = df.pivot(index=["name", "link", "prezzo"], columns="label", values="value")
-#        # Sort columns
-#        df_p = sort_first_columns(df_p, scraper)
-#        # Close waitbar modal window
-#        template.close_modal()
-#    else:
-#        # Leave empty dataframe
-#        df_p = pd.DataFrame()
-#        # Write error message
-#        error_message.object = "NO RESULTS"
-#        error_message.visible = True
-#
-#    # Enable download button
-#    if not df_p.empty:
-#        download_button.disabled = False
-#    else:
-#        download_button.disabled = True
-#
-#    # Update dataframe widget
-#    dataframe_widget.value = df_p
 
 
 def reload_menu(

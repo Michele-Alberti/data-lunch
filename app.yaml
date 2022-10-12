@@ -1,4 +1,0 @@
-# Google Cloud App Engine configuration file
-
-runtime: python310
-entrypoint: python -m panel serve data_lunch_app
