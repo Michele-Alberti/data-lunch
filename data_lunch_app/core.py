@@ -58,7 +58,11 @@ def build_menu(
     )
 
     # Delete menu file if exist (every extension)
-    files = list(pathlib.Path().glob(menu_filename + "*"))
+    files = list(
+        pathlib.Path(config.db.shared_data_folder).glob(
+            config.panel.file_name + "*"
+        )
+    )
     log.info(f"delete files {', '.join([f.name for f in files])}")
     for file in files:
         file.unlink(missing_ok=True)
