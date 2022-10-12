@@ -1,3 +1,9 @@
+## v1.1.1 (2022-10-12)
+
+### Fix
+
+- **core.py**: remove old functions
+
 ## v1.1.0 (2022-10-11)
 
 ### Feat
