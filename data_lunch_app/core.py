@@ -1,3 +1,4 @@
+from xml.parsers.expat import model
 import panel as pn
 import param
 import panel.widgets as pnw
@@ -22,6 +23,13 @@ sidebar_width = 400
 class Person(param.Parameterized):
 
     username = param.String(default="", doc="your name")
+    lunch_time = param.ObjectSelector(
+        default="12:30", doc="orario", objects=["12:30"]
+    )
+
+    def __init__(self, config, **params):
+        super().__init__(**params)
+        self.param["lunch_time"].objects = config.panel.lunch_times_options
 
     def __str__(self):
         return f"PERSON:{self.name}"
@@ -32,8 +40,9 @@ def build_menu(
     event,
     config: DictConfig,
     app: pn.Template,
-    menu_image_widget: pnw.FileInput,
+    file_widget: pnw.FileInput,
     dataframe_widget: pnw.DataFrame,
+    res_col: pn.Column,
     messages: list[pn.pane.HTML],
 ) -> pd.DataFrame:
     # Expand messages
@@ -44,17 +53,24 @@ def build_menu(
     confirm_message.visible = False
 
     # Build image path
-    menu_image_filename = str(
-        pathlib.Path(config.panel.shared_data_folder) / config.panel.image_name
+    menu_filename = str(
+        pathlib.Path(config.db.shared_data_folder) / config.panel.file_name
     )
 
-    # Delete image if exist
-    image_path = pathlib.Path(menu_image_filename)
-    image_path.unlink(missing_ok=True)
+    # Delete menu file if exist (every extension)
+    files = list(pathlib.Path().glob(menu_filename + "*"))
+    log.info(f"delete files {', '.join([f.name for f in files])}")
+    for file in files:
+        file.unlink(missing_ok=True)
 
     # Load image from widget
-    if menu_image_widget.value is not None:
-        menu_image_widget.save(menu_image_filename)
+    if file_widget.value is not None:
+        # Find file extension
+        file_ext = pathlib.PurePath(file_widget.filename).suffix
+
+        # Save file locally
+        local_menu_filename = menu_filename + file_ext
+        file_widget.save(local_menu_filename)
 
         # Clean tables
         session = models.create_session(config)
@@ -65,36 +81,51 @@ def build_menu(
         session.commit()
         log.info(f"deleted {num_rows_deleted} from table 'orders")
 
-        # Transform image into a pandas DataFrame
-        # TODO
+        # File can be either an excel file or an image
+        if file_ext == ".png":
+            # Transform image into a pandas DataFrame
+            # TODO
+            # Concat additional items
+            #            df = pd.concat([df, pd.DataFrame({"item": config.panel.menu_items_to_concat})], axis="index")
+            log.info("image uploaded")
+        elif file_ext == ".xlsx":
+            log.info("excel file uploaded")
+            df = pd.read_excel(local_menu_filename, names=["item"])
+            # Concat additional items
+            df = pd.concat(
+                [
+                    df,
+                    pd.DataFrame({"item": config.panel.menu_items_to_concat}),
+                ],
+                axis="index",
+                ignore_index=True,
+            )
+        else:
+            df = pd.DataFrame()
+            error_message.object = "WRONG FILE TYPE"
+            error_message.visible = True
+            log.warning("wrong file type")
 
         # Upload to database menu table
-        df = pd.DataFrame(
-            {
-                "item": [
-                    "Pasta al sugo",
-                    "Tacchino",
-                    "Patate",
-                    "Insalata",
-                    "Torta",
-                    "Caffé",
-                ]
-            }
-        )
         engine = models.create_engine(config)
-        df.to_sql(
-            config.db.menu_table, engine, index=False, if_exists="append"
-        )
+        try:
+            df.drop_duplicates(subset="item").to_sql(
+                config.db.menu_table, engine, index=False, if_exists="append"
+            )
+            # Update dataframe widget
+            reload_menu("", config, dataframe_widget, res_col)
 
-        # Update dataframe widget
-        reload_menu("", config, dataframe_widget)
-
-        confirm_message.object = "MENU UPLOADED"
-        confirm_message.visible = True
-        log.info("menu uploaded")
+            confirm_message.object = "MENU UPLOADED"
+            confirm_message.visible = True
+            log.info("menu uploaded")
+        except Exception as e:
+            # Any exception here is a database fault
+            error_message.object = f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
+            error_message.visible = True
+            log.warning("database error")
 
     else:
-        error_message.object = "NO IMAGE SELECTED"
+        error_message.object = "NO FILE SELECTED"
         error_message.visible = True
         log.warning("no image selected")
 
@@ -103,10 +134,12 @@ def build_menu(
 
 
 def reload_menu(
-    event, config: DictConfig, dataframe_widget: pnw.DataFrame
+    event,
+    config: DictConfig,
+    dataframe_widget: pnw.DataFrame,
+    res_col: pn.Column,
 ) -> None:
-    # Write order into database table
-
+    # Reload menu
     engine = models.create_engine(config)
     df = pd.read_sql_table("menu", engine, index_col="id")
     df["order"] = False
@@ -120,6 +153,20 @@ def reload_menu(
 
     log.debug("menu reloaded")
 
+    # Load results
+    df_dict = df_list_by_lunch_time(config)
+    # Clean column and load text and dataframes
+    res_col.clear()
+    res_col.append(pn.Spacer(height=50))
+    res_col.append(config.panel.result_column_text)
+    if df_dict:
+        for time, df in df_dict.items():
+            res_col.append(pn.Spacer(height=25))
+            res_col.append(f"### {time}")
+            res_col.append(pnw.Tabulator(name=time, value=df))
+
+    log.debug("results reloaded")
+
 
 def send_order(
     event,
@@ -127,6 +174,7 @@ def send_order(
     app: pn.Template,
     person: Person,
     dataframe_widget: pnw.DataFrame,
+    res_col: pn.Column,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -140,15 +188,43 @@ def send_order(
     df = dataframe_widget.value.copy()
     df_order = df[df.order]
 
+    # If no username is missing or the order is empty return an error message
     if person.username and not df_order.empty:
         session = models.create_session(config)
-        for index, row in df_order.iterrows():
-            new_order = models.Orders(user=person.username, menu_item_id=index)
-            session.add(new_order)
-            session.commit()
-        confirm_message.object = "ORDER SENT"
-        confirm_message.visible = True
-        log.info(f"{person.username}'s order saved")
+        # Check if the user already placed an order
+        if (
+            session.query(models.Orders)
+            .filter(models.Orders.user == person.username)
+            .first()
+        ):
+            error_message.object = f'CANNOT OVERWRITE AN ORDER<br><br>You have to first delete the order for user named "{person.username}"'
+            error_message.visible = True
+            log.warning("database error")
+        else:
+            # Place order
+            try:
+                for index, row in df_order.iterrows():
+                    new_order = models.Orders(
+                        user=person.username,
+                        lunch_time=person.lunch_time,
+                        menu_item_id=index,
+                    )
+                    session.add(new_order)
+                    session.commit()
+
+                # Update dataframe widget
+                reload_menu("", config, dataframe_widget, res_col)
+
+                confirm_message.object = "ORDER SENT"
+                confirm_message.visible = True
+                log.info(f"{person.username}'s order saved")
+            except Exception as e:
+                # Any exception here is a database fault
+                error_message.object = (
+                    f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
+                )
+                error_message.visible = True
+                log.warning("database error")
     else:
         if not person.username:
             error_message.object = "PLEASE INSERT USER NAME"
@@ -163,10 +239,13 @@ def send_order(
     app.open_modal()
 
 
-def download_dataframe(
+def delete_order(
+    event,
     config: DictConfig,
     app: pn.Template,
+    person: Person,
     dataframe_widget: pnw.DataFrame,
+    res_col: pn.Column,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -175,23 +254,91 @@ def download_dataframe(
     # Hide messages
     error_message.visible = False
     confirm_message.visible = False
-    # Create database engine
+
+    if person.username:
+        session = models.create_session(config)
+        num_rows_deleted = (
+            session.query(models.Orders)
+            .filter(models.Orders.user == person.username)
+            .delete()
+        )
+        session.commit()
+        if num_rows_deleted > 0:
+            # Update dataframe widget
+            reload_menu("", config, dataframe_widget, res_col)
+
+            confirm_message.object = "ORDER CANCELED"
+            confirm_message.visible = True
+            log.info(f"{person.username}'s order canceled")
+        else:
+            confirm_message.object = f'NO ORDER<br><br>No order exists for user named "{person.username}"'
+            confirm_message.visible = True
+            log.info(f"{person.username}'s order canceled")
+    else:
+        error_message.object = "PLEASE INSERT USER NAME"
+        error_message.visible = True
+        log.warning("missing username")
+
+    # Open modal window
+    app.open_modal()
+
+
+def df_list_by_lunch_time(
+    config: DictConfig,
+) -> dict:
+
+    # Create database engine and session
     engine = models.create_engine(config)
+    # Read menu
+    original_order = pd.read_sql_table("menu", engine, index_col="id").item
     # Read dataframe
-    df = pd.read_sql_query(config.db.orders_query, engine)
-    # Users' selections
-    df_users = df.pivot_table(
-        index="item", columns="user", aggfunc=len, fill_value=0
-    )
-    df_users = df_users.reindex(dataframe_widget.value.item)
-    df_users["totale"] = df_users.sum(axis=1)
-    # Export dataframe
+    df = pd.read_sql_query(config.panel.orders_query, engine)
+    # Build a list of dataframes, one for each lunch time
+    df_dict = {}
+    for time in df.lunch_time.unique():
+        # Take only one lunch time
+        temp_df = (
+            df[df.lunch_time == time]
+            .drop(columns="lunch_time")
+            .reset_index(drop=True)
+        )
+        # Users' selections
+        df_users = temp_df.pivot_table(
+            index="item", columns="user", aggfunc=len
+        )
+        # Reorder index in accordance with original menu and add columns of totals
+        df_users = df_users.reindex(original_order)
+        df_users["totale"] = df_users.sum(axis=1)
+        df_dict[time] = df_users
+
+    return df_dict
+
+
+def download_dataframe(
+    config: DictConfig,
+    app: pn.Template,
+    messages: list[pn.pane.HTML],
+) -> None:
+    # Expand messages
+    error_message = messages[0]
+    confirm_message = messages[1]
+    # Hide messages
+    error_message.visible = False
+    confirm_message.visible = False
+
+    # Build a dict of dataframes, one for each lunch time (the key contains
+    # a lunch time)
+    df_dict = df_list_by_lunch_time(config)
+    # Export one dataframe for each lunch time
     bytes_io = BytesIO()
     writer = pd.ExcelWriter(bytes_io)
-    df_users.to_excel(writer)
-    writer.save()  # Important!
-    bytes_io.seek(0)  # Important!
+    for time, df in df_dict.items():
+        log.info(f"writing sheet {time}")
+        df.to_excel(writer, sheet_name=time.replace(":", "."))
+        writer.save()  # Important!
+        bytes_io.seek(0)  # Important!
 
+    # Message prompt
     confirm_message.object = "FILE WITH ORDERS DOWNLOADED"
     confirm_message.visible = True
     log.info("xlsx downloaded")
