@@ -1,4 +1,0 @@
-shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, /tmp/shared_data}
-image_name: menu_image.png
-file_name: lunch_order.xlsx
-nthreads: 0

@@ -30,7 +30,7 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("starting initialization process")
 
     log.debug("create 'shared_data' folder")
-    pathlib.Path(config.panel.shared_data_folder).mkdir(exist_ok=True)
+    pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
 
     log.debug("initialize database")
     create_database(config)
@@ -47,13 +47,17 @@ def create_app(config: DictConfig) -> pn.Template:
         title="Data Lunch", sidebar_width=core.sidebar_width
     )
 
+    # RESULTS (USED IN MAIN SECTION)
+    # Create column for resulting menus
+    res_col = pn.Column()
+
     # BASE INSTANCES
     # Create person instance
-    person = core.Person(name="User")
+    person = core.Person(config, name="User")
     # Create dataframe instance
     dataframe = pnw.Tabulator(name="Order")
     # Update dataframe widget
-    core.reload_menu("", config, dataframe)
+    core.reload_menu("", config, dataframe, res_col)
 
     # MODAL
     error_message = pn.pane.HTML(
@@ -70,7 +74,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # SIDEBAR
     # Widgets
     person_widget = pn.Param(person.param, width=core.sidebar_width)
-    menu_image_widget = pnw.FileInput()
+    file_widget = pnw.FileInput(accept=".png,.xlsx")
     # Build menu button
     build_menu_button = pnw.Button(
         name="Build Menu", button_type="primary", sizing_mode="stretch_width"
@@ -80,32 +84,41 @@ def create_app(config: DictConfig) -> pn.Template:
             e,
             config,
             app,
-            menu_image_widget,
+            file_widget,
             dataframe,
+            res_col,
             [error_message, confirm_message],
         )
     )
     # Create download button
     download_button = pn.widgets.FileDownload(
         callback=lambda: core.download_dataframe(
-            config, app, dataframe, [error_message, confirm_message]
+            config, app, [error_message, confirm_message]
         ),
-        filename=config.panel.file_name,
+        filename=config.panel.file_name + ".xlsx",
     )
     # Sidebar tabs
+    person_text = """
+    ### User Data
+    Fill your name (use unique values) and select the lunch time.<br>
+    Click "Delete Order" to remove your orders.
+    """
     upload_text = """
     ### Menu Upload
-    Select a .png file with the menu.
+    Select a .png or .xlsx file with the menu.<br>
+    The app may add some default items to the menu.
+
+    **For .xlsx:** list menu items starting from cell A1, one per each row.
     """
     download_text = """
     ### Download Orders
     Download the orders list.
     """
     sidebar_tabs = pn.Tabs(
-        person_widget,
+        pn.Column(person_text, person_widget, name="User"),
         pn.Column(
             upload_text,
-            menu_image_widget,
+            file_widget,
             build_menu_button,
             name="Menu Upload",
         ),
@@ -115,22 +128,53 @@ def create_app(config: DictConfig) -> pn.Template:
     # MAIN
     # Create refresh button
     refresh_button = pnw.Button(name="Refresh")
-    refresh_button.on_click(lambda e: core.reload_menu(e, config, dataframe))
+    refresh_button.on_click(
+        lambda e: core.reload_menu(e, config, dataframe, res_col)
+    )
     # Create send button
     send_order_button = pnw.Button(
         name="Send", button_type="primary", sizing_mode="stretch_width"
     )
     send_order_button.on_click(
         lambda e: core.send_order(
-            e, config, app, person, dataframe, [error_message, confirm_message]
+            e,
+            config,
+            app,
+            person,
+            dataframe,
+            res_col,
+            [error_message, confirm_message],
+        )
+    )
+    # Create delete order
+    delete_order_button = pnw.Button(
+        name="Delete Order", button_type="danger", sizing_mode="stretch_width"
+    )
+    delete_order_button.on_click(
+        lambda e: core.delete_order(
+            e,
+            config,
+            app,
+            person,
+            dataframe,
+            res_col,
+            [error_message, confirm_message],
         )
     )
 
     # Build dashboard
     app.sidebar.append(sidebar_tabs)
-    app.main.append(pn.Column(refresh_button, dataframe, send_order_button))
-    # app.modal.append(page_tqdm)
-    # app.modal.append(ads_tqdm)
+    app.main.append(
+        pn.Column(
+            "# Menu",
+            refresh_button,
+            pn.Spacer(height=25),
+            dataframe,
+            pn.Spacer(height=25),
+            pn.Row(send_order_button, delete_order_button),
+            res_col,
+        )
+    )
     app.modal.append(error_message)
     app.modal.append(confirm_message)
 

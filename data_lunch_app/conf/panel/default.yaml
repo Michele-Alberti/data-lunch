@@ -1,0 +1,24 @@
+file_name: menu_file
+export_file_name: lunch_order.xlsx
+nthreads: 0
+# Dashboard options
+result_column_text: "# Orders"
+lunch_times_options:
+  - "12:00"
+  - "12:30"
+  - "13:00"
+  - "13:30"
+  - "14:00"
+  - "14:30"
+menu_items_to_concat:
+  - Insalatona
+  - Dolce
+  - Caffé
+  - Altro
+# QUERIES
+orders_query: "
+  SELECT o.user, o.lunch_time, m.item
+  FROM orders o
+  LEFT JOIN menu m
+  ON m.id = o.menu_item_id ;
+  "

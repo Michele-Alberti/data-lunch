@@ -1,12 +1,7 @@
+shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, shared_data}
 name: lunch
-url: sqlite:///${panel.shared_data_folder}/${db.name}.db
+url: sqlite:///${db.shared_data_folder}/${db.name}.db
 engine:
   _target_: sqlalchemy.create_engine
   url: ${db.url}
 menu_table: menu
-orders_query: "
-  SELECT orders.id, orders.user, item
-  FROM orders
-  LEFT JOIN menu
-  ON menu.id = orders.menu_item_id ;
-  "
