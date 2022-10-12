@@ -1,3 +1,13 @@
+## v1.2.0 (2022-10-13)
+
+### Fix
+
+- **models.py**: fix minor bugs and add event listner
+
+### Feat
+
+- add results table to main panel  and a delete order button
+
 ## v1.1.1 (2022-10-12)
 
 ### Fix
