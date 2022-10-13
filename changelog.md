@@ -1,3 +1,9 @@
+## v1.3.0 (2022-10-13)
+
+### Feat
+
+- **conf/panel/default.yaml**: add salads auto-inserted items
+
 ## v1.2.1 (2022-10-13)
 
 ### Fix
