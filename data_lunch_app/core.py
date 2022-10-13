@@ -94,7 +94,9 @@ def build_menu(
             log.info("image uploaded")
         elif file_ext == ".xlsx":
             log.info("excel file uploaded")
-            df = pd.read_excel(local_menu_filename, names=["item"])
+            df = pd.read_excel(
+                local_menu_filename, names=["item"], header=None
+            )
             # Concat additional items
             df = pd.concat(
                 [
