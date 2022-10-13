@@ -1,3 +1,9 @@
+## v1.3.1 (2022-10-13)
+
+### Fix
+
+- **core.py**: fix error in call to read_excel
+
 ## v1.3.0 (2022-10-13)
 
 ### Feat
