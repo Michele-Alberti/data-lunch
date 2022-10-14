@@ -1,3 +1,9 @@
+## v1.3.2 (2022-10-14)
+
+### Fix
+
+- install data-lunch environment at os level
+
 ## v1.3.1 (2022-10-13)
 
 ### Fix
