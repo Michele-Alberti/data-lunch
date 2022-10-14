@@ -1,3 +1,9 @@
+## v1.4.0 (2022-10-14)
+
+### Feat
+
+- add scheduled cleaning of menu files and database tables
+
 ## v1.3.2 (2022-10-14)
 
 ### Fix
