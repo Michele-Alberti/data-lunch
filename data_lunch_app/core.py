@@ -36,6 +36,29 @@ class Person(param.Parameterized):
 
 
 # FUNCTIONS -------------------------------------------------------------------
+def delete_files(config: DictConfig):
+    # Delete menu file if exist (every extension)
+    files = list(
+        pathlib.Path(config.db.shared_data_folder).glob(
+            config.panel.file_name + "*"
+        )
+    )
+    log.info(f"delete files {', '.join([f.name for f in files])}")
+    for file in files:
+        file.unlink(missing_ok=True)
+
+
+def clean_tables(config: DictConfig):
+    # Clean tables
+    session = models.create_session(config)
+    num_rows_deleted = session.query(models.Menu).delete()
+    session.commit()
+    log.info(f"deleted {num_rows_deleted} from table 'menu'")
+    num_rows_deleted = session.query(models.Orders).delete()
+    session.commit()
+    log.info(f"deleted {num_rows_deleted} from table 'orders'")
+
+
 def build_menu(
     event,
     config: DictConfig,
@@ -58,14 +81,7 @@ def build_menu(
     )
 
     # Delete menu file if exist (every extension)
-    files = list(
-        pathlib.Path(config.db.shared_data_folder).glob(
-            config.panel.file_name + "*"
-        )
-    )
-    log.info(f"delete files {', '.join([f.name for f in files])}")
-    for file in files:
-        file.unlink(missing_ok=True)
+    delete_files(config)
 
     # Load image from widget
     if file_widget.value is not None:
@@ -77,13 +93,7 @@ def build_menu(
         file_widget.save(local_menu_filename)
 
         # Clean tables
-        session = models.create_session(config)
-        num_rows_deleted = session.query(models.Menu).delete()
-        session.commit()
-        log.info(f"deleted {num_rows_deleted} from table 'menu")
-        num_rows_deleted = session.query(models.Orders).delete()
-        session.commit()
-        log.info(f"deleted {num_rows_deleted} from table 'orders")
+        clean_tables(config)
 
         # File can be either an excel file or an image
         if file_ext == ".png":
