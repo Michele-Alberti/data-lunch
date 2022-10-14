@@ -27,3 +27,8 @@ orders_query: "
   LEFT JOIN menu m
   ON m.id = o.menu_item_id ;
   "
+# SCHEDULED CLEANING
+scheduled_cleaning: # Set to null to turn off
+  hour: 18
+  minute: 0
+  period: 1d
