@@ -1,3 +1,9 @@
+## v1.4.1 (2022-10-15)
+
+### Refactor
+
+- **panel/default.yaml**: change hour of scheduled_cleaning to 15
+
 ## v1.4.0 (2022-10-14)
 
 ### Feat
