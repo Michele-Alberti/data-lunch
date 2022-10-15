@@ -29,6 +29,6 @@ orders_query: "
   "
 # SCHEDULED CLEANING
 scheduled_cleaning: # Set to null to turn off
-  hour: 18
+  hour: 15
   minute: 0
   period: 1d
