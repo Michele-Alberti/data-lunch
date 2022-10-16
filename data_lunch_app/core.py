@@ -10,6 +10,8 @@ from . import models
 from omegaconf import DictConfig
 from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
+import matplotlib.pyplot as plt
+import easyocr
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
@@ -96,12 +98,23 @@ def build_menu(
         clean_tables(config)
 
         # File can be either an excel file or an image
-        if file_ext == ".png":
+        if file_ext == ".png" or file_ext == ".jpg":
             # Transform image into a pandas DataFrame
             # TODO
             # Concat additional items
             #            df = pd.concat([df, pd.DataFrame({"item": config.panel.menu_items_to_concat})], axis="index")
-            log.info("image uploaded")
+            log.info("image file uploaded")
+            img = plt.imread(local_menu_filename)
+            reader = easyocr.Reader(['it'])
+            results = reader.readtext(img, slope_ths = .2)
+            words = [result[1] for result in results]
+            primi = words[3:6]
+            secondi = words[7:10]
+            contorni = words[11:16]
+            df = pd.DataFrame(
+                {'item': primi+secondi+contorni}
+            )
+
         elif file_ext == ".xlsx":
             log.info("excel file uploaded")
             df = pd.read_excel(
