@@ -1,3 +1,17 @@
+## v1.5.0 (2022-10-16)
+
+### Feat
+
+- download the sqlite database from a bucket on google cloud storage
+
+### Refactor
+
+- improve scheduled tasks execution
+
+### Fix
+
+- **CPU_Memory_time.ipynb**: fix error in df_info instantiation
+
 ## v1.4.1 (2022-10-15)
 
 ### Refactor
