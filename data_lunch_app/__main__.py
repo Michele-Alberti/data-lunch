@@ -49,7 +49,7 @@ def schedule_task(task: DictConfig, function: Callable):
         )
 
 
-async def clean_files_db(config):
+async def clean_files_db(config: DictConfig):
     log.info(f"clean task (files and db) executed at {dt.datetime.now()}")
     # Delete files
     delete_files(config)
