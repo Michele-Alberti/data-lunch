@@ -15,11 +15,23 @@ from omegaconf import DictConfig, open_dict
 
 # Database imports
 from .models import db, create_database
+from .cloud import download_from_gcloud
 
 # Core imports
 from . import core
 
 log = logging.getLogger(__name__)
+
+
+# UTILITY FUNCTIONS -----------------------------------------------------------
+def on_session_destroyed(config: DictConfig, session_context):
+
+    # If google cloud is configured, upload the sqlite database to storage
+    # bucket
+    if config.db.gcloud_storage:
+        log.info("uploading database file to bucket")
+        hydra.utils.call(config.db.gcloud_storage.upload)
+
 
 # APP FACTORY FUNCTION --------------------------------------------------------
 
@@ -33,6 +45,11 @@ def create_app(config: DictConfig) -> pn.Template:
     pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
 
     log.debug("initialize database")
+    # If configured, download the sqlite database from google cloud bucket
+    if config.db.gcloud_storage:
+        log.info("downloading database file from bucket")
+        hydra.utils.call(config.db.gcloud_storage.download)
+    # Then create tables
     create_database(config)
 
     log.debug("instantiate Panel app")
@@ -40,6 +57,15 @@ def create_app(config: DictConfig) -> pn.Template:
     # Panel configurations
     log.debug("set threads number")
     pn.config = config.panel.nthreads
+
+    # Set action to run when sessions are destroyed
+    # If google cloud is configured, download the sqlite database from storage
+    # bucket
+    if config.db.gcloud_storage:
+        log.debug("set 'on_session_destroy' actions")
+        pn.state.on_session_destroyed(
+            lambda context: on_session_destroyed(config, context)
+        )
 
     # DASHBOARD BASE TEMPLATE
     # Create web app template
