@@ -3,5 +3,5 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python #=3.10.6
-  - google-cloud-sdk #=3.10.6
+  - python=3.10.6
+  - google-cloud-sdk=405.0.0

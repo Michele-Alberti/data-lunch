@@ -13,3 +13,4 @@ dependencies:
   - panel=0.14.0
   - sqlalchemy=1.4.39
   - hydra-core=1.1.1
+  - google-cloud-storage=1.43.0
