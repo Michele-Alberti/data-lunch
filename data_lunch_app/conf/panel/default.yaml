@@ -27,8 +27,11 @@ orders_query: "
   LEFT JOIN menu m
   ON m.id = o.menu_item_id ;
   "
-# SCHEDULED CLEANING
-scheduled_cleaning: # Set to null to turn off
-  hour: 15
-  minute: 0
-  period: 1d
+# SERVER SCHEDULED ACTIVITIES
+scheduled_tasks: # Set to [] empty list to turn it off
+  # CLEANING
+  scheduled_cleaning:
+    name: scheduled cleaning
+    hour: 15
+    minute: 0
+    period: 1d

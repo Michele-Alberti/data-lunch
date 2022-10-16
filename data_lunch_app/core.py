@@ -105,15 +105,20 @@ def build_menu(
             #            df = pd.concat([df, pd.DataFrame({"item": config.panel.menu_items_to_concat})], axis="index")
             log.info("image file uploaded")
             img = plt.imread(local_menu_filename)
-            reader = easyocr.Reader(['it'])
-            results = reader.readtext(img, slope_ths = .2)
-            words = [result[1] for result in results]
-            primi = words[3:6]
-            secondi = words[7:10]
-            contorni = words[11:16]
-            df = pd.DataFrame(
-                {'item': primi+secondi+contorni}
-            )
+            try:
+                reader = easyocr.Reader(['it'])
+                results = reader.readtext(img, slope_ths = .2)
+                words = [result[1] for result in results]
+                primi = words[3:6]
+                secondi = words[7:10]
+                contorni = words[11:16]
+                df = pd.DataFrame(
+                    {'item': primi+secondi+contorni}
+                )
+            except:
+                error_message.object = f"INCORRECT MENU FORMAT"
+                error_message.visible = True
+                log.warning("incorrect menu format")
 
         elif file_ext == ".xlsx":
             log.info("excel file uploaded")

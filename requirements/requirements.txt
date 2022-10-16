@@ -9,3 +9,4 @@ sqlalchemy==1.4.39
 hydra-core==1.1.1
 easyocr==1.6.1
 matplotlib==3.6.1
+google-cloud-storage==1.43.0
