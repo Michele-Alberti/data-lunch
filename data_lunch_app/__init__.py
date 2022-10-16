@@ -44,7 +44,7 @@ def create_app(config: DictConfig) -> pn.Template:
     log.debug("create 'shared_data' folder")
     pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
 
-    log.debug("initialize database")
+    log.info("initialize database")
     # If configured, download the sqlite database from google cloud bucket
     if config.db.gcloud_storage:
         log.info("downloading database file from bucket")
@@ -52,7 +52,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Then create tables
     create_database(config)
 
-    log.debug("instantiate Panel app")
+    log.info("instantiate Panel app")
 
     # Panel configurations
     log.debug("set threads number")
