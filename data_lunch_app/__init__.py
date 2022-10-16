@@ -100,7 +100,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # SIDEBAR
     # Widgets
     person_widget = pn.Param(person.param, width=core.sidebar_width)
-    file_widget = pnw.FileInput(accept=".png,.xlsx")
+    file_widget = pnw.FileInput(accept=".png,.jpg,.xlsx")
     # Build menu button
     build_menu_button = pnw.Button(
         name="Build Menu", button_type="primary", sizing_mode="stretch_width"
@@ -131,7 +131,7 @@ def create_app(config: DictConfig) -> pn.Template:
     """
     upload_text = """
     ### Menu Upload
-    Select a .png or .xlsx file with the menu.<br>
+    Select a .png, .jpg or .xlsx file with the menu.<br>
     The app may add some default items to the menu.
 
     **For .xlsx:** list menu items starting from cell A1, one per each row.
