@@ -8,6 +8,12 @@ FROM python:3.10-slim-bullseye
 # Tell the docker runtime process to use the default shell
 SHELL ["/bin/sh", "-c"]
 
+# Install tesseract
+RUN apt update && apt install -y \
+  tesseract-ocr \
+  tesseract-ocr-ita \
+  && rm -rf /var/lib/apt/lists/*
+
 # Copy requirements
 COPY requirements/requirements.txt /app/requirements/requirements.txt
 

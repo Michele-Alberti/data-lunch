@@ -14,3 +14,4 @@ dependencies:
   - sqlalchemy=1.4.39
   - hydra-core=1.1.1
   - google-cloud-storage=1.43.0
+  - pytesseract=0.3.10

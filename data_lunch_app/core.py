@@ -10,6 +10,8 @@ from . import models
 from omegaconf import DictConfig
 from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
+from PIL import Image
+from pytesseract import pytesseract
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
@@ -96,12 +98,26 @@ def build_menu(
         clean_tables(config)
 
         # File can be either an excel file or an image
-        if file_ext == ".png":
+        if file_ext == ".png" or file_ext == ".jpg":
             # Transform image into a pandas DataFrame
-            # TODO
+            # Open image with PIL
+            img = Image.open(local_menu_filename)
+            # Extract text from image
+            text = pytesseract.image_to_string(img, lang="ita")
+            # Process rows (rows that are completely uppercase are section titles)
+            rows = [
+                row for row in text.split("\n") if row and not row.isupper()
+            ]
+            df = pd.DataFrame({"item": rows})
             # Concat additional items
-            #            df = pd.concat([df, pd.DataFrame({"item": config.panel.menu_items_to_concat})], axis="index")
-            log.info("image uploaded")
+            df = pd.concat(
+                [
+                    df,
+                    pd.DataFrame({"item": config.panel.menu_items_to_concat}),
+                ],
+                axis="index",
+            )
+
         elif file_ext == ".xlsx":
             log.info("excel file uploaded")
             df = pd.read_excel(
