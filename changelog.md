@@ -1,3 +1,12 @@
+## v1.6.1 (2022-10-19)
+
+### Fix
+
+- **db/production.yaml**: fix error in shared_data path
+- fix non-breaking error on makefile and production.yaml
+- **nginx.conf**: change listen port to 8080
+- **makefile**: fix error in run-it label
+
 ## v1.6.0 (2022-10-18)
 
 ### Feat
