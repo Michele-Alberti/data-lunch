@@ -10,9 +10,16 @@ SHELL ["/bin/sh", "-c"]
 
 # Install tesseract
 RUN apt update && apt install -y \
+  apt-transport-https \
+  lsb-release \
+  && echo "deb https://notesalexp.org/tesseract-ocr5/$(lsb_release -cs)/ $(lsb_release -cs) main" \
+  | tee /etc/apt/sources.list.d/notesalexp.list > /dev/null \
+  && apt update -oAcquire::AllowInsecureRepositories=true \
+  && apt install -y notesalexp-keyring -oAcquire::AllowInsecureRepositories=true --allow-unauthenticated \
+  && apt update && apt install -y \
   tesseract-ocr \
   tesseract-ocr-ita \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get clean all && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
 COPY requirements/requirements.txt /app/requirements/requirements.txt

@@ -1,11 +1,10 @@
 #vars
 APP=${PANEL_APP}
-USERNAME=${DOCKER_USERNAME}
-IMAGENAME=${USERNAME}/${APP}
-RUNNAME=${USERNAME}_${APP}
+IMAGENAME=${DOCKER_USERNAME}/${APP}
+RUNNAME=${DOCKER_USERNAME}_${APP}
 VERSION=latest
 IMAGEFULLNAME=${IMAGENAME}:${VERSION}
-PROJECTNAME=${USERNAME}_${APP}
+PROJECTNAME=${DOCKER_USERNAME}_${APP}
 
 .PHONY: help build push all clean
 
@@ -27,7 +26,7 @@ run:
 	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/tmp/shared_data -v ${HOME}/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} ${IMAGEFULLNAME}
 
 run-it:
-	docker run -it ${IMAGEFULLNAME} /entry.sh /bin/sh
+	docker run -e PANEL_ENV=development -it ${IMAGEFULLNAME} /entry.sh /bin/sh
 
 run-development: 
 	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} ${IMAGEFULLNAME}
