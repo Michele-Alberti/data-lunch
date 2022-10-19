@@ -1,3 +1,9 @@
+## v1.6.2 (2022-10-19)
+
+### Fix
+
+- change container and load balancer port to 80
+
 ## v1.6.1 (2022-10-19)
 
 ### Fix
