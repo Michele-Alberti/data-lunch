@@ -1,3 +1,9 @@
+## v1.7.0 (2022-10-21)
+
+### Feat
+
+- add support for https and ssl certificates
+
 ## v1.6.2 (2022-10-19)
 
 ### Fix
