@@ -17,9 +17,12 @@ services:
     image: nginx:latest
     volumes:
       - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+      - ./ssl/private/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
     depends_on:
       - web
     ports:
+      - "443:443" # port 443 available on localhost
       - "80:80" # port 80 available on localhost
 networks:
   default:

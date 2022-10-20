@@ -62,6 +62,14 @@ gcp-build: build
 gcp-deploy:
 	gcloud run deploy --image=us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION} --platform managed --update-env-vars PANEL_ENV=production,PANEL_APP=data-lunch-app
 
+ssl-cert:
+	mkdir -p ./ssl/private
+	mkdir -p ./ssl/certs
+	openssl req -nodes -x509 -newkey rsa:2048 -keyout ./ssl/private/nginx-selfsigned.key -out ./ssl/certs/nginx-selfsigned.crt  -subj "/C=IT/ST=Lombardia/L=Milan/O=MIC/OU=IT/CN=data-lunch.duckdns.org/"
+
+rm-ssl-cert:
+	rm -R ./ssl
+
 all: build
 
 clean:
