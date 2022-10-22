@@ -36,19 +36,19 @@ stop:
 
 up:
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
-		docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --scale web=3; \
+		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --scale web=3; \
 	else \
-		docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d web nginx --scale web=3; \
+		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d web nginx --scale web=3; \
 	fi;
 
 up-build:
-	docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3
+	docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3
 
 down:
-	docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . down
+	docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . down
 
 up-init:
-	sh docker/compose_init.sh
+	bash docker/compose_init.sh
 
 gcp-config:
 	gcloud config configurations create ${APP}
