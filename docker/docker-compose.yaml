@@ -38,7 +38,7 @@ services:
       DOMAIN: ${DOMAIN}
     command: >-
       certonly --reinstall --webroot --webroot-path=/var/www/certbot
-      --email ${CERT_EMAIL} --agree-tos --no-eff-email --test-cert
+      --email ${CERT_EMAIL} --agree-tos --no-eff-email
       -d ${DOMAIN}
 networks:
   default:
