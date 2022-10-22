@@ -1,3 +1,9 @@
+## v1.7.3 (2022-10-22)
+
+### Fix
+
+- **compose_init.sh**: add dhparams installation
+
 ## v1.7.2 (2022-10-22)
 
 ### Fix
