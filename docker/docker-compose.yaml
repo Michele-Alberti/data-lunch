@@ -10,20 +10,36 @@ services:
     expose:
       - "5000" # Expose port 5000 to an ephemeral port (used by load balancer)
     environment:
-      PANEL_APP: data-lunch-app
-      PANEL_ENV: production
+      PANEL_APP: ${PANEL_APP}
+      PANEL_ENV: ${PANEL_ENV}
       PORT: 5000
   nginx:
     image: nginx:latest
     volumes:
-      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
-      - ./ssl/private/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
+      - ./docker/nginx/template.conf:/etc/nginx/template.conf:ro
+      - ./ssl/www:/var/www/certbot/:ro
+      - ./ssl/conf/:/etc/letsencrypt/:rw
     depends_on:
       - web
+    environment:
+      DOMAIN: ${DOMAIN}
     ports:
       - "443:443" # port 443 available on localhost
       - "80:80" # port 80 available on localhost
+    command: /bin/bash -c "echo 'selected domain $DOMAIN' && envsubst '$$DOMAIN' < /etc/nginx/template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./ssl/www/:/var/www/certbot/:rw
+      - ./ssl/conf/:/etc/letsencrypt/:rw
+    depends_on:
+      - nginx
+    environment:
+      DOMAIN: ${DOMAIN}
+    command: >-
+      certonly --reinstall --webroot --webroot-path=/var/www/certbot
+      --email ${CERT_EMAIL} --agree-tos --no-eff-email --test-cert
+      -d ${DOMAIN}
 networks:
   default:
     driver: bridge
