@@ -1,3 +1,9 @@
+## v1.7.2 (2022-10-22)
+
+### Fix
+
+- fix errors in makefile and compose_init.sh
+
 ## v1.7.1 (2022-10-22)
 
 ### Fix
