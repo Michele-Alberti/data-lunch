@@ -35,13 +35,20 @@ stop:
 	docker stop ${RUNNAME}
 
 up:
-	docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --scale web=3
+	if [[ ${PANEL_ENV} == "production" ]] ; then \
+		docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --scale web=3; \
+	else \
+		docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d web nginx --scale web=3; \
+	fi;
 
 up-build:
 	docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3
 
 down:
 	docker-compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . down
+
+up-init:
+	sh docker/compose_init.sh
 
 gcp-config:
 	gcloud config configurations create ${APP}
@@ -63,9 +70,10 @@ gcp-deploy:
 	gcloud run deploy --image=us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION} --platform managed --update-env-vars PANEL_ENV=production,PANEL_APP=data-lunch-app
 
 ssl-cert:
-	mkdir -p ./ssl/private
-	mkdir -p ./ssl/certs
-	openssl req -nodes -x509 -newkey rsa:2048 -keyout ./ssl/private/nginx-selfsigned.key -out ./ssl/certs/nginx-selfsigned.crt  -subj "/C=IT/ST=Lombardia/L=Milan/O=MIC/OU=IT/CN=data-lunch.duckdns.org/"
+	mkdir -p ./ssl/conf/live/${DOMAIN}/
+	curl https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > ./ssl/conf/options-ssl-nginx.conf
+	openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048
+	openssl req -nodes -x509 -newkey rsa:2048 -keyout ./ssl/conf/live/${DOMAIN}/privkey.pem -out ./ssl/conf/live/${DOMAIN}/fullchain.pem  -subj "/C=IT/ST=Lombardia/L=Milan/O=MIC/OU=IT/CN=${DOMAIN}/"
 
 rm-ssl-cert:
 	rm -R ./ssl

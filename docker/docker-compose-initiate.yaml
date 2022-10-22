@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./docker/nginx/template-initiate.conf:/etc/nginx/template.conf:ro
+      - ./ssl/www:/var/www/certbot/:ro
+      - ./ssl/conf/:/etc/letsencrypt/:rw
+    ports:
+      - 80:80
+    environment:
+      DOMAIN: ${DOMAIN}
+    command: /bin/bash -c "echo 'selected domain $DOMAIN' && envsubst '$$DOMAIN' < /etc/nginx/template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:latest
+    volumes:
+      - ./ssl/www:/var/www/certbot/:rw
+      - ./ssl/conf/:/etc/letsencrypt/:rw
+    depends_on:
+      - nginx
+    environment:
+      DOMAIN: ${DOMAIN}
+    command: >- 
+      certonly --reinstall --webroot --webroot-path=/var/www/certbot
+      --email ${CERT_EMAIL} --agree-tos --no-eff-email --test-cert
+      -d ${DOMAIN}
