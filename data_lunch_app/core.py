@@ -98,7 +98,7 @@ def build_menu(
         clean_tables(config)
 
         # File can be either an excel file or an image
-        if file_ext == ".png" or file_ext == ".jpg":
+        if file_ext == ".png" or file_ext == ".jpg" or file_ext == ".jpeg":
             # Transform image into a pandas DataFrame
             # Open image with PIL
             img = Image.open(local_menu_filename)
@@ -137,6 +137,7 @@ def build_menu(
             error_message.object = "WRONG FILE TYPE"
             error_message.visible = True
             log.warning("wrong file type")
+            return
 
         # Upload to database menu table
         engine = models.create_engine(config)
@@ -349,6 +350,7 @@ def df_list_by_lunch_time(
 def download_dataframe(
     config: DictConfig,
     app: pn.Template,
+    dataframe_widget: pnw.DataFrame,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -364,16 +366,28 @@ def download_dataframe(
     # Export one dataframe for each lunch time
     bytes_io = BytesIO()
     writer = pd.ExcelWriter(bytes_io)
-    for time, df in df_dict.items():
-        log.info(f"writing sheet {time}")
-        df.to_excel(writer, sheet_name=time.replace(":", "."))
+    # If the dataframe dict is non-empty export one dataframe for each sheet
+    if df_dict:
+        for time, df in df_dict.items():
+            log.info(f"writing sheet {time}")
+            df.to_excel(writer, sheet_name=time.replace(":", "."))
+            writer.save()  # Important!
+            bytes_io.seek(0)  # Important!
+
+        # Message prompt
+        confirm_message.object = "FILE WITH ORDERS DOWNLOADED"
+        confirm_message.visible = True
+        log.info("xlsx downloaded")
+    else:
+        dataframe_widget.value.drop(columns=["order"]).to_excel(
+            writer, sheet_name="MENU", index=False
+        )
         writer.save()  # Important!
         bytes_io.seek(0)  # Important!
-
-    # Message prompt
-    confirm_message.object = "FILE WITH ORDERS DOWNLOADED"
-    confirm_message.visible = True
-    log.info("xlsx downloaded")
+        # Message prompt
+        confirm_message.object = "NO ORDER, FILE WITH MENU DOWNLOADED"
+        confirm_message.visible = True
+        log.warning("no order exist, menu exported to excel")
 
     # Open modal window
     app.open_modal()

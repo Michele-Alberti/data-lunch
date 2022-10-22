@@ -100,7 +100,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # SIDEBAR
     # Widgets
     person_widget = pn.Param(person.param, width=core.sidebar_width)
-    file_widget = pnw.FileInput(accept=".png,.jpg,.xlsx")
+    file_widget = pnw.FileInput(accept=".png,.jpg,.jpeg,.xlsx")
     # Build menu button
     build_menu_button = pnw.Button(
         name="Build Menu", button_type="primary", sizing_mode="stretch_width"
@@ -119,7 +119,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create download button
     download_button = pn.widgets.FileDownload(
         callback=lambda: core.download_dataframe(
-            config, app, [error_message, confirm_message]
+            config, app, dataframe, [error_message, confirm_message]
         ),
         filename=config.panel.file_name + ".xlsx",
     )
