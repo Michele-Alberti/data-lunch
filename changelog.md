@@ -1,3 +1,9 @@
+## v1.7.1 (2022-10-22)
+
+### Fix
+
+- fix missing image extension (.jpeg) and download of empty order list
+
 ## v1.7.0 (2022-10-21)
 
 ### Feat
