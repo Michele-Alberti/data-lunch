@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="data_lunch_cli",
-    version="1.7.3",
+    version="1.8.0",
     py_modules=["data_lunch_app"],
     install_requires=[
         "sqlalchemy==1.4.39",
