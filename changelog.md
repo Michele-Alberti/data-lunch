@@ -1,3 +1,9 @@
+## v1.8.0 (2022-10-23)
+
+### Feat
+
+- **send_email_with_ip.py**: add script for emails with vm external ip
+
 ## v1.7.3 (2022-10-22)
 
 ### Fix
