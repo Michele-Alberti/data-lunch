@@ -49,6 +49,10 @@ The following environment variables are required for running the _web app_ or th
 `GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile`)
 `CERT_EMAIL` | _str_ | email for _SSL certificates_
 `DOMAIN` | _str_ | domain name, e.g. mywebapp.com
+`MAIL_USER` | _str_ | email client user (for sending emails with the current instance IP)
+`MAIL_APP_PASSWORD` | _str_ | email client user (for sending emails with the current instance IP)
+`MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (for sending emails with the current instance IP)
+
 
 ### 2.3. Install data-lunch CLI
 
