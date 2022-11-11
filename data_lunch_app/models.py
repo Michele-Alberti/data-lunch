@@ -17,7 +17,7 @@ db = declarative_base()
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.execute("PRAGMA foreign_keys=ON;")
     cursor.close()
 
 
@@ -42,7 +42,12 @@ class Menu(db):
 class Orders(db):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)
-    user = Column(String(100), index=True, nullable=False)
+    user = Column(
+        String(100),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
     lunch_time = Column(String(7), index=True, nullable=False)
     menu_item_id = Column(
         Integer,
@@ -50,9 +55,29 @@ class Orders(db):
         nullable=False,
     )
     menu_item = relationship("Menu", back_populates="orders")
+    note = relationship("Users", back_populates="orders", uselist=False)
 
     def __repr__(self):
         return f"<ORDER:{self.user}, {self.menu_item.item}>"
+
+
+class Users(db):
+    __tablename__ = "users"
+    id = Column(
+        String(100),
+        primary_key=True,
+        nullable=False,
+    )
+    note = Column(String(500), unique=False, nullable=False)
+    orders = relationship(
+        "Orders",
+        back_populates="note",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+    def __repr__(self):
+        return f"<NOTE:{self.id} - {self.user}>"
 
 
 # FUNCTIONS -------------------------------------------------------------------

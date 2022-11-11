@@ -74,6 +74,8 @@ def create_app(config: DictConfig) -> pn.Template:
     )
 
     # RESULTS (USED IN MAIN SECTION)
+    # Create column for lunch time labels
+    time_col = pn.Column(width=100)
     # Create column for resulting menus
     res_col = pn.Column()
 
@@ -83,7 +85,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create dataframe instance
     dataframe = pnw.Tabulator(name="Order")
     # Update dataframe widget
-    core.reload_menu("", config, dataframe, res_col)
+    core.reload_menu("", config, dataframe, res_col, time_col)
 
     # MODAL
     error_message = pn.pane.HTML(
@@ -113,6 +115,7 @@ def create_app(config: DictConfig) -> pn.Template:
             file_widget,
             dataframe,
             res_col,
+            time_col,
             [error_message, confirm_message],
         )
     )
@@ -152,10 +155,27 @@ def create_app(config: DictConfig) -> pn.Template:
     )
 
     # MAIN
-    # Create refresh button
-    refresh_button = pnw.Button(name="Refresh")
+    # Create refresh button (with css to center text)
+    button_css = """
+    .refresh-button .bk-btn-group button {
+        font-size: 2rem;
+        vertical-align: middle;
+        padding: 0;
+        margin: 0;
+        line-height: 1.25rem;
+        border-style: none;
+    }
+    """
+    pn.extension(raw_css=[button_css])
+    refresh_button = pnw.Button(
+        name="⟲",
+        width=45,
+        height=45,
+        align=("end", "start"),
+        css_classes=["refresh-button"],
+    )
     refresh_button.on_click(
-        lambda e: core.reload_menu(e, config, dataframe, res_col)
+        lambda e: core.reload_menu(e, config, dataframe, res_col, time_col)
     )
     # Create send button
     send_order_button = pnw.Button(
@@ -169,6 +189,7 @@ def create_app(config: DictConfig) -> pn.Template:
             person,
             dataframe,
             res_col,
+            time_col,
             [error_message, confirm_message],
         )
     )
@@ -184,6 +205,7 @@ def create_app(config: DictConfig) -> pn.Template:
             person,
             dataframe,
             res_col,
+            time_col,
             [error_message, confirm_message],
         )
     )
@@ -192,12 +214,20 @@ def create_app(config: DictConfig) -> pn.Template:
     app.sidebar.append(sidebar_tabs)
     app.main.append(
         pn.Column(
-            "# Menu",
-            refresh_button,
+            pn.Row(
+                "# Menu",
+                pn.layout.HSpacer(),
+                refresh_button,
+            ),
             pn.Spacer(height=25),
-            dataframe,
-            pn.Spacer(height=25),
-            pn.Row(send_order_button, delete_order_button),
+            pn.Row(
+                pn.Column(
+                    dataframe,
+                    pn.Spacer(height=25),
+                    pn.Row(send_order_button, delete_order_button),
+                ),
+                time_col,
+            ),
             res_col,
         )
     )

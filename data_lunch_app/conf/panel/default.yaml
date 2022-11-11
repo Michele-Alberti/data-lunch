@@ -3,6 +3,7 @@ export_file_name: lunch_order.xlsx
 nthreads: 0
 # Dashboard options
 result_column_text: "# Orders"
+time_column_text: "**Orders**"
 lunch_times_options:
   - "12:00"
   - "12:30"
@@ -27,6 +28,21 @@ orders_query: "
   LEFT JOIN menu m
   ON m.id = o.menu_item_id ;
   "
+# CSS
+time_style_res_col:
+  background-color: powderblue
+  border-radius: 1.2rem
+  padding: 1rem
+  font-size: 1.8rem
+  font-weight: bold
+  line-height: 1.25rem
+time_style_time_col:
+  background-color: powderblue
+  border-radius: .8rem
+  padding: .5rem
+  font-size: 1rem
+  font-weight: bold
+  line-height: 1rem
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
   # CLEANING
