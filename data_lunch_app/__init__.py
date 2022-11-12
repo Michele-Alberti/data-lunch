@@ -1,6 +1,7 @@
 # App metadata
 __version__ = "1.8.0"
 
+import datetime
 import pathlib
 import hydra
 import logging
@@ -21,6 +22,14 @@ from .cloud import download_from_gcloud
 from . import core
 
 log = logging.getLogger(__name__)
+
+# QUOTES ----------------------------------------------------------------------
+# Quote table
+quotes_filename = pathlib.Path(__file__).parent / "quotes.xlsx"
+df_quotes = pd.read_excel(quotes_filename)
+# Quote of the day
+seed_day = int(datetime.datetime.today().strftime("%Y%m%d"))
+df_quote = df_quotes.sample(n=1, random_state=seed_day)
 
 
 # UTILITY FUNCTIONS -----------------------------------------------------------
@@ -73,9 +82,19 @@ def create_app(config: DictConfig) -> pn.Template:
         title="Data Lunch", sidebar_width=core.sidebar_width
     )
 
+    # QUOTE OF THE DAY
+    quote = pn.pane.Markdown(
+        f"""
+    >_{df_quote.quote.iloc[0]}_
+    >
+    >**{df_quote.author.iloc[0]}**
+    """
+    )
     # RESULTS (USED IN MAIN SECTION)
+    # Create column for statistics
+    stats_col = pn.Column(name="Stats")
     # Create column for lunch time labels
-    time_col = pn.Column(width=100)
+    time_col = pn.Column(width=125)
     # Create column for resulting menus
     res_col = pn.Column()
 
@@ -85,7 +104,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create dataframe instance
     dataframe = pnw.Tabulator(name="Order")
     # Update dataframe widget
-    core.reload_menu("", config, dataframe, res_col, time_col)
+    core.reload_menu("", config, dataframe, stats_col, res_col, time_col)
 
     # MODAL
     error_message = pn.pane.HTML(
@@ -114,6 +133,7 @@ def create_app(config: DictConfig) -> pn.Template:
             app,
             file_widget,
             dataframe,
+            stats_col,
             res_col,
             time_col,
             [error_message, confirm_message],
@@ -129,7 +149,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Sidebar tabs
     person_text = """
     ### User Data
-    Fill your name (use unique values) and select the lunch time.<br>
+    Fill your name (duplicates are not allowed) and select the lunch time.<br>
     Click "Delete Order" to remove your orders.
     """
     upload_text = """
@@ -141,7 +161,7 @@ def create_app(config: DictConfig) -> pn.Template:
     """
     download_text = """
     ### Download Orders
-    Download the orders list.
+    Download the order list.
     """
     sidebar_tabs = pn.Tabs(
         pn.Column(person_text, person_widget, name="User"),
@@ -152,6 +172,7 @@ def create_app(config: DictConfig) -> pn.Template:
             name="Menu Upload",
         ),
         pn.Column(download_text, download_button, name="Download Orders"),
+        stats_col,
     )
 
     # MAIN
@@ -175,7 +196,9 @@ def create_app(config: DictConfig) -> pn.Template:
         css_classes=["refresh-button"],
     )
     refresh_button.on_click(
-        lambda e: core.reload_menu(e, config, dataframe, res_col, time_col)
+        lambda e: core.reload_menu(
+            e, config, dataframe, stats_col, res_col, time_col
+        )
     )
     # Create send button
     send_order_button = pnw.Button(
@@ -188,6 +211,7 @@ def create_app(config: DictConfig) -> pn.Template:
             app,
             person,
             dataframe,
+            stats_col,
             res_col,
             time_col,
             [error_message, confirm_message],
@@ -204,6 +228,7 @@ def create_app(config: DictConfig) -> pn.Template:
             app,
             person,
             dataframe,
+            stats_col,
             res_col,
             time_col,
             [error_message, confirm_message],
@@ -219,7 +244,8 @@ def create_app(config: DictConfig) -> pn.Template:
                 pn.layout.HSpacer(),
                 refresh_button,
             ),
-            pn.Spacer(height=25),
+            quote,
+            pn.Spacer(height=15),
             pn.Row(
                 pn.Column(
                     dataframe,

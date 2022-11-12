@@ -1,9 +1,10 @@
 import hydra
 import logging
-from sqlalchemy import Column, ForeignKey, Integer, String, event
+from sqlalchemy import Column, ForeignKey, Integer, String, Date, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, relationship, Session
 from omegaconf import DictConfig
+from datetime import datetime
 
 log = logging.getLogger(__name__)
 
@@ -78,6 +79,21 @@ class Users(db):
 
     def __repr__(self):
         return f"<NOTE:{self.id} - {self.user}>"
+
+
+class Stats(db):
+    __tablename__ = "stats"
+    id = Column(
+        Date,
+        primary_key=True,
+        nullable=False,
+        default=datetime.utcnow(),
+        sqlite_on_conflict_primary_key="REPLACE",
+    )
+    hungry_people = Column(Integer)
+
+    def __repr__(self):
+        return f"<STAT:{self.id} - HP:{self.hungry_people}>"
 
 
 # FUNCTIONS -------------------------------------------------------------------
