@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   web:
-    image: michelealberti/data-lunch-app
+    image: michelealberti/data-lunch-app:latest
 #    build:
 #      context: .
 #      dockerfile: ./docker/web/Dockerfile.web
