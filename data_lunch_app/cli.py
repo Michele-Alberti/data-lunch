@@ -17,7 +17,6 @@ __version__ = pkg_resources.require("data_lunch_cli")[0].version
 
 
 # CLI COMMANDS ----------------------------------------------------------------
-print(os.getcwd())
 
 
 @click.group()

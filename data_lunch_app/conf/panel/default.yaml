@@ -45,11 +45,11 @@ stats_id_cols:
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
   # CLEANING
-  scheduled_cleaning:
-    name: scheduled cleaning
-    hour: 15
-    minute: 0
-    period: 1d
+  scheduled_cleaning: null
+#    name: scheduled cleaning
+#    hour: 15
+#    minute: 0
+#    period: 1d
 
 # CSS
 time_style_res_col:
