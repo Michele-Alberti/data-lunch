@@ -1,3 +1,15 @@
+## v1.9.0 (2022-11-12)
+
+### Fix
+
+- remove print from cli.py and deactivate scheduled cleaning
+
+### Feat
+
+- **cli.py**: add commands to command line interface
+- add stats tab and famous quotes about food
+- add notes and lunch time recap column
+
 ## v1.8.0 (2022-10-23)
 
 ### Feat
