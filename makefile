@@ -42,8 +42,11 @@ up:
 	fi;
 
 up-build:
-	docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3
-
+	if [[ ${PANEL_ENV} == "production" ]] ; then \
+		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3
+	else \
+		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build web nginx --scale web=3; \
+	fi;
 down:
 	docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . down
 
