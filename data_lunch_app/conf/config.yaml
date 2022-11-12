@@ -6,6 +6,9 @@ defaults:
   - override hydra/job_logging: custom
 #  - _self_ #config.yaml is overriding configs from the Defaults List
 
+# LOCAL TIMEZONE
+local_timezone: Europe/Rome
+
 hydra:
   # disable changing of cwd as it interferes with flask auto-restart
   run:

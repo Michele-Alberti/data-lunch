@@ -3,6 +3,7 @@ export_file_name: lunch_order.xlsx
 nthreads: 0
 # Dashboard options
 result_column_text: "# Orders"
+time_column_text: "#### Summary"
 lunch_times_options:
   - "12:00"
   - "12:30"
@@ -21,17 +22,48 @@ menu_items_to_concat:
   - Caffé
   - Altro
 # QUERIES
+# Orders
 orders_query: "
   SELECT o.user, o.lunch_time, m.item
   FROM orders o
   LEFT JOIN menu m
-  ON m.id = o.menu_item_id ;
+  ON m.id = o.menu_item_id;
   "
+# Stats
+stats_query: "
+  SELECT STRFTIME('%Y', id) AS 'year', 
+    STRFTIME('%m', id) AS 'month', 
+    SUM(hungry_people) AS 'hungry people'
+  FROM stats
+  GROUP BY 'year', 'month'
+  ORDER BY 'year', 'month';
+  "
+stats_id_cols:
+  - year
+  - month
+
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
   # CLEANING
-  scheduled_cleaning:
-    name: scheduled cleaning
-    hour: 15
-    minute: 0
-    period: 1d
+  scheduled_cleaning: null
+#    name: scheduled cleaning
+#    hour: 15
+#    minute: 0
+#    period: 1d
+
+# CSS
+time_style_res_col:
+  background-color: powderblue
+  border-radius: 1.2rem
+  padding: 1rem
+  font-size: 1.8rem
+  font-weight: bold
+  line-height: 1.25rem
+time_style_time_col:
+  background-color: powderblue
+  border-radius: .8rem
+  padding: .5rem
+  font-size: 1.25rem
+  font-weight: bold
+  line-height: 1.5rem
+  text-align: center

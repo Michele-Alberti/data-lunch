@@ -23,7 +23,7 @@ push:
 	docker push ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/tmp/shared_data -v ${HOME}/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -v ${HOME}/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} ${IMAGEFULLNAME}
 
 run-it:
 	docker run -e PANEL_ENV=development -it ${IMAGEFULLNAME} /entry.sh /bin/sh
@@ -49,6 +49,9 @@ down:
 
 up-init:
 	bash docker/compose_init.sh
+
+db-clean:
+	docker run --rm --name clean_database --entrypoint "" -v ${PWD}/shared_data:/app/shared_data -e PANEL_ENV=production ${IMAGEFULLNAME} /bin/sh -c "data-lunch db clean --yes"
 
 gcp-config:
 	gcloud config configurations create ${APP}

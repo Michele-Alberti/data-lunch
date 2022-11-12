@@ -12,6 +12,8 @@ from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
 from pytesseract import pytesseract
+from sqlalchemy import func
+import random
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
@@ -19,15 +21,43 @@ log = logging.getLogger(__name__)
 # OPTIONS AND DEFAULTS --------------------------------------------------------
 # App
 sidebar_width = 400
-
+# Unicode Emoji fro food
+food_emoji = [
+    "&#127858;",
+    "&#127791;",
+    "&#127790;",
+    "&#127789;",
+    "&#129391;",
+    "&#127829;",
+    "&#127830;",
+    "&#127828;",
+    "&#129386;",
+    "&#127831;",
+    "&#129367;",
+    "&#129369;",
+    "&#127839;",
+    "&#129385;",
+    "&#129365;",
+    "&#129382;",
+    "&#129388;",
+    "&#129384;",
+    "&#129379;",
+    "&#129377;",
+    "&#127857;",
+    "&#127837;",
+    "&#127836;",
+]
 
 # CLASS -----------------------------------------------------------------------
+
+
 class Person(param.Parameterized):
 
     username = param.String(default="", doc="your name")
     lunch_time = param.ObjectSelector(
         default="12:30", doc="orario", objects=["12:30"]
     )
+    note = param.String(default="", doc="note")
 
     def __init__(self, config, **params):
         super().__init__(**params)
@@ -53,12 +83,18 @@ def delete_files(config: DictConfig):
 def clean_tables(config: DictConfig):
     # Clean tables
     session = models.create_session(config)
-    num_rows_deleted = session.query(models.Menu).delete()
-    session.commit()
-    log.info(f"deleted {num_rows_deleted} from table 'menu'")
+    # Clean orders
     num_rows_deleted = session.query(models.Orders).delete()
     session.commit()
     log.info(f"deleted {num_rows_deleted} from table 'orders'")
+    # Clean menu
+    num_rows_deleted = session.query(models.Menu).delete()
+    session.commit()
+    log.info(f"deleted {num_rows_deleted} from table 'menu'")
+    # Clean users
+    num_rows_deleted = session.query(models.Users).delete()
+    session.commit()
+    log.info(f"deleted {num_rows_deleted} from table 'users'")
 
 
 def build_menu(
@@ -67,7 +103,9 @@ def build_menu(
     app: pn.Template,
     file_widget: pnw.FileInput,
     dataframe_widget: pnw.DataFrame,
+    stats_col: pn.Column,
     res_col: pn.Column,
+    time_col: pn.Column,
     messages: list[pn.pane.HTML],
 ) -> pd.DataFrame:
     # Expand messages
@@ -85,7 +123,7 @@ def build_menu(
     # Delete menu file if exist (every extension)
     delete_files(config)
 
-    # Load image from widget
+    # Load file from widget
     if file_widget.value is not None:
         # Find file extension
         file_ext = pathlib.PurePath(file_widget.filename).suffix
@@ -146,7 +184,9 @@ def build_menu(
                 config.db.menu_table, engine, index=False, if_exists="append"
             )
             # Update dataframe widget
-            reload_menu("", config, dataframe_widget, res_col)
+            reload_menu(
+                "", config, dataframe_widget, stats_col, res_col, time_col
+            )
 
             confirm_message.object = "MENU UPLOADED"
             confirm_message.visible = True
@@ -170,7 +210,9 @@ def reload_menu(
     event,
     config: DictConfig,
     dataframe_widget: pnw.DataFrame,
+    stats_col: pn.Column,
     res_col: pn.Column,
+    time_col: pn.Column,
 ) -> None:
     # Reload menu
     engine = models.create_engine(config)
@@ -188,17 +230,79 @@ def reload_menu(
 
     # Load results
     df_dict = df_list_by_lunch_time(config)
-    # Clean column and load text and dataframes
+    # Clean columns and load text and dataframes
     res_col.clear()
-    res_col.append(pn.Spacer(height=50))
-    res_col.append(config.panel.result_column_text)
+    time_col.clear()
     if df_dict:
+        res_col.append(pn.Spacer(height=50))
+        res_col.append(config.panel.result_column_text)
+        time_col.append(
+            pn.pane.Markdown(
+                config.panel.time_column_text,
+                sizing_mode="stretch_width",
+                style={"text-align": "center", "display": "block"},
+            )
+        )
         for time, df in df_dict.items():
+            # Find the number of grumbling stomachs
+            grumbling_stomachs = len(
+                [c for c in df.columns if c.lower() != "totale"]
+            )
+            # Add tables to result column
             res_col.append(pn.Spacer(height=25))
-            res_col.append(f"### {time}")
-            res_col.append(pnw.Tabulator(name=time, value=df))
+            res_col.append(
+                pn.pane.HTML(
+                    f"{time} &#10072; {random.choice(food_emoji)} &#10006; {grumbling_stomachs}",
+                    style=dict(config.panel.time_style_res_col),
+                )
+            )
+            res_col.append(
+                pnw.Tabulator(name=time, value=df, frozen_rows=[-1])
+            )
+            # Add also a label to lunch time column
+            time_col.append(
+                pn.pane.HTML(
+                    f"{time}<br>&#127860;&#10006; {grumbling_stomachs}&nbsp",
+                    style=dict(config.panel.time_style_time_col),
+                    align=("center", "center"),
+                )
+            )
 
     log.debug("results reloaded")
+
+    # Clean stats column
+    stats_col.clear()
+    # Update stats
+    session = models.create_session(config)
+    # Find how many people eat today and add value to database stats table
+    today_count = session.query(func.count(models.Users.id)).scalar()
+    new_stat = models.Stats(hungry_people=today_count)
+    session.add(new_stat)
+    session.commit()
+
+    # Group stats by month and return how many people had lunch
+    df_stats = pd.read_sql_query(
+        config.panel.stats_query,
+        engine,
+        index_col=list(config.panel.stats_id_cols),
+    )
+    stats_text = pn.pane.HTML(
+        f"""
+        <h3>Statistics</h3>
+        <div style="color:green;">
+            <strong>Grumbling stomachs filled: {df_stats['hungry people'].sum()}</strong><br>
+        </div>
+        <div>
+            <i>See the table for details</i>
+        </div>
+    """
+    )
+    # Create stats table
+    stats_widget = pnw.Tabulator(name="Statistics")
+    stats_widget.value = df_stats
+    stats_col.append(stats_text)
+    stats_col.append(stats_widget)
+    log.debug("stats updated")
 
 
 def send_order(
@@ -207,7 +311,9 @@ def send_order(
     app: pn.Template,
     person: Person,
     dataframe_widget: pnw.DataFrame,
+    stats_col: pn.Column,
     res_col: pn.Column,
+    time_col: pn.Column,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -225,18 +331,22 @@ def send_order(
     if person.username and not df_order.empty:
         session = models.create_session(config)
         # Check if the user already placed an order
-        if (
-            session.query(models.Orders)
-            .filter(models.Orders.user == person.username)
-            .first()
-        ):
+        if session.query(models.Users).get(person.username):
             error_message.object = f'CANNOT OVERWRITE AN ORDER<br><br>You have to first delete the order for user named "{person.username}"'
             error_message.visible = True
-            log.warning("database error")
+            log.warning("an order already exist for selected user")
         else:
             # Place order
             try:
+                # Add User (note is empty by default)
+                new_user = models.Users(
+                    id=person.username,
+                    note=person.note,
+                )
+                # Add orders as long table (one row for each item selected by a user)
                 for index, row in df_order.iterrows():
+                    session.add(new_user)
+                    # Order
                     new_order = models.Orders(
                         user=person.username,
                         lunch_time=person.lunch_time,
@@ -246,7 +356,9 @@ def send_order(
                     session.commit()
 
                 # Update dataframe widget
-                reload_menu("", config, dataframe_widget, res_col)
+                reload_menu(
+                    "", config, dataframe_widget, stats_col, res_col, time_col
+                )
 
                 confirm_message.object = "ORDER SENT"
                 confirm_message.visible = True
@@ -278,7 +390,9 @@ def delete_order(
     app: pn.Template,
     person: Person,
     dataframe_widget: pnw.DataFrame,
+    stats_col: pn.Column,
     res_col: pn.Column,
+    time_col: pn.Column,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -291,14 +405,16 @@ def delete_order(
     if person.username:
         session = models.create_session(config)
         num_rows_deleted = (
-            session.query(models.Orders)
-            .filter(models.Orders.user == person.username)
+            session.query(models.Users)
+            .filter(models.Users.id == person.username)
             .delete()
         )
         session.commit()
         if num_rows_deleted > 0:
             # Update dataframe widget
-            reload_menu("", config, dataframe_widget, res_col)
+            reload_menu(
+                "", config, dataframe_widget, stats_col, res_col, time_col
+            )
 
             confirm_message.object = "ORDER CANCELED"
             confirm_message.visible = True
@@ -322,13 +438,13 @@ def df_list_by_lunch_time(
 
     # Create database engine and session
     engine = models.create_engine(config)
-    # Read menu
+    # Read menu and save how menu items are sorted (first courses, second courses, etc.)
     original_order = pd.read_sql_table("menu", engine, index_col="id").item
     # Read dataframe
     df = pd.read_sql_query(config.panel.orders_query, engine)
-    # Build a list of dataframes, one for each lunch time
+    # Build a dict of dataframes, one for each lunch time
     df_dict = {}
-    for time in df.lunch_time.unique():
+    for time in df.lunch_time.sort_values().unique():
         # Take only one lunch time
         temp_df = (
             df[df.lunch_time == time]
@@ -339,9 +455,25 @@ def df_list_by_lunch_time(
         df_users = temp_df.pivot_table(
             index="item", columns="user", aggfunc=len
         )
-        # Reorder index in accordance with original menu and add columns of totals
+        # Reorder index in accordance with original menu
         df_users = df_users.reindex(original_order)
+        # Add columns of totals
         df_users["totale"] = df_users.sum(axis=1)
+        # Add notes
+        # Find users included in this lunch time
+        users = tuple(temp_df.user.unique())
+        # Find relevant notes
+        session = models.create_session(config)
+        user_data = (
+            session.query(models.Users)
+            .filter(models.Users.id.in_(users))
+            .all()
+        )
+        for user in user_data:
+            df_users.loc["NOTE", user.id] = user.note
+        # Change NaNs to '-'
+        df_users = df_users.fillna("-")
+        # Add resulting dataframe to dict
         df_dict[time] = df_users
 
     return df_dict
