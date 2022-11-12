@@ -1,3 +1,9 @@
+## v1.9.1 (2022-11-12)
+
+### Fix
+
+- fix errors in docker-compose.yaml and makefile
+
 ## v1.9.0 (2022-11-12)
 
 ### Fix
