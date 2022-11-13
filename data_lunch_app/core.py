@@ -404,9 +404,16 @@ def delete_order(
 
     if person.username:
         session = models.create_session(config)
+        # Delete user
         num_rows_deleted = (
             session.query(models.Users)
             .filter(models.Users.id == person.username)
+            .delete()
+        )
+        # Delete also orders (hotfix for Debian)
+        num_rows_deleted = (
+            session.query(models.Orders)
+            .filter(models.Orders.user == person.username)
             .delete()
         )
         session.commit()
