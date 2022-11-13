@@ -1,3 +1,9 @@
+## v1.9.3 (2022-11-13)
+
+### Fix
+
+- **core.py**: fix error in check conditions for delete_order
+
 ## v1.9.2 (2022-11-13)
 
 ### Fix
