@@ -405,19 +405,19 @@ def delete_order(
     if person.username:
         session = models.create_session(config)
         # Delete user
-        num_rows_deleted = (
+        num_rows_deleted_users = (
             session.query(models.Users)
             .filter(models.Users.id == person.username)
             .delete()
         )
         # Delete also orders (hotfix for Debian)
-        num_rows_deleted = (
+        num_rows_deleted_orders = (
             session.query(models.Orders)
             .filter(models.Orders.user == person.username)
             .delete()
         )
         session.commit()
-        if num_rows_deleted > 0:
+        if (num_rows_deleted_users > 0) or (num_rows_deleted_orders > 0):
             # Update dataframe widget
             reload_menu(
                 "", config, dataframe_widget, stats_col, res_col, time_col
