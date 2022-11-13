@@ -1,3 +1,9 @@
+## v1.9.2 (2022-11-13)
+
+### Fix
+
+- fix dockerfile forcing web:latest and delete orders in addition to user in delete_order
+
 ## v1.9.1 (2022-11-12)
 
 ### Fix
