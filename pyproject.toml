@@ -17,7 +17,7 @@ exclude = '''
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.9.3"
+version = "1.9.4"
 version_files = [
     "data_lunch_app/__init__.py",
     "setup.py:version",
