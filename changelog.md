@@ -1,3 +1,9 @@
+## v1.9.4 (2022-11-16)
+
+### Fix
+
+- **.pre-commit-config.yaml**: fix error in pre-commit config file
+
 ## v1.9.3 (2022-11-13)
 
 ### Fix
