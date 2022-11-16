@@ -4,12 +4,12 @@ repos:
     hooks:
       - id: black
         language_version: python3
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/pycqa/flake8
+    rev: 5.0.4
     hooks:
       - id: flake8
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v2.35.0
+    rev: v2.37.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -17,3 +17,4 @@ repos:
     rev: 0.6.1
     hooks:
       - id: nbstripout
+default_install_hook_types: [pre-commit, commit-msg]
