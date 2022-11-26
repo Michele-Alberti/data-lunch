@@ -65,7 +65,7 @@ def create_app(config: DictConfig) -> pn.Template:
 
     # Panel configurations
     log.debug("set threads number")
-    pn.config = config.panel.nthreads
+    pn.config.nthreads = config.panel.nthreads
 
     # Set action to run when sessions are destroyed
     # If google cloud is configured, download the sqlite database from storage
