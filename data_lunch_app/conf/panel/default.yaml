@@ -21,6 +21,9 @@ menu_items_to_concat:
   - Dolce
   - Caffé
   - Altro
+# Notifications
+notifications:
+  duration: 0
 # QUERIES
 # Orders
 orders_query: "

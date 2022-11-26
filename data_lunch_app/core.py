@@ -172,8 +172,9 @@ def build_menu(
             )
         else:
             df = pd.DataFrame()
-            error_message.object = "WRONG FILE TYPE"
-            error_message.visible = True
+            pn.state.notifications.error(
+                "Wrong file type", duration=config.panel.notifications.duration
+            )
             log.warning("wrong file type")
             return
 
@@ -188,22 +189,26 @@ def build_menu(
                 "", config, dataframe_widget, stats_col, res_col, time_col
             )
 
-            confirm_message.object = "MENU UPLOADED"
-            confirm_message.visible = True
+            pn.state.notifications.success(
+                "Menu uploaded", duration=config.panel.notifications.duration
+            )
             log.info("menu uploaded")
         except Exception as e:
             # Any exception here is a database fault
+            pn.state.notifications.error(
+                "Database error", duration=config.panel.notifications.duration
+            )
             error_message.object = f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
             error_message.visible = True
             log.warning("database error")
+            # Open modal window
+            app.open_modal()
 
     else:
-        error_message.object = "NO FILE SELECTED"
-        error_message.visible = True
-        log.warning("no image selected")
-
-    # Open modal window
-    app.open_modal()
+        pn.state.notifications.warning(
+            "No file selected", duration=config.panel.notifications.duration
+        )
+        log.warning("no file selected")
 
 
 def reload_menu(
@@ -332,9 +337,11 @@ def send_order(
         session = models.create_session(config)
         # Check if the user already placed an order
         if session.query(models.Users).get(person.username):
-            error_message.object = f'CANNOT OVERWRITE AN ORDER<br><br>You have to first delete the order for user named "{person.username}"'
-            error_message.visible = True
-            log.warning("an order already exist for selected user")
+            pn.state.notifications.warning(
+                f"Cannot overwrite an order<br>Delete {person.username}'s order first and retry",
+                duration=config.panel.notifications.duration,
+            )
+            log.warning(f"an order already exist for {person.username}")
         else:
             # Place order
             try:
@@ -360,28 +367,36 @@ def send_order(
                     "", config, dataframe_widget, stats_col, res_col, time_col
                 )
 
-                confirm_message.object = "ORDER SENT"
-                confirm_message.visible = True
+                pn.state.notifications.success(
+                    "Order sent", duration=config.panel.notifications.duration
+                )
                 log.info(f"{person.username}'s order saved")
             except Exception as e:
                 # Any exception here is a database fault
+                pn.state.notifications.error(
+                    "Database error",
+                    duration=config.panel.notifications.duration,
+                )
                 error_message.object = (
                     f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
                 )
                 error_message.visible = True
                 log.warning("database error")
+                # Open modal window
+                app.open_modal()
     else:
         if not person.username:
-            error_message.object = "PLEASE INSERT USER NAME"
-            error_message.visible = True
+            pn.state.notifications.warning(
+                "Please insert user name",
+                duration=config.panel.notifications.duration,
+            )
             log.warning("missing username")
         else:
-            error_message.object = "PLEASE MAKE A SELECTION"
-            error_message.visible = True
+            pn.state.notifications.warning(
+                "Please make a selection",
+                duration=config.panel.notifications.duration,
+            )
             log.warning("no selection made")
-
-    # Open modal window
-    app.open_modal()
 
 
 def delete_order(
@@ -423,20 +438,22 @@ def delete_order(
                 "", config, dataframe_widget, stats_col, res_col, time_col
             )
 
-            confirm_message.object = "ORDER CANCELED"
-            confirm_message.visible = True
+            pn.state.notifications.success(
+                "Order canceled", duration=config.panel.notifications.duration
+            )
             log.info(f"{person.username}'s order canceled")
         else:
-            confirm_message.object = f'NO ORDER<br><br>No order exists for user named "{person.username}"'
-            confirm_message.visible = True
-            log.info(f"{person.username}'s order canceled")
+            pn.state.notifications.warning(
+                f'No order for user named<br>"{person.username}"',
+                duration=config.panel.notifications.duration,
+            )
+            log.info(f"no order for user named {person.username}")
     else:
-        error_message.object = "PLEASE INSERT USER NAME"
-        error_message.visible = True
+        pn.state.notifications.warning(
+            "Please insert user name",
+            duration=config.panel.notifications.duration,
+        )
         log.warning("missing username")
-
-    # Open modal window
-    app.open_modal()
 
 
 def df_list_by_lunch_time(
@@ -514,8 +531,10 @@ def download_dataframe(
             bytes_io.seek(0)  # Important!
 
         # Message prompt
-        confirm_message.object = "FILE WITH ORDERS DOWNLOADED"
-        confirm_message.visible = True
+        pn.state.notifications.success(
+            "File with orders downloaded",
+            duration=config.panel.notifications.duration,
+        )
         log.info("xlsx downloaded")
     else:
         dataframe_widget.value.drop(columns=["order"]).to_excel(
@@ -524,11 +543,12 @@ def download_dataframe(
         writer.save()  # Important!
         bytes_io.seek(0)  # Important!
         # Message prompt
-        confirm_message.object = "NO ORDER, FILE WITH MENU DOWNLOADED"
-        confirm_message.visible = True
-        log.warning("no order exist, menu exported to excel")
-
-    # Open modal window
-    app.open_modal()
+        pn.state.notifications.warning(
+            "No order<br>Menu downloaded",
+            duration=config.panel.notifications.duration,
+        )
+        log.warning(
+            "no order, menu exported to excel in place of orders' list"
+        )
 
     return bytes_io
