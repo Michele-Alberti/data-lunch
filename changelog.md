@@ -1,3 +1,19 @@
+## v1.10.0 (2022-11-27)
+
+### Perf
+
+- change widgets layout to improve performances
+- **server/development.yaml**: remove threading
+
+### Feat
+
+- add "stop orders" button to lock orders' table
+- add notifications as replacement for messages inside modal window
+
+### Fix
+
+- **__init__.py**: fix error in panel threading configuration
+
 ## v1.9.4 (2022-11-16)
 
 ### Fix
