@@ -254,7 +254,6 @@ def reload_menu(
     res_col.clear()
     time_col.clear()
     if df_dict:
-        res_col.append(pn.Spacer(height=50))
         res_col.append(config.panel.result_column_text)
         time_col.append(
             pn.pane.Markdown(
@@ -269,7 +268,7 @@ def reload_menu(
                 [c for c in df.columns if c.lower() != "totale"]
             )
             # Add tables to result column
-            res_col.append(pn.Spacer(height=25))
+            res_col.append(pn.Spacer(height=10))
             res_col.append(
                 pn.pane.HTML(
                     f"{time} &#10072; {random.choice(food_emoji)} &#10006; {grumbling_stomachs}",
@@ -287,9 +286,6 @@ def reload_menu(
                     align=("center", "center"),
                 )
             )
-
-    # Add the "no more order" button
-    time_col.append(no_more_order)
 
     log.debug("results reloaded")
 

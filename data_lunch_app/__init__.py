@@ -114,10 +114,10 @@ def create_app(config: DictConfig) -> pn.Template:
     # QUOTE OF THE DAY
     quote = pn.pane.Markdown(
         f"""
-    >_{df_quote.quote.iloc[0]}_
-    >
-    >**{df_quote.author.iloc[0]}**
-    """
+        _{df_quote.quote.iloc[0]}_
+
+        **{df_quote.author.iloc[0]}**
+        """
     )
     # RESULTS (USED IN MAIN SECTION)
     # Create column for statistics
@@ -130,6 +130,7 @@ def create_app(config: DictConfig) -> pn.Template:
     toggle_no_more_order_button = pnw.Toggle(
         value=pn.state.cache["no_more_orders"],
         name="⌛ Stop Orders",
+        width=150,
     )
 
     # Callback on every "toggle" action
@@ -162,16 +163,6 @@ def create_app(config: DictConfig) -> pn.Template:
     person = core.Person(config, name="User")
     # Create dataframe instance
     dataframe = pnw.Tabulator(name="Order")
-    # Update dataframe widget
-    core.reload_menu(
-        "",
-        config,
-        dataframe,
-        stats_col,
-        res_col,
-        time_col,
-        toggle_no_more_order_button,
-    )
 
     # MODAL
     error_message = pn.pane.HTML(
@@ -287,7 +278,7 @@ def create_app(config: DictConfig) -> pn.Template:
     )
     # Create send button
     send_order_button = pnw.Button(
-        name="Send", button_type="primary", sizing_mode="stretch_width"
+        name="✔ Send Order", button_type="primary", width=150
     )
     send_order_button.on_click(
         lambda e: core.send_order(
@@ -305,7 +296,7 @@ def create_app(config: DictConfig) -> pn.Template:
     )
     # Create delete order
     delete_order_button = pnw.Button(
-        name="Delete Order", button_type="danger", sizing_mode="stretch_width"
+        name="✖ Delete Order", button_type="danger", width=150
     )
     delete_order_button.on_click(
         lambda e: core.delete_order(
@@ -322,35 +313,37 @@ def create_app(config: DictConfig) -> pn.Template:
         )
     )
 
-    # Set components visibility based on no_more_order_button state
-    reload_on_no_more_order(pn.state.cache["no_more_orders"])
+    # Create flexboxes
+    menu_flexbox = pn.FlexBox(
+        *[dataframe, time_col], sizing_mode="stretch_height"
+    )
+    buttons_flexbox = pn.FlexBox(
+        *[send_order_button, toggle_no_more_order_button, delete_order_button]
+    )
 
     # DASHBOARD
     # Build dashboard
     app.sidebar.append(sidebar_tabs)
+    app.main.append(no_more_order_text)
     app.main.append(
-        pn.Column(
-            no_more_order_text,
-            pn.Row(
-                "# Menu",
-                pn.layout.HSpacer(),
-                refresh_button,
-            ),
-            quote,
-            pn.Spacer(height=15),
-            pn.Row(
-                pn.Column(
-                    dataframe,
-                    pn.Spacer(height=25),
-                    pn.Row(send_order_button, delete_order_button),
-                ),
-                time_col,
-            ),
-            res_col,
-        )
+        pn.Row(
+            "# Menu",
+            pn.layout.HSpacer(),
+            refresh_button,
+        ),
     )
+    app.main.append(quote)
+    app.main.append(pn.Spacer(height=15))
+    app.main.append(menu_flexbox)
+    app.main.append(buttons_flexbox)
+    app.main.append(pn.layout.Divider(sizing_mode="stretch_width"))
+    app.main.append(res_col)
     app.modal.append(error_message)
     app.modal.append(confirm_message)
+
+    # Set components visibility based on no_more_order_button state
+    # and reload menu
+    reload_on_no_more_order(pn.state.cache["no_more_orders"])
 
     app.servable()
 
