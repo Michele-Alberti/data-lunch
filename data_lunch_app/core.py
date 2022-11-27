@@ -227,6 +227,17 @@ def reload_menu(
     time_col: pn.Column,
     no_more_order: pnw.Toggle,
 ) -> None:
+
+    # Check if someone changed the "no_more_order" toggle
+    if no_more_order.value != pn.state.cache["no_more_orders"]:
+        # The following statement will trigger the toggle callback
+        # which will call reload_menu once again
+        # This is the reason why this if contains a return (without the return
+        # the content will be reloaded twice)
+        no_more_order.value = pn.state.cache["no_more_orders"]
+
+        return
+
     # Reload menu
     engine = models.create_engine(config)
     df = pd.read_sql_table("menu", engine, index_col="id")
@@ -343,6 +354,26 @@ def send_order(
     error_message.visible = False
     confirm_message.visible = False
 
+    # Check if the "no more order" toggle button is pressed
+    if pn.state.cache["no_more_orders"]:
+        pn.state.notifications.error(
+            "It is not possible to place new orders",
+            duration=config.panel.notifications.duration,
+        )
+
+        # Reload the menu
+        reload_menu(
+            "",
+            config,
+            dataframe_widget,
+            stats_col,
+            res_col,
+            time_col,
+            no_more_order,
+        )
+
+        return
+
     # Write order into database table
     df = dataframe_widget.value.copy()
     df_order = df[df.order]
@@ -438,6 +469,26 @@ def delete_order(
     # Hide messages
     error_message.visible = False
     confirm_message.visible = False
+
+    # Check if the "no more order" toggle button is pressed
+    if pn.state.cache["no_more_orders"]:
+        pn.state.notifications.error(
+            "It is not possible to delete orders",
+            duration=config.panel.notifications.duration,
+        )
+
+        # Reload the menu
+        reload_menu(
+            "",
+            config,
+            dataframe_widget,
+            stats_col,
+            res_col,
+            time_col,
+            no_more_order,
+        )
+
+        return
 
     if person.username:
         session = models.create_session(config)
