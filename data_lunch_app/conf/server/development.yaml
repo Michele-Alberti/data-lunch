@@ -4,3 +4,5 @@ websocket_origin: "*"
 xheaders: false
 verbose: true
 open: false
+static_dirs:
+  webfonts: ./data_lunch_app/static/fontawesome/webfonts

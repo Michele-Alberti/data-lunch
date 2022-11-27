@@ -31,6 +31,28 @@ df_quotes = pd.read_excel(quotes_filename)
 seed_day = int(datetime.datetime.today().strftime("%Y%m%d"))
 df_quote = df_quotes.sample(n=1, random_state=seed_day)
 
+# CSS FILES -------------------------------------------------------------------
+# CSS
+# Font awesome icons
+css_fa_icons_files = [
+    pathlib.Path(__file__).parent
+    / "static"
+    / "fontawesome"
+    / "css"
+    / "fontawesome.css",
+    pathlib.Path(__file__).parent
+    / "static"
+    / "fontawesome"
+    / "css"
+    / "brands.css",
+    pathlib.Path(__file__).parent
+    / "static"
+    / "fontawesome"
+    / "css"
+    / "solid.css",
+]
+css_fa_icons_files = [str(file) for file in css_fa_icons_files]
+
 
 # UTILITY FUNCTIONS -----------------------------------------------------------
 def on_session_destroyed(config: DictConfig, session_context):
@@ -64,9 +86,13 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("instantiate Panel app")
 
     # Panel configurations
-    log.debug("set threads number")
+    log.debug("set panel config and cache")
+    # Configurations
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True
+    # Cache for no_more_orders flag
+    if "no_more_orders" not in pn.state.cache:
+        pn.state.cache["no_more_orders"] = False
 
     # Set action to run when sessions are destroyed
     # If google cloud is configured, download the sqlite database from storage
@@ -82,6 +108,8 @@ def create_app(config: DictConfig) -> pn.Template:
     app = pn.template.VanillaTemplate(
         title="Data Lunch", sidebar_width=core.sidebar_width
     )
+    # Add fontawesome icons
+    pn.extension(css_files=css_fa_icons_files)
 
     # QUOTE OF THE DAY
     quote = pn.pane.Markdown(
@@ -98,6 +126,36 @@ def create_app(config: DictConfig) -> pn.Template:
     time_col = pn.Column(width=125)
     # Create column for resulting menus
     res_col = pn.Column()
+    # Toggle button that stop orders (used in time column)
+    toggle_no_more_order_button = pnw.Toggle(
+        value=pn.state.cache["no_more_orders"],
+        name="⌛ Stop Orders",
+    )
+
+    # Callback on every "toggle" action
+    @pn.depends(toggle_no_more_order_button, watch=True)
+    def reload_on_no_more_order(toggle_button):
+
+        # Update global variable
+        pn.state.cache["no_more_orders"] = toggle_button
+
+        # Show "no more order" text
+        no_more_order_text.visible = toggle_button
+
+        # Deactivate send order and delete order buttons
+        send_order_button.disabled = toggle_button
+        delete_order_button.disabled = toggle_button
+
+        # Simply reload the menu when the toggle button value changes
+        core.reload_menu(
+            "",
+            config,
+            dataframe,
+            stats_col,
+            res_col,
+            time_col,
+            toggle_no_more_order_button,
+        )
 
     # BASE INSTANCES
     # Create person instance
@@ -105,7 +163,15 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create dataframe instance
     dataframe = pnw.Tabulator(name="Order")
     # Update dataframe widget
-    core.reload_menu("", config, dataframe, stats_col, res_col, time_col)
+    core.reload_menu(
+        "",
+        config,
+        dataframe,
+        stats_col,
+        res_col,
+        time_col,
+        toggle_no_more_order_button,
+    )
 
     # MODAL
     error_message = pn.pane.HTML(
@@ -137,6 +203,7 @@ def create_app(config: DictConfig) -> pn.Template:
             stats_col,
             res_col,
             time_col,
+            toggle_no_more_order_button,
             [error_message, confirm_message],
         )
     )
@@ -177,6 +244,17 @@ def create_app(config: DictConfig) -> pn.Template:
     )
 
     # MAIN
+    # Create the "no more order" message
+    no_more_order_text = pn.pane.HTML(
+        """
+        <div style="font-size: 1.25rem; color: crimson; background-color: whitesmoke; border-left: 0.5rem solid crimson; padding: 0.5rem">
+            <i class="fa-solid fa-circle-exclamation fa-fade" style="--fa-animation-duration: 1.5s;"></i> <strong>Oh no! You missed this train...</strong><br>
+            Orders are closed, better luck next time.
+        </div>
+        """,
+        margin=5,
+        sizing_mode="stretch_width",
+    )
     # Create refresh button (with css to center text)
     button_css = """
     .refresh-button .bk-btn-group button {
@@ -198,7 +276,13 @@ def create_app(config: DictConfig) -> pn.Template:
     )
     refresh_button.on_click(
         lambda e: core.reload_menu(
-            e, config, dataframe, stats_col, res_col, time_col
+            e,
+            config,
+            dataframe,
+            stats_col,
+            res_col,
+            time_col,
+            toggle_no_more_order_button,
         )
     )
     # Create send button
@@ -215,6 +299,7 @@ def create_app(config: DictConfig) -> pn.Template:
             stats_col,
             res_col,
             time_col,
+            toggle_no_more_order_button,
             [error_message, confirm_message],
         )
     )
@@ -232,14 +317,20 @@ def create_app(config: DictConfig) -> pn.Template:
             stats_col,
             res_col,
             time_col,
+            toggle_no_more_order_button,
             [error_message, confirm_message],
         )
     )
 
+    # Set components visibility based on no_more_order_button state
+    reload_on_no_more_order(pn.state.cache["no_more_orders"])
+
+    # DASHBOARD
     # Build dashboard
     app.sidebar.append(sidebar_tabs)
     app.main.append(
         pn.Column(
+            no_more_order_text,
             pn.Row(
                 "# Menu",
                 pn.layout.HSpacer(),

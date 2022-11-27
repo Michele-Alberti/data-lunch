@@ -106,6 +106,7 @@ def build_menu(
     stats_col: pn.Column,
     res_col: pn.Column,
     time_col: pn.Column,
+    no_more_order: pnw.Toggle,
     messages: list[pn.pane.HTML],
 ) -> pd.DataFrame:
     # Expand messages
@@ -186,7 +187,13 @@ def build_menu(
             )
             # Update dataframe widget
             reload_menu(
-                "", config, dataframe_widget, stats_col, res_col, time_col
+                "",
+                config,
+                dataframe_widget,
+                stats_col,
+                res_col,
+                time_col,
+                no_more_order,
             )
 
             pn.state.notifications.success(
@@ -218,6 +225,7 @@ def reload_menu(
     stats_col: pn.Column,
     res_col: pn.Column,
     time_col: pn.Column,
+    no_more_order: pnw.Toggle,
 ) -> None:
     # Reload menu
     engine = models.create_engine(config)
@@ -230,6 +238,13 @@ def reload_menu(
         "item": None,
         "order": CheckboxEditor(),
     }
+
+    if no_more_order.value:
+        dataframe_widget.hidden_columns = ["order"]
+        dataframe_widget.disabled = True
+    else:
+        dataframe_widget.hidden_columns = []
+        dataframe_widget.disabled = False
 
     log.debug("menu reloaded")
 
@@ -272,6 +287,9 @@ def reload_menu(
                     align=("center", "center"),
                 )
             )
+
+    # Add the "no more order" button
+    time_col.append(no_more_order)
 
     log.debug("results reloaded")
 
@@ -319,6 +337,7 @@ def send_order(
     stats_col: pn.Column,
     res_col: pn.Column,
     time_col: pn.Column,
+    no_more_order: pnw.Toggle,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -364,7 +383,13 @@ def send_order(
 
                 # Update dataframe widget
                 reload_menu(
-                    "", config, dataframe_widget, stats_col, res_col, time_col
+                    "",
+                    config,
+                    dataframe_widget,
+                    stats_col,
+                    res_col,
+                    time_col,
+                    no_more_order,
                 )
 
                 pn.state.notifications.success(
@@ -408,6 +433,7 @@ def delete_order(
     stats_col: pn.Column,
     res_col: pn.Column,
     time_col: pn.Column,
+    no_more_order: pnw.Toggle,
     messages: list[pn.pane.HTML],
 ) -> None:
     # Expand messages
@@ -435,7 +461,13 @@ def delete_order(
         if (num_rows_deleted_users > 0) or (num_rows_deleted_orders > 0):
             # Update dataframe widget
             reload_menu(
-                "", config, dataframe_widget, stats_col, res_col, time_col
+                "",
+                config,
+                dataframe_widget,
+                stats_col,
+                res_col,
+                time_col,
+                no_more_order,
             )
 
             pn.state.notifications.success(
