@@ -1,3 +1,9 @@
+## v1.10.1 (2022-11-27)
+
+### Fix
+
+- **core.py**: fix error that ignored the "no more order" constraint if set by another user
+
 ## v1.10.0 (2022-11-27)
 
 ### Perf
