@@ -1,0 +1,78 @@
+# Bump version with Commitizen
+
+name: Release new version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+    name: Bump version and log
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Bump and changelog
+        id: cz
+        uses: commitizen-tools/commitizen-action@0.15.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Print version
+        run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+  merge_back_to_dev:
+    needs: bump_version
+    runs-on: ubuntu-latest
+    name: Merge back to dev
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with: 
+          fetch-depth: 0
+          ref: main
+      - name: Set Git config
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Merge master back to dev
+        run: |
+          git checkout development
+          git merge --no-ff main -m "Merge branch 'main' into development"
+          git push
+  build_container:
+    needs: merge_back_to_dev
+    name: Build container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v3
+        with: 
+          ref: main
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        env:
+          PANEL_APP: data-lunch-app
+          PANEL_ENV: production
+          PORT: 5000
+          GCLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+        with:
+          context: ./
+          file: ./docker/web/Dockerfile.web
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache,mode=max
