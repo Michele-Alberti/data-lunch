@@ -33,14 +33,13 @@ orders_query: "
   ON m.id = o.menu_item_id;
   "
 # Stats
-stats_query: "
-  SELECT STRFTIME('%Y', id) AS 'year', 
-    STRFTIME('%m', id) AS 'month', 
-    SUM(hungry_people) AS 'hungry people'
+stats_query: |-
+  SELECT STRFTIME('%Y', id) AS "year", 
+    STRFTIME('%m', id) AS "month", 
+    SUM(hungry_people) AS "hungry people"
   FROM stats
-  GROUP BY 'year', 'month'
-  ORDER BY 'year', 'month';
-  "
+  GROUP BY "year", "month"
+  ORDER BY "year", "month";
 stats_id_cols:
   - year
   - month
