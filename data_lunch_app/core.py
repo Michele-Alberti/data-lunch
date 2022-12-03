@@ -278,7 +278,7 @@ def reload_menu(
             grumbling_stomachs = len(
                 [c for c in df.columns if c.lower() != "totale"]
             )
-            # Add tables to result column
+            # Add text to result column
             res_col.append(pn.Spacer(height=10))
             res_col.append(
                 pn.pane.HTML(
@@ -286,9 +286,12 @@ def reload_menu(
                     style=dict(config.panel.time_style_res_col),
                 )
             )
-            res_col.append(
-                pnw.Tabulator(name=time, value=df, frozen_rows=[-1])
+            # Add non editable table to result column
+            orders_table_widget = pnw.Tabulator(
+                name=time, value=df, frozen_rows=[-1], frozen_columns=[0]
             )
+            orders_table_widget.editors = {c: None for c in df.columns}
+            res_col.append(orders_table_widget)
             # Add also a label to lunch time column
             time_col.append(
                 pn.pane.HTML(
@@ -314,7 +317,7 @@ def reload_menu(
     df_stats = pd.read_sql_query(
         config.panel.stats_query,
         engine,
-        index_col=list(config.panel.stats_id_cols),
+        # index_col=list(config.panel.stats_id_cols),
     )
     stats_text = pn.pane.HTML(
         f"""
@@ -327,8 +330,9 @@ def reload_menu(
         </div>
     """
     )
-    # Create stats table
-    stats_widget = pnw.Tabulator(name="Statistics")
+    # Create stats table (non-editable)
+    stats_widget = pnw.Tabulator(name="Statistics", hidden_columns=["index"])
+    stats_widget.editors = {c: None for c in df_stats.columns}
     stats_widget.value = df_stats
     stats_col.append(stats_text)
     stats_col.append(stats_widget)
