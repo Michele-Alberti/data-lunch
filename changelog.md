@@ -1,3 +1,10 @@
+## v1.10.2 (2022-12-03)
+
+### Fix
+
+- **default.yaml**: fix error in stats query
+- **core.py**: fix bug with stats table index and turn stats and order tables to non-editable
+
 ## v1.10.1 (2022-11-27)
 
 ### Fix
