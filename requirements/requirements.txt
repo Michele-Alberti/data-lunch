@@ -4,7 +4,7 @@ ipywidgets==7.6.5
 openpyxl==3.0.10
 pandas==1.4.4
 tqdm==4.64.1
-panel==0.14.0
+panel==0.14.1
 sqlalchemy==1.4.39
 hydra-core==1.1.1
 google-cloud-storage==1.43.0
