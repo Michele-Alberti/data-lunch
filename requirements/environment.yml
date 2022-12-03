@@ -4,6 +4,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10.6
+  - setuptools=65.3.0
   - click=8.0.4
   - ipykernel=6.15.2
   - ipywidgets=7.6.5

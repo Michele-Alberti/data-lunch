@@ -1,3 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data_lunch"
+version = "1.10.2"
+description = "The ultimate web app for a well organized lunch."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["python", "webapp", "lunch"]
+license = {text = "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dynamic = ["dependencies"]
+
+[project.scripts]
+data-lunch = "data_lunch_app.cli:main"
+
+[tool.setuptools]
+packages = ["data_lunch_app"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements/requirements.txt"]}
+
 [tool.black]
 line-length = 79
 include = '\.pyi?$'
@@ -20,7 +46,6 @@ name = "cz_conventional_commits"
 version = "1.10.2"
 version_files = [
     "data_lunch_app/__init__.py",
-    "setup.py:version",
     "pyproject.toml:version",
 ]
 tag_format = "v$version"
