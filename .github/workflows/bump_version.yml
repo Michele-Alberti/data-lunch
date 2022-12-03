@@ -10,27 +10,42 @@ on:
 jobs:
   bump_version:
     runs-on: ubuntu-latest
-    name: "Bump version and log"
+    name: Bump version and log
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+      sha: ${{ steps.sha.outputs.new_sha }}
     steps:
       - name: Check out
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: "${{ secrets.GITHUB_TOKEN }}"
-      - id: cz
-        name: Create bump and changelog
+      - name: Bump and changelog
+        id: cz
         uses: commitizen-tools/commitizen-action@0.15.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Print version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+      - name: Get SHA
+        id: sha
+        run: |
+          sha=$(git rev-parse HEAD)
+          echo "retrieved SHA $sha"
+          echo "new_sha=$sha" >> $GITHUB_OUTPUT
+      - name: Print SHA
+        run:
+            echo "new SHA ${{ steps.sha.outputs.new_sha }}"
   merge_back_to_dev:
     needs: bump_version
     runs-on: ubuntu-latest
-    name: "Merge back to dev"
+    name: Merge back to dev
     steps:
       - name: Check out
         uses: actions/checkout@v3
+        with: 
+          fetch-depth: 0
+          ref: ${{ needs.bump_version.outputs.sha }}
       - name: Set Git config
         run: |
           git config --local user.name "github-actions[bot]"
