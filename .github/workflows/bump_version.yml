@@ -10,7 +10,7 @@ on:
 jobs:
   bump_version:
     runs-on: ubuntu-latest
-    name: "Bump version and create changelog with commitizen"
+    name: "Bump version and log"
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -22,5 +22,23 @@ jobs:
         uses: commitizen-tools/commitizen-action@0.15.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Print Version
+      - name: Print version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+  merge_back_to_dev:
+    needs: bump_version
+    runs-on: ubuntu-latest
+    name: "Merge back to dev"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+      - name: Set Git config
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Merge master back to dev
+        run: |
+          git fetch --unshallow
+          git checkout development
+          git pull
+          git merge --no-ff main -m "Merge branch 'main' into development"
+          git push
