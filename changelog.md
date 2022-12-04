@@ -1,3 +1,13 @@
+## v1.11.0 (2022-12-04)
+
+### Feat
+
+- add host info inside the stats tab
+
+### Fix
+
+- **compose_init.sh**: fix error in cronjob command
+
 ## v1.10.3 (2022-12-04)
 
 ### Fix
