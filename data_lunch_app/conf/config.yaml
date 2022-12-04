@@ -9,6 +9,9 @@ defaults:
 # LOCAL TIMEZONE
 local_timezone: Europe/Rome
 
+# DOCKER
+docker_username: ${oc.env:DOCKER_USERNAME, not_declared}
+
 hydra:
   # disable changing of cwd as it interferes with flask auto-restart
   run:
