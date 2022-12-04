@@ -14,6 +14,7 @@ RUN apt update && apt install -y \
   lsb-release \
   sqlite3 \
   libsqlite3-dev \
+  dnsutils \
   && echo "deb https://notesalexp.org/tesseract-ocr5/$(lsb_release -cs)/ $(lsb_release -cs) main" \
   | tee /etc/apt/sources.list.d/notesalexp.list > /dev/null \
   && apt update -oAcquire::AllowInsecureRepositories=true \

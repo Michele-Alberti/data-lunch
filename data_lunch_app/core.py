@@ -6,6 +6,9 @@ import pandas as pd
 import pathlib
 from panel.widgets import Tqdm
 import logging
+import socket
+import subprocess
+from . import __version__
 from . import models
 from omegaconf import DictConfig
 from bokeh.models.widgets.tables import CheckboxEditor
@@ -68,6 +71,31 @@ class Person(param.Parameterized):
 
 
 # FUNCTIONS -------------------------------------------------------------------
+
+
+def get_host_name(config: DictConfig):
+    try:
+        ip_address = socket.gethostbyname(socket.gethostname())
+        dig_res = subprocess.run(
+            ["dig", "+short", "-x", ip_address], stdout=subprocess.PIPE
+        ).stdout
+        host_name = (
+            subprocess.run(
+                ["cut", "-d.", "-f1"], stdout=subprocess.PIPE, input=dig_res
+            )
+            .stdout.decode("utf-8")
+            .strip()
+        )
+        if host_name:
+            host_name = host_name.replace(f"{config.docker_username}_", "")
+        else:
+            host_name = "no info"
+    except Exception:
+        host_name = "not available"
+
+    return host_name
+
+
 def delete_files(config: DictConfig):
     # Delete menu file if exist (every extension)
     files = list(
@@ -319,6 +347,7 @@ def reload_menu(
         engine,
         # index_col=list(config.panel.stats_id_cols),
     )
+    # Stats top text
     stats_text = pn.pane.HTML(
         f"""
         <h3>Statistics</h3>
@@ -330,12 +359,25 @@ def reload_menu(
         </div>
     """
     )
+    # Other info
+    other_info_text = pn.pane.HTML(
+        f"""
+        <h4>Other Info</h3>
+        <div>
+            <i class="fa-solid fa-tag" style="font-size: 1.15rem;"></i>&nbsp;<strong>Version:</strong> <i>{__version__}</i>
+            <br>
+            <i class="fa-solid fa-microchip" style="font-size: 1.15rem;"></i>&nbsp;<strong>Host:</strong> <i>{get_host_name(config)}</i>
+        </div>
+        """,
+        sizing_mode="stretch_width",
+    )
     # Create stats table (non-editable)
     stats_widget = pnw.Tabulator(name="Statistics", hidden_columns=["index"])
     stats_widget.editors = {c: None for c in df_stats.columns}
     stats_widget.value = df_stats
     stats_col.append(stats_text)
     stats_col.append(stats_widget)
+    stats_col.append(other_info_text)
     log.debug("stats updated")
 
 

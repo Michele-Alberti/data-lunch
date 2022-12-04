@@ -12,6 +12,7 @@ services:
     environment:
       PANEL_APP: ${PANEL_APP}
       PANEL_ENV: ${PANEL_ENV}
+      DOCKER_USERNAME: ${DOCKER_USERNAME}
       PORT: 5000
   nginx:
     image: nginx:latest

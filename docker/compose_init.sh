@@ -18,11 +18,11 @@
  
     # Create cronjob for certbot and nginx
     # Renew certificates
-    croncmd="docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up certbot"
+    croncmd="cd /app && docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up certbot"
     cronjob="0 3 * * * $croncmd"
     ( crontab -l | grep -v -F "$croncmd" || : ; echo "$cronjob" ) | crontab -
     # Update nginx
-    croncmd="docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . exec nginx nginx -s reload"
+    croncmd="cd /app && docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . exec nginx nginx -s reload"
     cronjob="30 3 * * * $croncmd"
     ( crontab -l | grep -v -F "$croncmd" || : ; echo "$cronjob" ) | crontab -
 
