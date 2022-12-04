@@ -22,6 +22,9 @@ build:
 push:
 	docker push ${IMAGEFULLNAME}
 
+pull:
+	docker pull ${IMAGEFULLNAME}
+
 run: 
 	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -v ${HOME}/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} ${IMAGEFULLNAME}
 
