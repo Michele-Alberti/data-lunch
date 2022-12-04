@@ -1,3 +1,9 @@
+## v1.10.3 (2022-12-04)
+
+### Fix
+
+- use pyproject.toml as config file for package build and fix cli.py
+
 ## v1.10.2 (2022-12-03)
 
 ### Fix
