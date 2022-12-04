@@ -13,7 +13,7 @@ from .models import Menu, Orders, Users, Stats
 from .core import clean_tables as clean_tables_func
 
 # Version
-__version__ = pkg_resources.require("data_lunch_cli")[0].version
+__version__ = pkg_resources.require("data_lunch")[0].version
 
 
 # CLI COMMANDS ----------------------------------------------------------------
