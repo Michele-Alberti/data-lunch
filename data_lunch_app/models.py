@@ -1,6 +1,14 @@
 import hydra
 import logging
-from sqlalchemy import Column, ForeignKey, Integer, String, Date, event
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Date,
+    Boolean,
+    event,
+)
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, relationship, Session
 from omegaconf import DictConfig
@@ -69,6 +77,7 @@ class Users(db):
         primary_key=True,
         nullable=False,
     )
+    guest = Column(Boolean, nullable=False, default=False)
     note = Column(String(500), unique=False, nullable=False)
     orders = relationship(
         "Orders",
@@ -90,7 +99,8 @@ class Stats(db):
         default=datetime.utcnow(),
         sqlite_on_conflict_primary_key="REPLACE",
     )
-    hungry_people = Column(Integer)
+    hungry_people = Column(Integer, nullable=False, default=0)
+    hungry_guests = Column(Integer, nullable=False, default=0)
 
     def __repr__(self):
         return f"<STAT:{self.id} - HP:{self.hungry_people}>"

@@ -26,20 +26,21 @@ notifications:
   duration: 0
 # QUERIES
 # Orders
-orders_query: "
+orders_query: |-
   SELECT o.user, o.lunch_time, m.item
   FROM orders o
   LEFT JOIN menu m
   ON m.id = o.menu_item_id;
-  "
 # Stats
 stats_query: |-
-  SELECT STRFTIME('%Y', id) AS "year", 
-    STRFTIME('%m', id) AS "month", 
-    SUM(hungry_people) AS "hungry people"
+  SELECT STRFTIME('%Y', id) AS "Year", 
+    STRFTIME('%m', id) AS "Month", 
+    (hungry_people - hungry_guests) AS "Starving Locals",
+    SUM(hungry_guests) AS "Ravenous Guests",
+    SUM(hungry_people) AS "Hungry People"
   FROM stats
-  GROUP BY "year", "month"
-  ORDER BY "year", "month";
+  GROUP BY "Year", "Month"
+  ORDER BY "Year", "Month";
 stats_id_cols:
   - year
   - month
