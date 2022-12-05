@@ -103,6 +103,38 @@ def create_app(config: DictConfig) -> pn.Template:
             lambda context: on_session_destroyed(config, context)
         )
 
+    # CUSTOM CSS
+    sidenav_css = """
+    .sidenav {
+        overflow-y: auto !important;
+    }
+
+    #sidebar {
+        padding-right: 12px !important;
+    }
+    """
+    tabulator_css = """
+    .sidenav .tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
+        white-space: normal;
+        text-overflow: clip;
+    }
+
+    .sidenav .tabulator {
+        border: 1.5px solid lightgray;
+    }
+    """
+    button_css = """
+    .refresh-button .bk-btn-group button {
+        font-size: 2rem;
+        vertical-align: middle;
+        padding: 0;
+        margin: 0;
+        line-height: 1.25rem;
+        border-style: none;
+    }
+    """
+    pn.extension(raw_css=[sidenav_css, tabulator_css, button_css])
+
     # DASHBOARD BASE TEMPLATE
     # Create web app template
     app = pn.template.VanillaTemplate(
@@ -121,7 +153,7 @@ def create_app(config: DictConfig) -> pn.Template:
     )
     # RESULTS (USED IN MAIN SECTION)
     # Create column for statistics
-    stats_col = pn.Column(name="Stats")
+    stats_col = pn.Column(name="Stats", width=core.sidebar_width)
     # Create column for lunch time labels
     time_col = pn.Column(width=125)
     # Create column for resulting menus
@@ -223,15 +255,24 @@ def create_app(config: DictConfig) -> pn.Template:
     Download the order list.
     """
     sidebar_tabs = pn.Tabs(
-        pn.Column(person_text, person_widget, name="User"),
+        pn.Column(
+            person_text, person_widget, name="User", width=core.sidebar_width
+        ),
         pn.Column(
             upload_text,
             file_widget,
             build_menu_button,
             name="Menu Upload",
+            width=core.sidebar_width,
         ),
-        pn.Column(download_text, download_button, name="Download Orders"),
+        pn.Column(
+            download_text,
+            download_button,
+            name="Download Orders",
+            width=core.sidebar_width,
+        ),
         stats_col,
+        width=core.sidebar_width,
     )
 
     # MAIN
@@ -246,18 +287,8 @@ def create_app(config: DictConfig) -> pn.Template:
         margin=5,
         sizing_mode="stretch_width",
     )
-    # Create refresh button (with css to center text)
-    button_css = """
-    .refresh-button .bk-btn-group button {
-        font-size: 2rem;
-        vertical-align: middle;
-        padding: 0;
-        margin: 0;
-        line-height: 1.25rem;
-        border-style: none;
-    }
-    """
-    pn.extension(raw_css=[button_css])
+    # Create refresh button
+    # Text is centered thanks to CSS extension via pn.extension (see above)
     refresh_button = pnw.Button(
         name="⟲",
         width=45,
