@@ -23,4 +23,3 @@ ci:
     autofix_prs: false
     autoupdate_commit_msg: 'ci(.pre-commit-config.yaml): pre-commit autoupdate'
     autoupdate_schedule: weekly
-    autoupdate_branch: development
