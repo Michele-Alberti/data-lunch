@@ -14,16 +14,21 @@ jobs:
     outputs:
       version: ${{ steps.cz.outputs.version }}
     steps:
+      - name: Load custom GitHub token
+        if: env.CUSTOM_GITHUB_TOKEN == ''
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "CUSTOM_GITHUB_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
       - name: Check out
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          token: ${{ env.CUSTOM_GITHUB_TOKEN }}
       - name: Bump and changelog
         id: cz
         uses: commitizen-tools/commitizen-action@0.15.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ env.CUSTOM_GITHUB_TOKEN }}
       - name: Print version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
   merge_back_to_dev:
@@ -31,11 +36,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Merge back to dev
     steps:
+      - name: Load custom GitHub token
+        if: env.CUSTOM_GITHUB_TOKEN == ''
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "CUSTOM_GITHUB_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
       - name: Check out
         uses: actions/checkout@v3
         with: 
           fetch-depth: 0
           ref: main
+          token: ${{ env.CUSTOM_GITHUB_TOKEN }}
       - name: Set Git config
         run: |
           git config --local user.name "github-actions[bot]"
