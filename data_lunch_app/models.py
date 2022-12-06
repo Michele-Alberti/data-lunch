@@ -87,7 +87,7 @@ class Users(db):
     )
 
     def __repr__(self):
-        return f"<NOTE:{self.id} - {self.user}>"
+        return f"<NOTE:{self.id}>"
 
 
 class Stats(db):

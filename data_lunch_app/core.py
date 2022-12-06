@@ -303,6 +303,15 @@ def reload_menu(
                 style={"text-align": "center", "display": "block"},
             )
         )
+        # Build guests list
+        session = models.create_session(config)
+        guests_list = [
+            user.id
+            for user in session.query(models.Users)
+            .filter(models.Users.guest == sql_true())
+            .all()
+        ]
+        # Loop through lunch times
         for time, df in df_dict.items():
             # Find the number of grumbling stomachs
             grumbling_stomachs = len(
@@ -316,6 +325,11 @@ def reload_menu(
                     style=dict(config.panel.time_style_res_col),
                 )
             )
+            # Add a receipt symbol for guest users
+            df.columns = [
+                f"{c} 💰" if (c in guests_list) and (c != "totale") else c
+                for c in df.columns
+            ]
             # Add non editable table to result column
             orders_table_widget = pnw.Tabulator(
                 name=time, value=df, frozen_rows=[-1], frozen_columns=[0]
@@ -336,7 +350,6 @@ def reload_menu(
     # Clean stats column
     stats_col.clear()
     # Update stats
-    session = models.create_session(config)
     # Find how many people eat today and add value to database stats table
     today_count = session.query(func.count(models.Users.id)).scalar()
     today_guests_count = (
