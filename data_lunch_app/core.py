@@ -289,6 +289,9 @@ def reload_menu(
 
     log.debug("menu reloaded")
 
+    # Create session
+    session = models.create_session(config)
+
     # Load results
     df_dict = df_list_by_lunch_time(config)
     # Clean columns and load text and dataframes
@@ -304,7 +307,6 @@ def reload_menu(
             )
         )
         # Build guests list
-        session = models.create_session(config)
         guests_list = [
             user.id
             for user in session.query(models.Users)
