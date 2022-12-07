@@ -16,6 +16,7 @@ from io import BytesIO
 from PIL import Image
 from pytesseract import pytesseract
 from sqlalchemy import func
+from sqlalchemy.sql.expression import true as sql_true
 import random
 
 # LOGGER ----------------------------------------------------------------------
@@ -60,6 +61,7 @@ class Person(param.Parameterized):
     lunch_time = param.ObjectSelector(
         default="12:30", doc="orario", objects=["12:30"]
     )
+    guest = param.Boolean(default=False, doc="guest flag")
     note = param.String(default="", doc="note")
 
     def __init__(self, config, **params):
@@ -287,6 +289,9 @@ def reload_menu(
 
     log.debug("menu reloaded")
 
+    # Create session
+    session = models.create_session(config)
+
     # Load results
     df_dict = df_list_by_lunch_time(config)
     # Clean columns and load text and dataframes
@@ -301,6 +306,14 @@ def reload_menu(
                 style={"text-align": "center", "display": "block"},
             )
         )
+        # Build guests list
+        guests_list = [
+            user.id
+            for user in session.query(models.Users)
+            .filter(models.Users.guest == sql_true())
+            .all()
+        ]
+        # Loop through lunch times
         for time, df in df_dict.items():
             # Find the number of grumbling stomachs
             grumbling_stomachs = len(
@@ -314,6 +327,11 @@ def reload_menu(
                     style=dict(config.panel.time_style_res_col),
                 )
             )
+            # Add a receipt symbol for guest users
+            df.columns = [
+                f"{c} 💰" if (c in guests_list) and (c != "totale") else c
+                for c in df.columns
+            ]
             # Add non editable table to result column
             orders_table_widget = pnw.Tabulator(
                 name=time, value=df, frozen_rows=[-1], frozen_columns=[0]
@@ -334,10 +352,16 @@ def reload_menu(
     # Clean stats column
     stats_col.clear()
     # Update stats
-    session = models.create_session(config)
     # Find how many people eat today and add value to database stats table
     today_count = session.query(func.count(models.Users.id)).scalar()
-    new_stat = models.Stats(hungry_people=today_count)
+    today_guests_count = (
+        session.query(func.count(models.Users.id))
+        .filter(models.Users.guest == sql_true())
+        .scalar()
+    )
+    new_stat = models.Stats(
+        hungry_people=today_count, hungry_guests=today_guests_count
+    )
     session.add(new_stat)
     session.commit()
 
@@ -352,7 +376,10 @@ def reload_menu(
         f"""
         <h3>Statistics</h3>
         <div style="color:green;">
-            <strong>Grumbling stomachs filled: {df_stats['hungry people'].sum()}</strong><br>
+            <strong>
+                Grumbling stomachs fed (locals + guests = total):
+                {df_stats['Starving Locals'].sum()} + {df_stats['Ravenous Guests'].sum()} = {df_stats['Hungry People'].sum()}
+            </strong><br>
         </div>
         <div>
             <i>See the table for details</i>
@@ -372,7 +399,12 @@ def reload_menu(
         sizing_mode="stretch_width",
     )
     # Create stats table (non-editable)
-    stats_widget = pnw.Tabulator(name="Statistics", hidden_columns=["index"])
+    stats_widget = pnw.Tabulator(
+        name="Statistics",
+        hidden_columns=["index"],
+        width=sidebar_width - 20,
+        layout="fit_columns",
+    )
     stats_widget.editors = {c: None for c in df_stats.columns}
     stats_widget.value = df_stats
     stats_col.append(stats_text)
@@ -424,7 +456,7 @@ def send_order(
     df = dataframe_widget.value.copy()
     df_order = df[df.order]
 
-    # If no username is missing or the order is empty return an error message
+    # If username is missing or the order is empty return an error message
     if person.username and not df_order.empty:
         session = models.create_session(config)
         # Check if the user already placed an order
@@ -437,9 +469,11 @@ def send_order(
         else:
             # Place order
             try:
-                # Add User (note is empty by default)
+                # Add User (note is empty by default, guest is false
+                # by default)
                 new_user = models.Users(
                     id=person.username,
+                    guest=person.guest,
                     note=person.note,
                 )
                 # Add orders as long table (one row for each item selected by a user)
