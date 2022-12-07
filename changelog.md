@@ -1,3 +1,14 @@
+## v1.13.0 (2022-12-07)
+
+### Feat
+
+- **cli.py**: add export and load commands for tables
+- **models.py**: add defaults value also server-side (sqlite DDLs)
+
+### Fix
+
+- **panel/default.yaml**: fix an error inside the query for stats table
+
 ## v1.12.0 (2022-12-07)
 
 ### Feat
