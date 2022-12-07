@@ -1,3 +1,15 @@
+## v1.12.0 (2022-12-07)
+
+### Feat
+
+- add icon in orders tables to highlight that an user is a guest
+- add support for guest users
+- **__init__.py**: group and improve custom css, force fixed with inside sidebar
+
+### Fix
+
+- **core.py**: move create_session in reload_menu outside if statements
+
 ## v1.11.0 (2022-12-04)
 
 ### Feat
