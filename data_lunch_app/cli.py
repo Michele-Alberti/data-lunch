@@ -2,7 +2,7 @@ import click
 import pkg_resources
 from hydra import compose, initialize
 from omegaconf import OmegaConf
-import os
+import pandas as pd
 from .models import create_database, create_engine
 
 # Import database object
@@ -61,9 +61,10 @@ def delete_database(obj):
         engine = create_engine(obj["config"])
         sql_alchemy_db.metadata.drop_all(engine)
         click.secho("Database deleted", fg="green")
-    except Exception:
+    except Exception as e:
         # Generic error
-        click.secho("Cannot delete database for unknown reasons", fg="red")
+        click.secho("Cannot delete database", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
 
 
 @db.command("clean")
@@ -76,9 +77,10 @@ def clean_tables(obj):
     try:
         clean_tables_func(obj["config"])
         click.secho("done", fg="green")
-    except Exception:
+    except Exception as e:
         # Generic error
-        click.secho("Cannot clean database for unknown reasons", fg="red")
+        click.secho("Cannot clean database", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
 
 
 @db.group()
@@ -100,9 +102,91 @@ def delete_table(obj, name):
         command = f"DROP TABLE {name};"
         engine.execute(command)
         click.secho(f"Table '{name}' deleted", fg="green")
-    except Exception:
+    except Exception as e:
         # Generic error
-        click.secho("Cannot delete database for unknown reasons", fg="red")
+        click.secho("Cannot drop table", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
+
+
+@table.command("export")
+@click.argument("name")
+@click.argument("csv_file_path")
+@click.option("--index/--no-index", "index", show_default=True, default=False)
+@click.pass_obj
+def export_table_to_csv(obj, name, csv_file_path, index):
+    """Export a single table to a csv file."""
+
+    click.secho(f"Export table '{name}' to CSV {csv_file_path}", fg="yellow")
+
+    # Create dataframe
+    try:
+        engine = create_engine(obj["config"])
+        df = pd.read_sql_table(name, engine)
+    except Exception as e:
+        # Generic error
+        click.secho("Cannot read table", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
+
+    # Show head
+    click.echo("First three rows of the table")
+    click.echo(f"{df.head(3)}\n")
+
+    # Export table
+    try:
+        df.to_csv(csv_file_path, index=index)
+    except Exception as e:
+        # Generic error
+        click.secho("Cannot write CSV", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
+
+    click.secho("Done", fg="green")
+
+
+@table.command("load")
+@click.confirmation_option()
+@click.argument("name")
+@click.argument("csv_file_path")
+@click.option("--index/--no-index", "index", show_default=True, default=True)
+@click.option("-l", "--index-label", "index_label", type=str, default=None)
+@click.option("-c", "--index-col", "index_col", type=str, default=None)
+@click.option(
+    "-e",
+    "--if-exists",
+    "if_exists",
+    type=click.Choice(["fail", "replace", "append"], case_sensitive=False),
+    show_default=True,
+    default="append",
+)
+@click.pass_obj
+def load_table(
+    obj, name, csv_file_path, index, index_label, index_col, if_exists
+):
+    """Load a single table from a csv file."""
+
+    click.secho(f"Load CSV {csv_file_path} to table '{name}'", fg="yellow")
+
+    # Create dataframe
+    df = pd.read_csv(csv_file_path, index_col=index_col)
+
+    # Show head
+    click.echo("First three rows of the CSV table")
+    click.echo(f"{df.head(3)}\n")
+
+    # Load table
+    try:
+        engine = create_engine(obj["config"])
+        df.to_sql(
+            name,
+            engine,
+            index=index,
+            index_label=index_label,
+            if_exists=if_exists,
+        )
+        click.secho("Done", fg="green")
+    except Exception as e:
+        # Generic error
+        click.secho("Cannot load table", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
 
 
 def main():

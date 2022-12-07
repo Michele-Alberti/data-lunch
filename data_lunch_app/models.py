@@ -11,6 +11,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, relationship, Session
+from sqlalchemy.sql import func
+from sqlalchemy.sql import false as sql_false
 from omegaconf import DictConfig
 from datetime import datetime
 
@@ -77,7 +79,9 @@ class Users(db):
         primary_key=True,
         nullable=False,
     )
-    guest = Column(Boolean, nullable=False, default=False)
+    guest = Column(
+        Boolean, nullable=False, default=False, server_default=sql_false()
+    )
     note = Column(String(500), unique=False, nullable=False)
     orders = relationship(
         "Orders",
@@ -97,10 +101,15 @@ class Stats(db):
         primary_key=True,
         nullable=False,
         default=datetime.utcnow(),
+        server_default=func.current_timestamp(),
         sqlite_on_conflict_primary_key="REPLACE",
     )
-    hungry_people = Column(Integer, nullable=False, default=0)
-    hungry_guests = Column(Integer, nullable=False, default=0)
+    hungry_people = Column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
+    hungry_guests = Column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
 
     def __repr__(self):
         return f"<STAT:{self.id} - HP:{self.hungry_people}>"

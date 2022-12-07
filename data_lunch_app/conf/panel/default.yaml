@@ -35,7 +35,7 @@ orders_query: |-
 stats_query: |-
   SELECT STRFTIME('%Y', id) AS "Year", 
     STRFTIME('%m', id) AS "Month", 
-    (hungry_people - hungry_guests) AS "Starving Locals",
+    (SUM(hungry_people) - SUM(hungry_guests)) AS "Starving Locals",
     SUM(hungry_guests) AS "Ravenous Guests",
     SUM(hungry_people) AS "Hungry People"
   FROM stats

@@ -375,11 +375,13 @@ def reload_menu(
     stats_text = pn.pane.HTML(
         f"""
         <h3>Statistics</h3>
-        <div style="color:green;">
-            <strong>
-                Grumbling stomachs fed (locals + guests = total):
-                {df_stats['Starving Locals'].sum()} + {df_stats['Ravenous Guests'].sum()} = {df_stats['Hungry People'].sum()}
-            </strong><br>
+        <div>
+            Grumbling stomachs fed:<br>
+            <span style="color:green;">Locals&nbsp;&nbsp;{df_stats['Starving Locals'].sum()}</span><br>
+            <span style="color:darkorange;">Guests&nbsp;&nbsp;{df_stats['Ravenous Guests'].sum()}</span><br>
+            =================<br>
+            <strong>TOTAL&nbsp;&nbsp;{df_stats['Hungry People'].sum()}</strong><br>
+            <br>
         </div>
         <div>
             <i>See the table for details</i>
