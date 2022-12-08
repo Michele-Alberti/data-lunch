@@ -4,9 +4,9 @@
     # Before starting set up the dynamic dns
     # First call
     mkdir -p ~/duckdns
-    echo url="https://www.duckdns.org/update?domains=data-lunch&token=8657275c-de2c-494c-a42a-f1a97958571c&ip=" | curl -k -o ~/duckdns/duck.log -K -
+    echo url=${DUCKDNS_URL} | curl -k -o ~/duckdns/duck.log -K -
     # Set the cronjob
-    croncmd='echo url="https://www.duckdns.org/update?domains=data-lunch&token=8657275c-de2c-494c-a42a-f1a97958571c&ip=" | curl -k -o ~/duckdns/duck.log -K -'
+    croncmd="echo url=${DUCKDNS_URL} | curl -k -o ~/duckdns/duck.log -K -"
     cronjob="*/5 * * * * $croncmd"
     ( crontab -l | grep -v -F "$croncmd" || : ; echo "$cronjob" ) | crontab -
 
