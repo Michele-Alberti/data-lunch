@@ -6,7 +6,7 @@
     mkdir -p ~/duckdns
     echo url=${DUCKDNS_URL} | curl -k -o ~/duckdns/duck.log -K -
     # Set the cronjob
-    croncmd="echo url=${DUCKDNS_URL} | curl -k -o ~/duckdns/duck.log -K -"
+    croncmd="echo url=\"${DUCKDNS_URL}\" | curl -k -o ~/duckdns/duck.log -K -"
     cronjob="*/5 * * * * $croncmd"
     ( crontab -l | grep -v -F "$croncmd" || : ; echo "$cronjob" ) | crontab -
 
