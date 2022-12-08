@@ -1,3 +1,9 @@
+## v1.14.1 (2022-12-08)
+
+### Fix
+
+- **compose_init.sh**: add escaped " to string
+
 ## v1.14.0 (2022-12-08)
 
 ### Feat
