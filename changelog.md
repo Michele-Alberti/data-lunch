@@ -1,3 +1,9 @@
+## v1.14.2 (2022-12-08)
+
+### Fix
+
+- read docker image version from environment variable
+
 ## v1.14.1 (2022-12-08)
 
 ### Fix
