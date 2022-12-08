@@ -64,16 +64,11 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Build and push
         uses: docker/build-push-action@v3
-        env:
-          PANEL_APP: data-lunch-app
-          PANEL_ENV: production
-          PORT: 5000
-          GCLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
         with:
           context: ./
           file: ./docker/web/Dockerfile.web
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:stable
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache,mode=max
