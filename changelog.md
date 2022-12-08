@@ -1,3 +1,9 @@
+## v1.14.0 (2022-12-08)
+
+### Feat
+
+- **compose_init.sh**: add environment variable for DDNS url
+
 ## v1.13.0 (2022-12-07)
 
 ### Feat
