@@ -14,7 +14,6 @@ on:
 
 jobs:
   build_container:
-    needs: merge_back_to_dev
     name: Build container image
     runs-on: ubuntu-latest
     steps:
