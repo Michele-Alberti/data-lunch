@@ -52,6 +52,7 @@ The following environment variables are required for running the _web app_ or th
 `MAIL_USER` | _str_ | email client user (for sending emails with the current instance IP)
 `MAIL_APP_PASSWORD` | _str_ | email client user (for sending emails with the current instance IP)
 `MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (for sending emails with the current instance IP)
+`DUCKDNS_URL` | _str_ | _URL_ used to update dynamic address (with _Duck DNS_)
 
 
 ### 2.3. Install data-lunch CLI
