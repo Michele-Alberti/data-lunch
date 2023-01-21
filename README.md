@@ -26,7 +26,7 @@ The following steps will guide you through the installation procedure.
 [<img style="position: relative; bottom: 3px;" src="https://docs.conda.io/en/latest/_images/conda_logo.svg" alt="Conda" width="80"/>](https://docs.conda.io/en/latest/) is required for creating the development environment (it is suggested to install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)).
 
 From terminal navigate to the repository base directory.\
-Use the following command in your terminal to create an environment named `trails-app`.
+Use the following command in your terminal to create an environment named `data-lunch`.
 
 ```
 conda env create -f environment.yml
@@ -35,7 +35,7 @@ conda env create -f environment.yml
 Activate the new _Conda_ environment with the following command.
 
 ```
-conda activate trails-app
+conda activate data-lunch
 ```
 ### 2.2. Environment variables
 
