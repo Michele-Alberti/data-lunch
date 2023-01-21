@@ -334,7 +334,12 @@ def reload_menu(
             ]
             # Add non editable table to result column
             orders_table_widget = pnw.Tabulator(
-                name=time, value=df, frozen_rows=[-1], frozen_columns=[0]
+                name=time,
+                value=df,
+                frozen_rows=[-1],
+                frozen_columns=[0],
+                sizing_mode="stretch_width",
+                layout="fit_data_stretch",
             )
             orders_table_widget.editors = {c: None for c in df.columns}
             res_col.append(orders_table_widget)

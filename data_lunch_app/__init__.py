@@ -119,8 +119,8 @@ def create_app(config: DictConfig) -> pn.Template:
         text-overflow: clip;
     }
 
-    .sidenav .tabulator {
-        border: 1.5px solid lightgray;
+    .tabulator {
+        border: 1.5px solid lightgray !important;
     }
     """
     button_css = """
@@ -157,7 +157,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create column for lunch time labels
     time_col = pn.Column(width=125)
     # Create column for resulting menus
-    res_col = pn.Column()
+    res_col = pn.Column(sizing_mode="stretch_width")
     # Toggle button that stop orders (used in time column)
     toggle_no_more_order_button = pnw.Toggle(
         value=pn.state.cache["no_more_orders"],
