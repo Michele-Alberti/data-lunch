@@ -1,3 +1,17 @@
+## v1.15.0 (2023-01-22)
+
+### Feat
+
+- remove unselected items from orders' tables
+
+### Fix
+
+- fix scroll for large tables inside orders' section
+
+### Perf
+
+- add compression to server response
+
 ## v1.14.2 (2022-12-08)
 
 ### Fix
