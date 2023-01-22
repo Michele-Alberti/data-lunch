@@ -1,3 +1,4 @@
+# APP
 file_name: menu_file
 export_file_name: lunch_order.xlsx
 nthreads: null
@@ -24,6 +25,13 @@ menu_items_to_concat:
 # Notifications
 notifications:
   duration: 0
+
+# ORDERS' TABLES
+# Name of the column with total values for orders
+total_column_name: totale
+# Drop unused menus entries in orders tables (drop unused if true)
+drop_unused_menu_items: true
+
 # QUERIES
 # Orders
 orders_query: |-

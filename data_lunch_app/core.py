@@ -317,7 +317,11 @@ def reload_menu(
         for time, df in df_dict.items():
             # Find the number of grumbling stomachs
             grumbling_stomachs = len(
-                [c for c in df.columns if c.lower() != "totale"]
+                [
+                    c
+                    for c in df.columns
+                    if c.lower() != config.panel.total_column_name
+                ]
             )
             # Add text to result column
             res_col.append(pn.Spacer(height=10))
@@ -329,12 +333,19 @@ def reload_menu(
             )
             # Add a receipt symbol for guest users
             df.columns = [
-                f"{c} 💰" if (c in guests_list) and (c != "totale") else c
+                f"{c} 💰"
+                if (c in guests_list) and (c != config.panel.total_column_name)
+                else c
                 for c in df.columns
             ]
             # Add non editable table to result column
             orders_table_widget = pnw.Tabulator(
-                name=time, value=df, frozen_rows=[-1], frozen_columns=[0]
+                name=time,
+                value=df,
+                frozen_rows=[-1],
+                frozen_columns=[0],
+                sizing_mode="stretch_width",
+                layout="fit_data_stretch",
             )
             orders_table_widget.editors = {c: None for c in df.columns}
             res_col.append(orders_table_widget)
@@ -643,7 +654,9 @@ def df_list_by_lunch_time(
         # Reorder index in accordance with original menu
         df_users = df_users.reindex(original_order)
         # Add columns of totals
-        df_users["totale"] = df_users.sum(axis=1)
+        df_users[config.panel.total_column_name] = df_users.sum(axis=1)
+        if config.panel.drop_unused_menu_items:
+            df_users = df_users[df_users[config.panel.total_column_name] > 0]
         # Add notes
         # Find users included in this lunch time
         users = tuple(temp_df.user.unique())
