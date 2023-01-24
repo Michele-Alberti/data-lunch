@@ -6,4 +6,5 @@ verbose: true
 open: false
 static_dirs:
   webfonts: ./data_lunch_app/static/fontawesome/webfonts
+  images: ./data_lunch_app/static/images
 compress_response: true

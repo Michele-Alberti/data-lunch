@@ -138,7 +138,9 @@ def create_app(config: DictConfig) -> pn.Template:
     # DASHBOARD BASE TEMPLATE
     # Create web app template
     app = pn.template.VanillaTemplate(
-        title="Data Lunch", sidebar_width=core.sidebar_width
+        title=config.panel.title,
+        sidebar_width=core.sidebar_width,
+        favicon=config.panel.favicon_path,
     )
     # Add fontawesome icons
     pn.extension(css_files=css_fa_icons_files)

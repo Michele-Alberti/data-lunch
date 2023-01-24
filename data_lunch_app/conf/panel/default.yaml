@@ -2,6 +2,8 @@
 file_name: menu_file
 export_file_name: lunch_order.xlsx
 nthreads: null
+title: Data-Lunch
+favicon_path: images/favicon.ico
 # Dashboard options
 result_column_text: "# Orders"
 time_column_text: "#### Summary"
