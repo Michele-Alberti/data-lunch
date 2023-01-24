@@ -32,26 +32,12 @@ seed_day = int(datetime.datetime.today().strftime("%Y%m%d"))
 df_quote = df_quotes.sample(n=1, random_state=seed_day)
 
 # CSS FILES -------------------------------------------------------------------
-# CSS
+css_files = []
+
+
+# JS FILES -------------------------------------------------------------------
 # Font awesome icons
-css_fa_icons_files = [
-    pathlib.Path(__file__).parent
-    / "static"
-    / "fontawesome"
-    / "css"
-    / "fontawesome.css",
-    pathlib.Path(__file__).parent
-    / "static"
-    / "fontawesome"
-    / "css"
-    / "brands.css",
-    pathlib.Path(__file__).parent
-    / "static"
-    / "fontawesome"
-    / "css"
-    / "solid.css",
-]
-css_fa_icons_files = [str(file) for file in css_fa_icons_files]
+js_files = {"fa-icon": "https://kit.fontawesome.com/377fe96f85.js"}
 
 
 # UTILITY FUNCTIONS -----------------------------------------------------------
@@ -143,7 +129,7 @@ def create_app(config: DictConfig) -> pn.Template:
         favicon=config.panel.favicon_path,
     )
     # Add fontawesome icons
-    pn.extension(css_files=css_fa_icons_files)
+    pn.extension(css_files=css_files, js_files=js_files)
 
     # QUOTE OF THE DAY
     quote = pn.pane.Markdown(
