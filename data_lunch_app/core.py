@@ -342,7 +342,6 @@ def reload_menu(
             orders_table_widget = pnw.Tabulator(
                 name=time,
                 value=df,
-                frozen_rows=[-1],
                 frozen_columns=[0],
                 sizing_mode="stretch_width",
                 layout="fit_data_stretch",
