@@ -1,3 +1,17 @@
+## v1.16.0 (2023-01-25)
+
+### Feat
+
+- add custom favicon
+
+### Fix
+
+- **core.py**: restore note row in tables with orders
+
+### Perf
+
+- add font-awesome icons from js file
+
 ## v1.15.0 (2023-01-22)
 
 ### Feat
