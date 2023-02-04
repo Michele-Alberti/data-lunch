@@ -72,7 +72,7 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("instantiate Panel app")
 
     # Panel configurations
-    log.debug("set panel config and cache")
+    log.debug("set panel config and flags")
     # Configurations
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True

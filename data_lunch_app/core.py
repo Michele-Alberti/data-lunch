@@ -126,9 +126,8 @@ def clean_tables(config: DictConfig):
     session.commit()
     log.info(f"deleted {num_rows_deleted} from table 'users'")
     # Clean flags
-    num_rows_deleted = session.query(models.Flags).delete()
-    session.commit()
-    log.info(f"deleted {num_rows_deleted} from table 'flags'")
+    models.set_flag(session=session, id="no_more_orders", value=False)
+    log.info("reset values in table 'flags'")
 
 
 def build_menu(

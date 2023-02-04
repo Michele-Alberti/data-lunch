@@ -166,8 +166,8 @@ def get_flag(session: Session, id: str) -> bool | None:
     """Get the value of a flag"""
 
     flag = session.query(Flags).get(id)
-    if flag:
-        value = session.query(Flags).get(id).value
-    else:
+    if flag is None:
         value = None
+    else:
+        value = session.query(Flags).get(id).value
     return value
