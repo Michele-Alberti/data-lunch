@@ -3,6 +3,7 @@ import pkg_resources
 from hydra import compose, initialize
 from omegaconf import OmegaConf
 import pandas as pd
+import panel as pn
 from .models import create_database, create_engine
 
 # Import database object
@@ -31,6 +32,24 @@ def cli(ctx):
     initialize(config_path="conf", job_name="data_lunch_cli")
     config = compose(config_name="config")
     ctx.obj = {"config": config}
+
+
+@cli.group()
+@click.pass_obj
+def cache(obj):
+    """Manage cache."""
+
+
+@cache.command("clean")
+@click.confirmation_option()
+@click.pass_obj
+def clean_caches(obj):
+    """Clean caches."""
+
+    # Clear action
+    pn.state.clear_caches()
+
+    click.secho("Caches cleared", fg="green")
 
 
 @cli.group()
