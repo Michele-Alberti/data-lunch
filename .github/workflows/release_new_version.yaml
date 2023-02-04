@@ -5,13 +5,14 @@ name: Release new version
 on:
   push:
     branches:
-      - main
+      - '**'
     tags-ignore:
-      - v*
+      - 'v[0-9]+.[0-9]+.[0-9]+**'
 
 jobs:
   bump_version:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     name: Bump version and log
     outputs:
       version: ${{ steps.cz.outputs.version }}
@@ -31,6 +32,7 @@ jobs:
   merge_back_to_dev:
     needs: bump_version
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     name: Merge back to dev
     steps:
       - name: Check out
@@ -52,6 +54,7 @@ jobs:
     needs: merge_back_to_dev
     name: Build container image
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout 
         uses: actions/checkout@v3
