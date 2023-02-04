@@ -12,6 +12,7 @@ on:
 jobs:
   bump_version:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'Merge')
     name: Bump version and log
     outputs:
       version: ${{ steps.cz.outputs.version }}
@@ -23,7 +24,7 @@ jobs:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
       - name: Bump and changelog
         id: cz
-        uses: commitizen-tools/commitizen-action@0.15.1
+        uses: commitizen-tools/commitizen-action@0.16.0
         with:
           github_token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
       - name: Print version
@@ -31,6 +32,7 @@ jobs:
   merge_back_to_dev:
     needs: bump_version
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'Merge')
     name: Merge back to dev
     steps:
       - name: Check out
@@ -52,6 +54,7 @@ jobs:
     needs: merge_back_to_dev
     name: Build container image
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'Merge')
     steps:
       - name: Checkout 
         uses: actions/checkout@v3
