@@ -15,7 +15,7 @@ import sqlalchemy
 from omegaconf import DictConfig, open_dict
 
 # Database imports
-import models
+from . import models
 from .cloud import download_from_gcloud
 
 # Core imports
