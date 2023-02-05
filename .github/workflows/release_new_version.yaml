@@ -21,6 +21,8 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+      - name: Add safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Bump and changelog
         id: cz
         uses: commitizen-tools/commitizen-action@0.15.1
