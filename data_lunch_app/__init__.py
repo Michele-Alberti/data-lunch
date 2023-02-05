@@ -15,7 +15,7 @@ import sqlalchemy
 from omegaconf import DictConfig, open_dict
 
 # Database imports
-from .models import db, create_database
+from . import models
 from .cloud import download_from_gcloud
 
 # Core imports
@@ -67,18 +67,19 @@ def create_app(config: DictConfig) -> pn.Template:
         log.info("downloading database file from bucket")
         hydra.utils.call(config.db.gcloud_storage.download)
     # Then create tables
-    create_database(config)
+    models.create_database(config)
 
     log.info("instantiate Panel app")
 
     # Panel configurations
-    log.debug("set panel config and cache")
+    log.debug("set panel config and flags")
     # Configurations
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True
-    # Cache for no_more_orders flag
-    if "no_more_orders" not in pn.state.cache:
-        pn.state.cache["no_more_orders"] = False
+    # Set the no_more_orders flag if it is None (not found in flags table)
+    session = models.create_session(config)
+    if models.get_flag(session=session, id="no_more_orders") is None:
+        models.set_flag(session=session, id="no_more_orders", value=False)
 
     # Set action to run when sessions are destroyed
     # If google cloud is configured, download the sqlite database from storage
@@ -148,7 +149,7 @@ def create_app(config: DictConfig) -> pn.Template:
     res_col = pn.Column(sizing_mode="stretch_width")
     # Toggle button that stop orders (used in time column)
     toggle_no_more_order_button = pnw.Toggle(
-        value=pn.state.cache["no_more_orders"],
+        value=models.get_flag(session=session, id="no_more_orders"),
         name="⌛ Stop Orders",
         width=150,
     )
@@ -158,7 +159,10 @@ def create_app(config: DictConfig) -> pn.Template:
     def reload_on_no_more_order(toggle_button):
 
         # Update global variable
-        pn.state.cache["no_more_orders"] = toggle_button
+        session = models.create_session(config)
+        models.set_flag(
+            session=session, id="no_more_orders", value=toggle_button
+        )
 
         # Show "no more order" text
         no_more_order_text.visible = toggle_button
@@ -362,7 +366,10 @@ def create_app(config: DictConfig) -> pn.Template:
 
     # Set components visibility based on no_more_order_button state
     # and reload menu
-    reload_on_no_more_order(pn.state.cache["no_more_orders"])
+    reload_on_no_more_order(
+        models.get_flag(session=session, id="no_more_orders")
+    )
+    session.close()
 
     app.servable()
 

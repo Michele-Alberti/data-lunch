@@ -112,7 +112,21 @@ class Stats(db):
     )
 
     def __repr__(self):
-        return f"<STAT:{self.id} - HP:{self.hungry_people}>"
+        return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
+
+
+class Flags(db):
+    __tablename__ = "flags"
+    id = Column(
+        String(50),
+        primary_key=True,
+        nullable=False,
+        sqlite_on_conflict_primary_key="REPLACE",
+    )
+    value = Column(Boolean, nullable=False)
+
+    def __repr__(self):
+        return f"<FLAG:{self.id} - value:{self.value}>"
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -133,7 +147,27 @@ def create_session(config: DictConfig) -> Session:
     return session
 
 
-def create_database(config: DictConfig):
+def create_database(config: DictConfig) -> None:
     """Database factory function"""
     engine = create_engine(config)
     db.metadata.create_all(engine)
+
+
+def set_flag(session: Session, id: str, value: bool) -> None:
+    """Set value inside flag table"""
+
+    # Write the selected flag (it will be overwritten if exists)
+    new_flag = Flags(id=id, value=value)
+    session.add(new_flag)
+    session.commit()
+
+
+def get_flag(session: Session, id: str) -> bool | None:
+    """Get the value of a flag"""
+
+    flag = session.query(Flags).get(id)
+    if flag is None:
+        value = None
+    else:
+        value = session.query(Flags).get(id).value
+    return value

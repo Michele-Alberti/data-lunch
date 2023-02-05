@@ -125,6 +125,9 @@ def clean_tables(config: DictConfig):
     num_rows_deleted = session.query(models.Users).delete()
     session.commit()
     log.info(f"deleted {num_rows_deleted} from table 'users'")
+    # Clean flags
+    models.set_flag(session=session, id="no_more_orders", value=False)
+    log.info("reset values in table 'flags'")
 
 
 def build_menu(
@@ -258,13 +261,20 @@ def reload_menu(
     no_more_order: pnw.Toggle,
 ) -> None:
 
+    # Create session
+    session = models.create_session(config)
+
     # Check if someone changed the "no_more_order" toggle
-    if no_more_order.value != pn.state.cache["no_more_orders"]:
+    if no_more_order.value != models.get_flag(
+        session=session, id="no_more_orders"
+    ):
         # The following statement will trigger the toggle callback
         # which will call reload_menu once again
         # This is the reason why this if contains a return (without the return
         # the content will be reloaded twice)
-        no_more_order.value = pn.state.cache["no_more_orders"]
+        no_more_order.value = models.get_flag(
+            session=session, id="no_more_orders"
+        )
 
         return
 
@@ -288,9 +298,6 @@ def reload_menu(
         dataframe_widget.disabled = False
 
     log.debug("menu reloaded")
-
-    # Create session
-    session = models.create_session(config)
 
     # Load results
     df_dict = df_list_by_lunch_time(config)
@@ -444,8 +451,11 @@ def send_order(
     error_message.visible = False
     confirm_message.visible = False
 
+    # Create session
+    session = models.create_session(config)
+
     # Check if the "no more order" toggle button is pressed
-    if pn.state.cache["no_more_orders"]:
+    if models.get_flag(session=session, id="no_more_orders"):
         pn.state.notifications.error(
             "It is not possible to place new orders",
             duration=config.panel.notifications.duration,
@@ -470,7 +480,6 @@ def send_order(
 
     # If username is missing or the order is empty return an error message
     if person.username and not df_order.empty:
-        session = models.create_session(config)
         # Check if the user already placed an order
         if session.query(models.Users).get(person.username):
             pn.state.notifications.warning(
@@ -488,9 +497,9 @@ def send_order(
                     guest=person.guest,
                     note=person.note,
                 )
+                session.add(new_user)
                 # Add orders as long table (one row for each item selected by a user)
                 for index, row in df_order.iterrows():
-                    session.add(new_user)
                     # Order
                     new_order = models.Orders(
                         user=person.username,
@@ -562,8 +571,11 @@ def delete_order(
     error_message.visible = False
     confirm_message.visible = False
 
+    # Create session
+    session = models.create_session(config)
+
     # Check if the "no more order" toggle button is pressed
-    if pn.state.cache["no_more_orders"]:
+    if models.get_flag(session=session, id="no_more_orders"):
         pn.state.notifications.error(
             "It is not possible to delete orders",
             duration=config.panel.notifications.duration,
@@ -583,7 +595,6 @@ def delete_order(
         return
 
     if person.username:
-        session = models.create_session(config)
         # Delete user
         num_rows_deleted_users = (
             session.query(models.Users)
