@@ -1,3 +1,15 @@
+## v1.17.0 (2023-02-05)
+
+### Feat
+
+- **cli.py**: add clean caches command to cli
+
+### Fix
+
+- fix clean_tables functions and improve get_flag function
+- **__init__.py**: fix import error
+- move the 'no_more_orders' flag from pn.cache to a dedicated database table
+
 ## v1.16.0 (2023-01-25)
 
 ### Feat

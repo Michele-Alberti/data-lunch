@@ -1,5 +1,5 @@
 # App metadata
-__version__ = "1.16.0"
+__version__ = "1.17.0"
 
 import datetime
 import pathlib
