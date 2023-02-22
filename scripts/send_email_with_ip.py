@@ -13,6 +13,8 @@ import os
 username = os.environ["MAIL_USER"]
 password = os.environ["MAIL_APP_PASSWORD"]
 recipients = os.environ["MAIL_RECIPIENTS"]
+mail_user = os.environ["MAIL_USER"]
+domain = os.environ["DOMAIN"]
 
 # External IP
 metadata_server = "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip"
@@ -21,19 +23,19 @@ external_ip = requests.get(metadata_server, headers=metadata_flavor).text
 
 # Message
 timestr = time.strftime("(%Y-%m-%d)")
-send_from = "data.lunch.email@gmail.com"
+send_from = mail_user
 send_to = recipients
 body = f"""\
 <html>
   <body>
     <p>Buongiorno, Data-Lunch è online!<br><br>
-       Per accedere all'app da rete Edison (o con connessione VPN) clicca
+       Per accedere all'app da rete aziendale (o con connessione VPN) clicca
        <strong><a href="https://{external_ip}">qui</a></strong>.<br>
        <em>Nella schermata di avvertimento "la connessione non è privata" (con il browser Edge)
        clicca su "Avanzate" e poi "Procedi su...".</em><br><br>
-       Se non sei collegato alla rete Edison, oppure se sei su rete mobile,
+       Se non sei collegato alla rete aziendale, oppure se sei su rete mobile,
        puoi collegarti a
-       <strong><a href="https://data-lunch.duckdns.org/">data-lunch.duckdns.org</a></strong>.
+       <strong><a href="https://{domain}/">{domain}</a></strong>.
     </p>
   </body>
 </html>
