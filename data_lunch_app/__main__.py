@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 
 @hydra.main(config_path="conf", config_name="config")
 def run_app(config: DictConfig):
-
     # Starting scheduled cleaning
     schedule_task(
         config.panel.scheduled_tasks.scheduled_cleaning,

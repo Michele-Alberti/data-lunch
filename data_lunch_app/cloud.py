@@ -5,7 +5,6 @@ log = logging.getLogger(__name__)
 
 
 def get_bucket_list(project: str):
-
     # Create storage client
     storage_client = storage.Client(project=project)
 
@@ -21,7 +20,6 @@ def upload_to_gcloud(
     bucket_name: str,
     project: str,
 ):
-
     # Create storage client
     storage_client = storage.Client(project=project)
 
@@ -45,7 +43,6 @@ def download_from_gcloud(
     bucket_name: str,
     project: str,
 ):
-
     # Create storage client
     storage_client = storage.Client(project=project)
 
