@@ -82,7 +82,10 @@ class Users(db):
     guest = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
-    note = Column(String(500), unique=False, nullable=False)
+    takeaway = Column(
+        Boolean, nullable=False, default=False, server_default=sql_false()
+    )
+    note = Column(String(500), unique=False, nullable=True)
     orders = relationship(
         "Orders",
         back_populates="note",

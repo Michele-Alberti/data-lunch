@@ -11,6 +11,7 @@ from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
 from pytesseract import pytesseract
+import random
 from sqlalchemy import func
 from sqlalchemy.sql.expression import true as sql_true
 
@@ -235,6 +236,7 @@ def reload_menu(
     gui.res_col.clear()
     gui.time_col.clear()
     if df_dict:
+        # Titles
         gui.res_col.append(config.panel.result_column_text)
         gui.time_col.append(gui.build_time_col_title(config))
         # Build guests list
@@ -254,36 +256,55 @@ def reload_menu(
                     if c.lower() != config.panel.total_column_name
                 ]
             )
+            # Set different graphics for takeaway lunches
+            if config.panel.takeaway_id in time:
+                res_col_label_kwargs = {
+                    "time": time.replace(config.panel.takeaway_id, ""),
+                    "diners_n": grumbling_stomachs,
+                    "emoji": config.panel.takeaway_emoji,
+                    "is_takeaway": True,
+                    "takeaway_alert_sign": f"{gui.takeaway_alert_sign} {gui.build_takeaway_text(config)}",
+                    "style": dict(config.panel.takeaway_style_res_col),
+                }
+                time_col_label_kwargs = {
+                    "time": time.replace(config.panel.takeaway_id, ""),
+                    "diners_n": str(grumbling_stomachs) + "&nbsp",
+                    "separator": "<br>",
+                    "emoji": config.panel.takeaway_emoji,
+                    "align": ("center", "center"),
+                    "sizing_mode": "stretch_width",
+                    "is_takeaway": True,
+                    "takeaway_alert_sign": gui.takeaway_alert_sign,
+                    "style": dict(config.panel.takeaway_style_time_col),
+                }
+            else:
+                res_col_label_kwargs = {
+                    "time": time,
+                    "diners_n": grumbling_stomachs,
+                    "emoji": random.choice(config.panel.food_emoji),
+                    "style": dict(config.panel.time_style_res_col),
+                }
+                time_col_label_kwargs = {
+                    "time": time,
+                    "diners_n": str(grumbling_stomachs) + "&nbsp",
+                    "separator": "<br>",
+                    "emoji": config.panel.restaurant_emoji,
+                    "per_icon": "&#10006; ",
+                    "align": ("center", "center"),
+                    "sizing_mode": "stretch_width",
+                    "style": dict(config.panel.time_style_time_col),
+                }
             # Add text to result column
             gui.res_col.append(pn.Spacer(height=10))
-            gui.res_col.append(
-                gui.build_time_label(
-                    time=time,
-                    diners_n=grumbling_stomachs,
-                    style=dict(config.panel.time_style_res_col),
-                )
-            )
-            # Add a receipt symbol for guest users
-            df.columns = [
-                f"{c} 💰"
-                if (c in guests_list) and (c != config.panel.total_column_name)
-                else c
-                for c in df.columns
-            ]
+            gui.res_col.append(gui.build_time_label(**res_col_label_kwargs))
             # Add non editable table to result column
-            gui.res_col.append(gui.build_order_table(df, time))
-            # Add also a label to lunch time column
-            gui.time_col.append(
-                gui.build_time_label(
-                    time=time,
-                    diners_n=str(grumbling_stomachs) + "&nbsp",
-                    style=dict(config.panel.time_style_time_col),
-                    separator="<br>",
-                    emoji="&#127860;",
-                    per_icon="&#10006; ",
-                    align=("center", "center"),
+            gui.res_col.append(
+                gui.build_order_table(
+                    config, df=df, time=time, guests_list=guests_list
                 )
             )
+            # Add also a label to lunch time column
+            gui.time_col.append(gui.build_time_label(**time_col_label_kwargs))
 
     log.debug("results reloaded")
 
@@ -370,6 +391,7 @@ def send_order(
                 new_user = models.Users(
                     id=person.username,
                     guest=person.guest,
+                    takeaway=person.takeaway,
                     note=person.note,
                 )
                 session.add(new_user)
@@ -496,6 +518,15 @@ def df_list_by_lunch_time(
     engine = models.create_engine(config)
     # Read menu and save how menu items are sorted (first courses, second courses, etc.)
     original_order = pd.read_sql_table("menu", engine, index_col="id").item
+    # Create session
+    session = models.create_session(config)
+    # Build takeaway list
+    takeaway_list = [
+        user.id
+        for user in session.query(models.Users)
+        .filter(models.Users.takeaway == sql_true())
+        .all()
+    ]
     # Read dataframe
     df = pd.read_sql_query(config.panel.orders_query, engine)
     # Build a dict of dataframes, one for each lunch time
@@ -513,26 +544,44 @@ def df_list_by_lunch_time(
         )
         # Reorder index in accordance with original menu
         df_users = df_users.reindex(original_order)
-        # Add columns of totals
-        df_users[config.panel.total_column_name] = df_users.sum(axis=1)
-        if config.panel.drop_unused_menu_items:
-            df_users = df_users[df_users[config.panel.total_column_name] > 0]
-        # Add notes
-        # Find users included in this lunch time
-        users = tuple(temp_df.user.unique())
-        # Find relevant notes
-        session = models.create_session(config)
-        user_data = (
-            session.query(models.Users)
-            .filter(models.Users.id.in_(users))
-            .all()
-        )
-        for user in user_data:
-            df_users.loc["NOTE", user.id] = user.note
-        # Change NaNs to '-'
-        df_users = df_users.fillna("-")
-        # Add resulting dataframe to dict
-        df_dict[time] = df_users
+        # Split restaurant lunches from takeaway lunches
+        df_users_restaurant = df_users.loc[
+            :, [c for c in df_users.columns if c not in takeaway_list]
+        ]
+        df_users_takeaways = df_users.loc[:, takeaway_list]
+
+        def clean_up_table(config, df_in):
+            # Add columns of totals
+            df = df_in.copy()
+            df[config.panel.total_column_name] = df.sum(axis=1)
+            if config.panel.drop_unused_menu_items:
+                df = df[df[config.panel.total_column_name] > 0]
+            # Find users included in this lunch time
+            users = df.columns
+            # Find relevant notes
+            session = models.create_session(config)
+            user_data = (
+                session.query(models.Users)
+                .filter(models.Users.id.in_(users))
+                .all()
+            )
+            # Add notes
+            for user in user_data:
+                df.loc["NOTE", user.id] = user.note
+            # Change NaNs to '-'
+            df = df.fillna("-")
+
+            return df
+
+        # Clean and add resulting dataframes to dict
+        # RESTAURANT LUNCH
+        if not df_users_restaurant.empty:
+            df_users_restaurant = clean_up_table(config, df_users_restaurant)
+            df_dict[time] = df_users_restaurant
+        # TAKEAWAY
+        if not df_users_takeaways.empty:
+            df_users_takeaways = clean_up_table(config, df_users_takeaways)
+            df_dict[f"{time} {config.panel.takeaway_id}"] = df_users_takeaways
 
     return df_dict
 

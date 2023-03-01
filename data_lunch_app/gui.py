@@ -6,7 +6,6 @@ import panel as pn
 import panel.widgets as pnw
 import param
 import pathlib
-import random
 
 # Database imports
 from . import models
@@ -41,7 +40,6 @@ food_emoji = [
     "&#129388;",
     "&#129384;",
     "&#129379;",
-    "&#129377;",
     "&#127857;",
     "&#127837;",
     "&#127836;",
@@ -55,6 +53,7 @@ class Person(param.Parameterized):
         default="12:30", doc="orario", objects=["12:30"]
     )
     guest = param.Boolean(default=False, doc="guest flag")
+    takeaway = param.Boolean(default=False, doc="takeaway flag")
     note = param.String(default="", doc="note")
 
     def __init__(self, config, **params):
@@ -140,6 +139,9 @@ download_text = """
 Download the order list.
 """
 
+# Takeaway texts
+takeaway_alert_sign = '<i class="fa-solid fa-triangle-exclamation fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"></i>'
+
 # JS FILES --------------------------------------------------------------------
 # Font awesome icons
 js_files = {"fa-icon": "https://kit.fontawesome.com/377fe96f85.js"}
@@ -188,12 +190,14 @@ delete_order_button = pnw.Button(
 
 # COLUMNS
 # Create column for lunch time labels
-time_col = pn.Column(width=125)
+time_col = pn.Column(width=85)
 # Create column for resulting menus
 res_col = pn.Column(sizing_mode="stretch_width")
 
 # FLEXBOXES
-menu_flexbox = pn.FlexBox(*[dataframe, time_col], sizing_mode="stretch_height")
+menu_flexbox = pn.FlexBox(
+    *[dataframe, pn.Spacer(width=5), time_col], sizing_mode="stretch_height"
+)
 buttons_flexbox = pn.FlexBox(
     *[send_order_button, toggle_no_more_order_button, delete_order_button]
 )
@@ -255,7 +259,20 @@ def define_main_section_callbacks(
 
 
 # UTILITY FUNCTIONS
-def build_order_table(df: pd.DataFrame, time: str) -> pnw.Tabulator:
+def build_order_table(
+    config: DictConfig,
+    df: pd.DataFrame,
+    time: str,
+    guests_list: list[str] = [],
+) -> pnw.Tabulator:
+    # Add guest icon to users' id
+    df.columns = [
+        f"{c} 💰"
+        if (c in guests_list) and (c != config.panel.total_column_name)
+        else c
+        for c in df.columns
+    ]
+    # Create table widget
     orders_table_widget = pnw.Tabulator(
         name=time,
         value=df,
@@ -269,11 +286,18 @@ def build_order_table(df: pd.DataFrame, time: str) -> pnw.Tabulator:
     return orders_table_widget
 
 
-def build_time_col_title(config: DictConfig) -> pn.pane.HTML:
+def build_time_col_title(
+    config: DictConfig,
+    sizing_mode: str = "stretch_width",
+    style: dict = {},
+) -> pn.pane.HTML:
+    # Add default style elements to dict
+    style.update({"text-align": "center"})
+    # Title pane
     title = pn.pane.Markdown(
         config.panel.time_column_text,
-        sizing_mode="stretch_width",
-        style={"text-align": "center", "display": "block"},
+        sizing_mode=sizing_mode,
+        style=style,
     )
 
     return title
@@ -282,19 +306,35 @@ def build_time_col_title(config: DictConfig) -> pn.pane.HTML:
 def build_time_label(
     time: str,
     diners_n: str,
-    style: DictConfig,
     separator: str = " &#10072; ",
-    emoji: str = random.choice(food_emoji),
+    emoji: str = "&#127829;",
     per_icon: str = " &#10006; ",
+    is_takeaway: bool = False,
+    takeaway_alert_sign: str = "TAKEAWAY",
+    style: dict = {},
     **kwargs,
 ) -> pn.pane.HTML:
+    # Add default style elements to dict
+    style.update({"text-align": "center"})
+    # If takeaway add alert sign
+    if is_takeaway:
+        takeaway = f"{separator}{takeaway_alert_sign}"
+    else:
+        takeaway = ""
+    # Time label pane
     time_label = pn.pane.HTML(
-        f"{time}{separator}{emoji}{per_icon}{diners_n}",
+        f"{time}{separator}{emoji}{per_icon}{diners_n}{takeaway}",
         style=style,
         **kwargs,
     )
 
     return time_label
+
+
+def build_takeaway_text(config: DictConfig) -> str:
+    takeaway_alert_text = f'<span class="fa-fade fa-sm" style="--fa-animation-duration: 1.5s;">{config.panel.takeaway_id}</span> '
+
+    return takeaway_alert_text
 
 
 # MODAL WINDOW ----------------------------------------------------------------
