@@ -1,10 +1,6 @@
-from xml.parsers.expat import model
 import panel as pn
-import param
-import panel.widgets as pnw
 import pandas as pd
 import pathlib
-from panel.widgets import Tqdm
 import logging
 import socket
 import subprocess
@@ -15,61 +11,15 @@ from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
 from pytesseract import pytesseract
+import random
 from sqlalchemy import func
 from sqlalchemy.sql.expression import true as sql_true
-import random
+
+# Graphic interface imports (after class definition)
+from . import gui
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
-
-# OPTIONS AND DEFAULTS --------------------------------------------------------
-# App
-sidebar_width = 400
-# Unicode Emoji fro food
-food_emoji = [
-    "&#127858;",
-    "&#127791;",
-    "&#127790;",
-    "&#127789;",
-    "&#129391;",
-    "&#127829;",
-    "&#127830;",
-    "&#127828;",
-    "&#129386;",
-    "&#127831;",
-    "&#129367;",
-    "&#129369;",
-    "&#127839;",
-    "&#129385;",
-    "&#129365;",
-    "&#129382;",
-    "&#129388;",
-    "&#129384;",
-    "&#129379;",
-    "&#129377;",
-    "&#127857;",
-    "&#127837;",
-    "&#127836;",
-]
-
-# CLASS -----------------------------------------------------------------------
-
-
-class Person(param.Parameterized):
-
-    username = param.String(default="", doc="your name")
-    lunch_time = param.ObjectSelector(
-        default="12:30", doc="orario", objects=["12:30"]
-    )
-    guest = param.Boolean(default=False, doc="guest flag")
-    note = param.String(default="", doc="note")
-
-    def __init__(self, config, **params):
-        super().__init__(**params)
-        self.param["lunch_time"].objects = config.panel.lunch_times_options
-
-    def __str__(self):
-        return f"PERSON:{self.name}"
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -134,20 +84,11 @@ def build_menu(
     event,
     config: DictConfig,
     app: pn.Template,
-    file_widget: pnw.FileInput,
-    dataframe_widget: pnw.DataFrame,
-    stats_col: pn.Column,
-    res_col: pn.Column,
-    time_col: pn.Column,
-    no_more_order: pnw.Toggle,
-    messages: list[pn.pane.HTML],
+    gi: gui.GraphicInterface,
 ) -> pd.DataFrame:
-    # Expand messages
-    error_message = messages[0]
-    confirm_message = messages[1]
     # Hide messages
-    error_message.visible = False
-    confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Build image path
     menu_filename = str(
@@ -158,13 +99,13 @@ def build_menu(
     delete_files(config)
 
     # Load file from widget
-    if file_widget.value is not None:
+    if gi.file_widget.value is not None:
         # Find file extension
-        file_ext = pathlib.PurePath(file_widget.filename).suffix
+        file_ext = pathlib.PurePath(gi.file_widget.filename).suffix
 
         # Save file locally
         local_menu_filename = menu_filename + file_ext
-        file_widget.save(local_menu_filename)
+        gi.file_widget.save(local_menu_filename)
 
         # Clean tables
         clean_tables(config)
@@ -220,13 +161,9 @@ def build_menu(
             )
             # Update dataframe widget
             reload_menu(
-                "",
+                None,
                 config,
-                dataframe_widget,
-                stats_col,
-                res_col,
-                time_col,
-                no_more_order,
+                gi,
             )
 
             pn.state.notifications.success(
@@ -238,8 +175,10 @@ def build_menu(
             pn.state.notifications.error(
                 "Database error", duration=config.panel.notifications.duration
             )
-            error_message.object = f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
-            error_message.visible = True
+            gi.error_message.object = (
+                f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
+            )
+            gi.error_message.visible = True
             log.warning("database error")
             # Open modal window
             app.open_modal()
@@ -254,25 +193,20 @@ def build_menu(
 def reload_menu(
     event,
     config: DictConfig,
-    dataframe_widget: pnw.DataFrame,
-    stats_col: pn.Column,
-    res_col: pn.Column,
-    time_col: pn.Column,
-    no_more_order: pnw.Toggle,
+    gi: gui.GraphicInterface,
 ) -> None:
-
     # Create session
     session = models.create_session(config)
 
     # Check if someone changed the "no_more_order" toggle
-    if no_more_order.value != models.get_flag(
+    if gi.toggle_no_more_order_button.value != models.get_flag(
         session=session, id="no_more_orders"
     ):
         # The following statement will trigger the toggle callback
         # which will call reload_menu once again
         # This is the reason why this if contains a return (without the return
         # the content will be reloaded twice)
-        no_more_order.value = models.get_flag(
+        gi.toggle_no_more_order_button.value = models.get_flag(
             session=session, id="no_more_orders"
         )
 
@@ -282,37 +216,32 @@ def reload_menu(
     engine = models.create_engine(config)
     df = pd.read_sql_table("menu", engine, index_col="id")
     df["order"] = False
-    dataframe_widget.value = df
-    dataframe_widget.formatters = {"order": {"type": "tickCross"}}
-    dataframe_widget.editors = {
+    gi.dataframe.value = df
+    gi.dataframe.formatters = {"order": {"type": "tickCross"}}
+    gi.dataframe.editors = {
         "id": None,
         "item": None,
         "order": CheckboxEditor(),
     }
 
-    if no_more_order.value:
-        dataframe_widget.hidden_columns = ["order"]
-        dataframe_widget.disabled = True
+    if gi.toggle_no_more_order_button.value:
+        gi.dataframe.hidden_columns = ["order"]
+        gi.dataframe.disabled = True
     else:
-        dataframe_widget.hidden_columns = []
-        dataframe_widget.disabled = False
+        gi.dataframe.hidden_columns = []
+        gi.dataframe.disabled = False
 
     log.debug("menu reloaded")
 
     # Load results
     df_dict = df_list_by_lunch_time(config)
     # Clean columns and load text and dataframes
-    res_col.clear()
-    time_col.clear()
+    gi.res_col.clear()
+    gi.time_col.clear()
     if df_dict:
-        res_col.append(config.panel.result_column_text)
-        time_col.append(
-            pn.pane.Markdown(
-                config.panel.time_column_text,
-                sizing_mode="stretch_width",
-                style={"text-align": "center", "display": "block"},
-            )
-        )
+        # Titles
+        gi.res_col.append(config.panel.result_column_text)
+        gi.time_col.append(gi.time_col_title)
         # Build guests list
         guests_list = [
             user.id
@@ -330,44 +259,60 @@ def reload_menu(
                     if c.lower() != config.panel.total_column_name
                 ]
             )
+            # Set different graphics for takeaway lunches
+            if config.panel.takeaway_id in time:
+                res_col_label_kwargs = {
+                    "time": time.replace(config.panel.takeaway_id, ""),
+                    "diners_n": grumbling_stomachs,
+                    "emoji": config.panel.takeaway_emoji,
+                    "is_takeaway": True,
+                    "takeaway_alert_sign": f"{gi.takeaway_alert_sign} {gi.takeaway_alert_text}",
+                    "style": dict(config.panel.takeaway_style_res_col),
+                }
+                time_col_label_kwargs = {
+                    "time": time.replace(config.panel.takeaway_id, ""),
+                    "diners_n": str(grumbling_stomachs) + "&nbsp",
+                    "separator": "<br>",
+                    "emoji": config.panel.takeaway_emoji,
+                    "align": ("center", "center"),
+                    "sizing_mode": "stretch_width",
+                    "is_takeaway": True,
+                    "takeaway_alert_sign": gi.takeaway_alert_sign,
+                    "style": dict(config.panel.takeaway_style_time_col),
+                }
+            else:
+                res_col_label_kwargs = {
+                    "time": time,
+                    "diners_n": grumbling_stomachs,
+                    "emoji": random.choice(config.panel.food_emoji),
+                    "style": dict(config.panel.time_style_res_col),
+                }
+                time_col_label_kwargs = {
+                    "time": time,
+                    "diners_n": str(grumbling_stomachs) + "&nbsp",
+                    "separator": "<br>",
+                    "emoji": config.panel.restaurant_emoji,
+                    "per_icon": "&#10006; ",
+                    "align": ("center", "center"),
+                    "sizing_mode": "stretch_width",
+                    "style": dict(config.panel.time_style_time_col),
+                }
             # Add text to result column
-            res_col.append(pn.Spacer(height=10))
-            res_col.append(
-                pn.pane.HTML(
-                    f"{time} &#10072; {random.choice(food_emoji)} &#10006; {grumbling_stomachs}",
-                    style=dict(config.panel.time_style_res_col),
-                )
-            )
-            # Add a receipt symbol for guest users
-            df.columns = [
-                f"{c} 💰"
-                if (c in guests_list) and (c != config.panel.total_column_name)
-                else c
-                for c in df.columns
-            ]
+            gi.res_col.append(pn.Spacer(height=10))
+            gi.res_col.append(gi.build_time_label(**res_col_label_kwargs))
             # Add non editable table to result column
-            orders_table_widget = pnw.Tabulator(
-                name=time,
-                value=df,
-                frozen_columns=[0],
-                sizing_mode="stretch_width",
-                layout="fit_data_stretch",
-            )
-            orders_table_widget.editors = {c: None for c in df.columns}
-            res_col.append(orders_table_widget)
-            # Add also a label to lunch time column
-            time_col.append(
-                pn.pane.HTML(
-                    f"{time}<br>&#127860;&#10006; {grumbling_stomachs}&nbsp",
-                    style=dict(config.panel.time_style_time_col),
-                    align=("center", "center"),
+            gi.res_col.append(
+                gi.build_order_table(
+                    config, df=df, time=time, guests_list=guests_list
                 )
             )
+            # Add also a label to lunch time column
+            gi.time_col.append(gi.build_time_label(**time_col_label_kwargs))
 
     log.debug("results reloaded")
 
     # Clean stats column
-    stats_col.clear()
+    gi.sidebar_stats_col.clear()
     # Update stats
     # Find how many people eat today and add value to database stats table
     today_count = session.query(func.count(models.Users.id)).scalar()
@@ -386,49 +331,17 @@ def reload_menu(
     df_stats = pd.read_sql_query(
         config.panel.stats_query,
         engine,
-        # index_col=list(config.panel.stats_id_cols),
     )
     # Stats top text
-    stats_text = pn.pane.HTML(
-        f"""
-        <h3>Statistics</h3>
-        <div>
-            Grumbling stomachs fed:<br>
-            <span style="color:green;">Locals&nbsp;&nbsp;{df_stats['Starving Locals'].sum()}</span><br>
-            <span style="color:darkorange;">Guests&nbsp;&nbsp;{df_stats['Ravenous Guests'].sum()}</span><br>
-            =================<br>
-            <strong>TOTAL&nbsp;&nbsp;{df_stats['Hungry People'].sum()}</strong><br>
-            <br>
-        </div>
-        <div>
-            <i>See the table for details</i>
-        </div>
-    """
+    stats_text = gi.build_stats_text(
+        df_stats, __version__, get_host_name(config)
     )
-    # Other info
-    other_info_text = pn.pane.HTML(
-        f"""
-        <h4>Other Info</h3>
-        <div>
-            <i class="fa-solid fa-tag" style="font-size: 1.15rem;"></i>&nbsp;<strong>Version:</strong> <i>{__version__}</i>
-            <br>
-            <i class="fa-solid fa-microchip" style="font-size: 1.15rem;"></i>&nbsp;<strong>Host:</strong> <i>{get_host_name(config)}</i>
-        </div>
-        """,
-        sizing_mode="stretch_width",
-    )
-    # Create stats table (non-editable)
-    stats_widget = pnw.Tabulator(
-        name="Statistics",
-        hidden_columns=["index"],
-        width=sidebar_width - 20,
-        layout="fit_columns",
-    )
-    stats_widget.editors = {c: None for c in df_stats.columns}
-    stats_widget.value = df_stats
-    stats_col.append(stats_text)
-    stats_col.append(stats_widget)
-    stats_col.append(other_info_text)
+    # Add value and non-editable option to stats table
+    gi.stats_widget.editors = {c: None for c in df_stats.columns}
+    gi.stats_widget.value = df_stats
+    gi.sidebar_stats_col.append(stats_text["stats"])
+    gi.sidebar_stats_col.append(gi.stats_widget)
+    gi.sidebar_stats_col.append(stats_text["info"])
     log.debug("stats updated")
 
 
@@ -436,20 +349,12 @@ def send_order(
     event,
     config: DictConfig,
     app: pn.Template,
-    person: Person,
-    dataframe_widget: pnw.DataFrame,
-    stats_col: pn.Column,
-    res_col: pn.Column,
-    time_col: pn.Column,
-    no_more_order: pnw.Toggle,
-    messages: list[pn.pane.HTML],
+    person: gui.Person,
+    gi: gui.GraphicInterface,
 ) -> None:
-    # Expand messages
-    error_message = messages[0]
-    confirm_message = messages[1]
     # Hide messages
-    error_message.visible = False
-    confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Create session
     session = models.create_session(config)
@@ -463,19 +368,15 @@ def send_order(
 
         # Reload the menu
         reload_menu(
-            "",
+            None,
             config,
-            dataframe_widget,
-            stats_col,
-            res_col,
-            time_col,
-            no_more_order,
+            gi,
         )
 
         return
 
     # Write order into database table
-    df = dataframe_widget.value.copy()
+    df = gi.dataframe.value.copy()
     df_order = df[df.order]
 
     # If username is missing or the order is empty return an error message
@@ -495,6 +396,7 @@ def send_order(
                 new_user = models.Users(
                     id=person.username,
                     guest=person.guest,
+                    takeaway=person.takeaway,
                     note=person.note,
                 )
                 session.add(new_user)
@@ -511,13 +413,9 @@ def send_order(
 
                 # Update dataframe widget
                 reload_menu(
-                    "",
+                    None,
                     config,
-                    dataframe_widget,
-                    stats_col,
-                    res_col,
-                    time_col,
-                    no_more_order,
+                    gi,
                 )
 
                 pn.state.notifications.success(
@@ -530,10 +428,10 @@ def send_order(
                     "Database error",
                     duration=config.panel.notifications.duration,
                 )
-                error_message.object = (
+                gi.error_message.object = (
                     f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
                 )
-                error_message.visible = True
+                gi.error_message.visible = True
                 log.warning("database error")
                 # Open modal window
                 app.open_modal()
@@ -556,20 +454,12 @@ def delete_order(
     event,
     config: DictConfig,
     app: pn.Template,
-    person: Person,
-    dataframe_widget: pnw.DataFrame,
-    stats_col: pn.Column,
-    res_col: pn.Column,
-    time_col: pn.Column,
-    no_more_order: pnw.Toggle,
-    messages: list[pn.pane.HTML],
+    person: gui.Person,
+    gi: gui.GraphicInterface,
 ) -> None:
-    # Expand messages
-    error_message = messages[0]
-    confirm_message = messages[1]
     # Hide messages
-    error_message.visible = False
-    confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Create session
     session = models.create_session(config)
@@ -583,13 +473,9 @@ def delete_order(
 
         # Reload the menu
         reload_menu(
-            "",
+            None,
             config,
-            dataframe_widget,
-            stats_col,
-            res_col,
-            time_col,
-            no_more_order,
+            gi,
         )
 
         return
@@ -611,13 +497,9 @@ def delete_order(
         if (num_rows_deleted_users > 0) or (num_rows_deleted_orders > 0):
             # Update dataframe widget
             reload_menu(
-                "",
+                None,
                 config,
-                dataframe_widget,
-                stats_col,
-                res_col,
-                time_col,
-                no_more_order,
+                gi,
             )
 
             pn.state.notifications.success(
@@ -641,11 +523,19 @@ def delete_order(
 def df_list_by_lunch_time(
     config: DictConfig,
 ) -> dict:
-
     # Create database engine and session
     engine = models.create_engine(config)
     # Read menu and save how menu items are sorted (first courses, second courses, etc.)
     original_order = pd.read_sql_table("menu", engine, index_col="id").item
+    # Create session
+    session = models.create_session(config)
+    # Build takeaway list
+    takeaway_list = [
+        user.id
+        for user in session.query(models.Users)
+        .filter(models.Users.takeaway == sql_true())
+        .all()
+    ]
     # Read dataframe
     df = pd.read_sql_query(config.panel.orders_query, engine)
     # Build a dict of dataframes, one for each lunch time
@@ -663,26 +553,44 @@ def df_list_by_lunch_time(
         )
         # Reorder index in accordance with original menu
         df_users = df_users.reindex(original_order)
-        # Add columns of totals
-        df_users[config.panel.total_column_name] = df_users.sum(axis=1)
-        if config.panel.drop_unused_menu_items:
-            df_users = df_users[df_users[config.panel.total_column_name] > 0]
-        # Add notes
-        # Find users included in this lunch time
-        users = tuple(temp_df.user.unique())
-        # Find relevant notes
-        session = models.create_session(config)
-        user_data = (
-            session.query(models.Users)
-            .filter(models.Users.id.in_(users))
-            .all()
-        )
-        for user in user_data:
-            df_users.loc["NOTE", user.id] = user.note
-        # Change NaNs to '-'
-        df_users = df_users.fillna("-")
-        # Add resulting dataframe to dict
-        df_dict[time] = df_users
+        # Split restaurant lunches from takeaway lunches
+        df_users_restaurant = df_users.loc[
+            :, [c for c in df_users.columns if c not in takeaway_list]
+        ]
+        df_users_takeaways = df_users.loc[:, takeaway_list]
+
+        def clean_up_table(config, df_in):
+            # Add columns of totals
+            df = df_in.copy()
+            df[config.panel.total_column_name] = df.sum(axis=1)
+            if config.panel.drop_unused_menu_items:
+                df = df[df[config.panel.total_column_name] > 0]
+            # Find users included in this lunch time
+            users = df.columns
+            # Find relevant notes
+            session = models.create_session(config)
+            user_data = (
+                session.query(models.Users)
+                .filter(models.Users.id.in_(users))
+                .all()
+            )
+            # Add notes
+            for user in user_data:
+                df.loc["NOTE", user.id] = user.note
+            # Change NaNs to '-'
+            df = df.fillna("-")
+
+            return df
+
+        # Clean and add resulting dataframes to dict
+        # RESTAURANT LUNCH
+        if not df_users_restaurant.empty:
+            df_users_restaurant = clean_up_table(config, df_users_restaurant)
+            df_dict[time] = df_users_restaurant
+        # TAKEAWAY
+        if not df_users_takeaways.empty:
+            df_users_takeaways = clean_up_table(config, df_users_takeaways)
+            df_dict[f"{time} {config.panel.takeaway_id}"] = df_users_takeaways
 
     return df_dict
 
@@ -690,15 +598,11 @@ def df_list_by_lunch_time(
 def download_dataframe(
     config: DictConfig,
     app: pn.Template,
-    dataframe_widget: pnw.DataFrame,
-    messages: list[pn.pane.HTML],
+    gi: gui.GraphicInterface,
 ) -> None:
-    # Expand messages
-    error_message = messages[0]
-    confirm_message = messages[1]
     # Hide messages
-    error_message.visible = False
-    confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Build a dict of dataframes, one for each lunch time (the key contains
     # a lunch time)
@@ -721,7 +625,7 @@ def download_dataframe(
         )
         log.info("xlsx downloaded")
     else:
-        dataframe_widget.value.drop(columns=["order"]).to_excel(
+        gi.dataframe.value.drop(columns=["order"]).to_excel(
             writer, sheet_name="MENU", index=False
         )
         writer.save()  # Important!
