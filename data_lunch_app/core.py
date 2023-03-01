@@ -84,10 +84,11 @@ def build_menu(
     event,
     config: DictConfig,
     app: pn.Template,
+    gi: gui.GraphicInterface,
 ) -> pd.DataFrame:
     # Hide messages
-    gui.error_message.visible = False
-    gui.confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Build image path
     menu_filename = str(
@@ -98,13 +99,13 @@ def build_menu(
     delete_files(config)
 
     # Load file from widget
-    if gui.file_widget.value is not None:
+    if gi.file_widget.value is not None:
         # Find file extension
-        file_ext = pathlib.PurePath(gui.file_widget.filename).suffix
+        file_ext = pathlib.PurePath(gi.file_widget.filename).suffix
 
         # Save file locally
         local_menu_filename = menu_filename + file_ext
-        gui.file_widget.save(local_menu_filename)
+        gi.file_widget.save(local_menu_filename)
 
         # Clean tables
         clean_tables(config)
@@ -162,6 +163,7 @@ def build_menu(
             reload_menu(
                 None,
                 config,
+                gi,
             )
 
             pn.state.notifications.success(
@@ -173,10 +175,10 @@ def build_menu(
             pn.state.notifications.error(
                 "Database error", duration=config.panel.notifications.duration
             )
-            gui.error_message.object = (
+            gi.error_message.object = (
                 f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
             )
-            gui.error_message.visible = True
+            gi.error_message.visible = True
             log.warning("database error")
             # Open modal window
             app.open_modal()
@@ -191,19 +193,20 @@ def build_menu(
 def reload_menu(
     event,
     config: DictConfig,
+    gi: gui.GraphicInterface,
 ) -> None:
     # Create session
     session = models.create_session(config)
 
     # Check if someone changed the "no_more_order" toggle
-    if gui.toggle_no_more_order_button.value != models.get_flag(
+    if gi.toggle_no_more_order_button.value != models.get_flag(
         session=session, id="no_more_orders"
     ):
         # The following statement will trigger the toggle callback
         # which will call reload_menu once again
         # This is the reason why this if contains a return (without the return
         # the content will be reloaded twice)
-        gui.toggle_no_more_order_button.value = models.get_flag(
+        gi.toggle_no_more_order_button.value = models.get_flag(
             session=session, id="no_more_orders"
         )
 
@@ -213,32 +216,32 @@ def reload_menu(
     engine = models.create_engine(config)
     df = pd.read_sql_table("menu", engine, index_col="id")
     df["order"] = False
-    gui.dataframe.value = df
-    gui.dataframe.formatters = {"order": {"type": "tickCross"}}
-    gui.dataframe.editors = {
+    gi.dataframe.value = df
+    gi.dataframe.formatters = {"order": {"type": "tickCross"}}
+    gi.dataframe.editors = {
         "id": None,
         "item": None,
         "order": CheckboxEditor(),
     }
 
-    if gui.toggle_no_more_order_button.value:
-        gui.dataframe.hidden_columns = ["order"]
-        gui.dataframe.disabled = True
+    if gi.toggle_no_more_order_button.value:
+        gi.dataframe.hidden_columns = ["order"]
+        gi.dataframe.disabled = True
     else:
-        gui.dataframe.hidden_columns = []
-        gui.dataframe.disabled = False
+        gi.dataframe.hidden_columns = []
+        gi.dataframe.disabled = False
 
     log.debug("menu reloaded")
 
     # Load results
     df_dict = df_list_by_lunch_time(config)
     # Clean columns and load text and dataframes
-    gui.res_col.clear()
-    gui.time_col.clear()
+    gi.res_col.clear()
+    gi.time_col.clear()
     if df_dict:
         # Titles
-        gui.res_col.append(config.panel.result_column_text)
-        gui.time_col.append(gui.build_time_col_title(config))
+        gi.res_col.append(config.panel.result_column_text)
+        gi.time_col.append(gi.time_col_title)
         # Build guests list
         guests_list = [
             user.id
@@ -263,7 +266,7 @@ def reload_menu(
                     "diners_n": grumbling_stomachs,
                     "emoji": config.panel.takeaway_emoji,
                     "is_takeaway": True,
-                    "takeaway_alert_sign": f"{gui.takeaway_alert_sign} {gui.build_takeaway_text(config)}",
+                    "takeaway_alert_sign": f"{gi.takeaway_alert_sign} {gi.takeaway_alert_text}",
                     "style": dict(config.panel.takeaway_style_res_col),
                 }
                 time_col_label_kwargs = {
@@ -274,7 +277,7 @@ def reload_menu(
                     "align": ("center", "center"),
                     "sizing_mode": "stretch_width",
                     "is_takeaway": True,
-                    "takeaway_alert_sign": gui.takeaway_alert_sign,
+                    "takeaway_alert_sign": gi.takeaway_alert_sign,
                     "style": dict(config.panel.takeaway_style_time_col),
                 }
             else:
@@ -295,21 +298,21 @@ def reload_menu(
                     "style": dict(config.panel.time_style_time_col),
                 }
             # Add text to result column
-            gui.res_col.append(pn.Spacer(height=10))
-            gui.res_col.append(gui.build_time_label(**res_col_label_kwargs))
+            gi.res_col.append(pn.Spacer(height=10))
+            gi.res_col.append(gi.build_time_label(**res_col_label_kwargs))
             # Add non editable table to result column
-            gui.res_col.append(
-                gui.build_order_table(
+            gi.res_col.append(
+                gi.build_order_table(
                     config, df=df, time=time, guests_list=guests_list
                 )
             )
             # Add also a label to lunch time column
-            gui.time_col.append(gui.build_time_label(**time_col_label_kwargs))
+            gi.time_col.append(gi.build_time_label(**time_col_label_kwargs))
 
     log.debug("results reloaded")
 
     # Clean stats column
-    gui.sidebar_stats_col.clear()
+    gi.sidebar_stats_col.clear()
     # Update stats
     # Find how many people eat today and add value to database stats table
     today_count = session.query(func.count(models.Users.id)).scalar()
@@ -330,15 +333,15 @@ def reload_menu(
         engine,
     )
     # Stats top text
-    stats_text = gui.build_stats_text(
+    stats_text = gi.build_stats_text(
         df_stats, __version__, get_host_name(config)
     )
     # Add value and non-editable option to stats table
-    gui.stats_widget.editors = {c: None for c in df_stats.columns}
-    gui.stats_widget.value = df_stats
-    gui.sidebar_stats_col.append(stats_text["stats"])
-    gui.sidebar_stats_col.append(gui.stats_widget)
-    gui.sidebar_stats_col.append(stats_text["info"])
+    gi.stats_widget.editors = {c: None for c in df_stats.columns}
+    gi.stats_widget.value = df_stats
+    gi.sidebar_stats_col.append(stats_text["stats"])
+    gi.sidebar_stats_col.append(gi.stats_widget)
+    gi.sidebar_stats_col.append(stats_text["info"])
     log.debug("stats updated")
 
 
@@ -347,10 +350,11 @@ def send_order(
     config: DictConfig,
     app: pn.Template,
     person: gui.Person,
+    gi: gui.GraphicInterface,
 ) -> None:
     # Hide messages
-    gui.error_message.visible = False
-    gui.confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Create session
     session = models.create_session(config)
@@ -366,12 +370,13 @@ def send_order(
         reload_menu(
             None,
             config,
+            gi,
         )
 
         return
 
     # Write order into database table
-    df = gui.dataframe.value.copy()
+    df = gi.dataframe.value.copy()
     df_order = df[df.order]
 
     # If username is missing or the order is empty return an error message
@@ -410,6 +415,7 @@ def send_order(
                 reload_menu(
                     None,
                     config,
+                    gi,
                 )
 
                 pn.state.notifications.success(
@@ -422,10 +428,10 @@ def send_order(
                     "Database error",
                     duration=config.panel.notifications.duration,
                 )
-                gui.error_message.object = (
+                gi.error_message.object = (
                     f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
                 )
-                gui.error_message.visible = True
+                gi.error_message.visible = True
                 log.warning("database error")
                 # Open modal window
                 app.open_modal()
@@ -449,10 +455,11 @@ def delete_order(
     config: DictConfig,
     app: pn.Template,
     person: gui.Person,
+    gi: gui.GraphicInterface,
 ) -> None:
     # Hide messages
-    gui.error_message.visible = False
-    gui.confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Create session
     session = models.create_session(config)
@@ -468,6 +475,7 @@ def delete_order(
         reload_menu(
             None,
             config,
+            gi,
         )
 
         return
@@ -491,6 +499,7 @@ def delete_order(
             reload_menu(
                 None,
                 config,
+                gi,
             )
 
             pn.state.notifications.success(
@@ -589,10 +598,11 @@ def df_list_by_lunch_time(
 def download_dataframe(
     config: DictConfig,
     app: pn.Template,
+    gi: gui.GraphicInterface,
 ) -> None:
     # Hide messages
-    gui.error_message.visible = False
-    gui.confirm_message.visible = False
+    gi.error_message.visible = False
+    gi.confirm_message.visible = False
 
     # Build a dict of dataframes, one for each lunch time (the key contains
     # a lunch time)
@@ -615,7 +625,7 @@ def download_dataframe(
         )
         log.info("xlsx downloaded")
     else:
-        gui.dataframe.value.drop(columns=["order"]).to_excel(
+        gi.dataframe.value.drop(columns=["order"]).to_excel(
             writer, sheet_name="MENU", index=False
         )
         writer.save()  # Important!

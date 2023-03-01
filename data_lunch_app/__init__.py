@@ -89,49 +89,33 @@ def create_app(config: DictConfig) -> pn.Template:
     # graphic element that require the Person class has to be instantiated
     # by a dedicated function
     # Create person instance, widget and column
-    log.debug("instantiate person class and graphic elements")
+    log.debug("instantiate person class and graphic graphic interface")
     person = gui.Person(config, name="User")
-    person_widget = pn.Param(person.param, width=gui.sidebar_width)
-    person_column = pn.Column(
-        gui.person_text, person_widget, name="User", width=gui.sidebar_width
-    )
-    log.debug("replace person column placeholder")
-    gui.sidebar_tabs.objects[0] = person_column
-
-    # DEFINE CALLBACKS
-    log.debug("define main section callbacks")
-    gui.define_main_section_callbacks(config, app, person)
-    log.debug("define sidebar section callbacks")
-    gui.define_sidebar_section_callbacks(config, app)
+    gi = gui.GraphicInterface(config, app, person)
 
     # DASHBOARD
     # Build dashboard
-    app.sidebar.append(gui.sidebar_tabs)
-    app.main.append(gui.no_more_order_text)
-    app.main.append(
-        pn.Row(
-            "# Menu",
-            pn.layout.HSpacer(),
-            gui.refresh_button,
-        ),
-    )
-    app.main.append(gui.quote)
+    app.sidebar.append(gi.sidebar_tabs)
+    app.main.append(gi.no_more_order_text)
+    app.main.append(gi.main_header_row)
+    app.main.append(gi.quote)
     app.main.append(pn.Spacer(height=15))
-    app.main.append(gui.menu_flexbox)
-    app.main.append(gui.buttons_flexbox)
+    app.main.append(gi.menu_flexbox)
+    app.main.append(gi.buttons_flexbox)
     app.main.append(pn.layout.Divider(sizing_mode="stretch_width"))
-    app.main.append(gui.res_col)
-    app.modal.append(gui.error_message)
-    app.modal.append(gui.confirm_message)
+    app.main.append(gi.res_col)
+    app.modal.append(gi.error_message)
+    app.modal.append(gi.confirm_message)
 
     # Set components visibility based on no_more_order_button state
     # and reload menu
     core.reload_menu(
         None,
         config,
+        gi,
     )
-    gui.reload_on_no_more_order(
-        models.get_flag(session=session, id="no_more_orders"), config
+    gi.reload_on_no_more_order(
+        models.get_flag(session=session, id="no_more_orders")
     )
 
     # Close database session
