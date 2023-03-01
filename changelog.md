@@ -1,3 +1,19 @@
+## v1.18.0 (2023-03-01)
+
+### Feat
+
+- add flag for takeaway meals
+
+### Fix
+
+- fix error in create_app logic
+
+### Refactor
+
+- **gui.py**: remove unused emoji html strings
+- move all graphic elements to a dedicated module
+- **send_email_with_ip.py**: improve script for email with vm external ip
+
 ## v1.17.0 (2023-02-05)
 
 ### Feat

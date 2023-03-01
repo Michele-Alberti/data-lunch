@@ -1,5 +1,5 @@
 # App metadata
-__version__ = "1.17.0"
+__version__ = "1.18.0"
 
 import pathlib
 import hydra
