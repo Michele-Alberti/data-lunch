@@ -1,0 +1,25 @@
+defaults:
+  - default
+
+# RESTAURANT LUNCHES
+restaurant_emoji: "🎣 "
+food_emoji: [
+    "🐟",
+    "🐠",
+    "🐡",
+    ]
+
+# TAKEAWAY LUNCHES
+takeaway_alert_icon_options: 'class="fa-solid fa-fish-fins fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"'
+
+# CUSTOMIZABLE GRAPHIC OBJECTS
+# Instantiate a panel object to be rendered on app's header
+# Set to null to ignore
+# e.g: _target_: panel.pane.HTML with _args_: - <img src="${panel.favicon_path}"> 
+header_object:
+  _target_: panel.pane.HTML
+  _convert_: all
+  _args_:
+    - <span>🐟</span>
+  style:
+    font-size: 2.5em
