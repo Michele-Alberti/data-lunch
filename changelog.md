@@ -1,3 +1,13 @@
+## v1.19.0 (2023-03-05)
+
+### Feat
+
+- add special graphic configurations
+
+### Refactor
+
+- move graphic interface configurations to a dedicated sub-config file
+
 ## v1.18.0 (2023-03-01)
 
 ### Feat
