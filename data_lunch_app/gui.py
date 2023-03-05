@@ -1,4 +1,5 @@
 import datetime
+from hydra.utils import instantiate
 import logging
 from omegaconf import DictConfig
 import pandas as pd
@@ -44,6 +45,15 @@ css_files = []
 
 
 # CUSTOM CSS ------------------------------------------------------------------
+header_css = """
+  @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
+
+  .app-header .title {
+    font-family: "Silkscreen", cursive;
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+"""
 sidenav_css = """
 .sidenav {
     overflow-y: auto !important;
@@ -73,7 +83,8 @@ button_css = """
     border-style: none;
 }
 """
-
+# List for panel.extension
+raw_css_list = [header_css, sidenav_css, tabulator_css, button_css]
 
 # JS FILES --------------------------------------------------------------------
 # Font awesome icons
@@ -112,7 +123,12 @@ df_quote = df_quotes.sample(n=1, random_state=seed_day)
 # USER INTERFACE CLASS ========================================================
 class GraphicInterface:
     def __init__(self, config: DictConfig, app: pn.Template, person: Person):
-        # MAIN SECTION ----------------------------------------------------------------
+        # HEADER SECTION ------------------------------------------------------
+        # WIDGET
+        # Create PNG pane with app icon
+        self.header_object = instantiate(config.panel.gui.header_object)
+
+        # MAIN SECTION --------------------------------------------------------
         # Elements required for build the main section of the web app
 
         # TEXTS
@@ -142,8 +158,10 @@ class GraphicInterface:
             sizing_mode="stretch_width",
         )
         # Takeaway alert
-        self.takeaway_alert_sign = '<i class="fa-solid fa-triangle-exclamation fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"></i>'
-        self.takeaway_alert_text = f'<span class="fa-fade fa-sm" style="--fa-animation-duration: 1.5s;">{config.panel.takeaway_id}</span> '
+        self.takeaway_alert_sign = (
+            f"<i {config.panel.gui.takeaway_alert_icon_options}></i>"
+        )
+        self.takeaway_alert_text = f"<span {config.panel.gui.takeaway_alert_text_options}>{config.panel.gui.takeaway_id}</span> "
 
         # WIDGETS
         # Create dataframe instance
@@ -257,7 +275,7 @@ class GraphicInterface:
             )
         )
 
-        # MODAL WINDOW ----------------------------------------------------------------
+        # MODAL WINDOW --------------------------------------------------------
         # Error message
         self.error_message = pn.pane.HTML(
             style={"color": "red", "font-weight": "bold"},
@@ -271,7 +289,7 @@ class GraphicInterface:
         )
         self.confirm_message.visible = False
 
-        # SIDEBAR ---------------------------------------------------------------------
+        # SIDEBAR -------------------------------------------------------------
         # WIDGET
         # Person data
         self.person_widget = pn.Param(person.param, width=sidebar_width)
@@ -356,7 +374,7 @@ class GraphicInterface:
         # Add guest icon to users' id
         df.columns = [
             f"{c} 💰"
-            if (c in guests_list) and (c != config.panel.total_column_name)
+            if (c in guests_list) and (c != config.panel.gui.total_column_name)
             else c
             for c in df.columns
         ]

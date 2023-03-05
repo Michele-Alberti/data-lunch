@@ -256,46 +256,46 @@ def reload_menu(
                 [
                     c
                     for c in df.columns
-                    if c.lower() != config.panel.total_column_name
+                    if c.lower() != config.panel.gui.total_column_name
                 ]
             )
             # Set different graphics for takeaway lunches
-            if config.panel.takeaway_id in time:
+            if config.panel.gui.takeaway_id in time:
                 res_col_label_kwargs = {
-                    "time": time.replace(config.panel.takeaway_id, ""),
+                    "time": time.replace(config.panel.gui.takeaway_id, ""),
                     "diners_n": grumbling_stomachs,
-                    "emoji": config.panel.takeaway_emoji,
+                    "emoji": config.panel.gui.takeaway_emoji,
                     "is_takeaway": True,
-                    "takeaway_alert_sign": f"{gi.takeaway_alert_sign} {gi.takeaway_alert_text}",
-                    "style": dict(config.panel.takeaway_style_res_col),
+                    "takeaway_alert_sign": f"{gi.takeaway_alert_sign}&nbsp{gi.takeaway_alert_text}",
+                    "style": dict(config.panel.gui.takeaway_style_res_col),
                 }
                 time_col_label_kwargs = {
-                    "time": time.replace(config.panel.takeaway_id, ""),
+                    "time": time.replace(config.panel.gui.takeaway_id, ""),
                     "diners_n": str(grumbling_stomachs) + "&nbsp",
                     "separator": "<br>",
-                    "emoji": config.panel.takeaway_emoji,
+                    "emoji": config.panel.gui.takeaway_emoji,
                     "align": ("center", "center"),
                     "sizing_mode": "stretch_width",
                     "is_takeaway": True,
                     "takeaway_alert_sign": gi.takeaway_alert_sign,
-                    "style": dict(config.panel.takeaway_style_time_col),
+                    "style": dict(config.panel.gui.takeaway_style_time_col),
                 }
             else:
                 res_col_label_kwargs = {
                     "time": time,
                     "diners_n": grumbling_stomachs,
-                    "emoji": random.choice(config.panel.food_emoji),
-                    "style": dict(config.panel.time_style_res_col),
+                    "emoji": random.choice(config.panel.gui.food_emoji),
+                    "style": dict(config.panel.gui.time_style_res_col),
                 }
                 time_col_label_kwargs = {
                     "time": time,
                     "diners_n": str(grumbling_stomachs) + "&nbsp",
                     "separator": "<br>",
-                    "emoji": config.panel.restaurant_emoji,
+                    "emoji": config.panel.gui.restaurant_emoji,
                     "per_icon": "&#10006; ",
                     "align": ("center", "center"),
                     "sizing_mode": "stretch_width",
-                    "style": dict(config.panel.time_style_time_col),
+                    "style": dict(config.panel.gui.time_style_time_col),
                 }
             # Add text to result column
             gi.res_col.append(pn.Spacer(height=10))
@@ -562,9 +562,9 @@ def df_list_by_lunch_time(
         def clean_up_table(config, df_in):
             # Add columns of totals
             df = df_in.copy()
-            df[config.panel.total_column_name] = df.sum(axis=1)
+            df[config.panel.gui.total_column_name] = df.sum(axis=1)
             if config.panel.drop_unused_menu_items:
-                df = df[df[config.panel.total_column_name] > 0]
+                df = df[df[config.panel.gui.total_column_name] > 0]
             # Find users included in this lunch time
             users = df.columns
             # Find relevant notes
@@ -590,7 +590,9 @@ def df_list_by_lunch_time(
         # TAKEAWAY
         if not df_users_takeaways.empty:
             df_users_takeaways = clean_up_table(config, df_users_takeaways)
-            df_dict[f"{time} {config.panel.takeaway_id}"] = df_users_takeaways
+            df_dict[
+                f"{time} {config.panel.gui.takeaway_id}"
+            ] = df_users_takeaways
 
     return df_dict
 
