@@ -26,13 +26,13 @@ pull:
 	docker pull ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -v ${HOME}/.config/gcloud/application_default_credentials.json:/root/.config/gcloud/application_default_credentials.json -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
 
 run-it:
 	docker run --rm --entrypoint "" -e PANEL_ENV=development -it ${IMAGEFULLNAME} /bin/sh
 
 run-development: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
 
 stop: 
 	docker stop ${RUNNAME}
@@ -44,12 +44,13 @@ up:
 		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d web nginx --scale web=3; \
 	fi;
 
-up-build:
+up-build: build
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
-		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3
+		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3; \
 	else \
 		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build web nginx --scale web=3; \
 	fi;
+
 down:
 	docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . down
 
@@ -62,11 +63,9 @@ db-clean:
 gcp-config:
 	gcloud config configurations create ${APP}
 	gcloud config set project ${GCLOUD_PROJECT}
-	gcloud config set run/region us-east1
 	gcloud auth login
 	gcloud auth application-default login
 	gcloud auth application-default set-quota-project ${GCLOUD_PROJECT}
-
 
 gcp-revoke:
 	gcloud auth application-default revoke
@@ -74,9 +73,6 @@ gcp-revoke:
 gcp-build: build
 	docker tag ${IMAGEFULLNAME} us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION}
 	docker push us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION}
-
-gcp-deploy:
-	gcloud run deploy --image=us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION} --platform managed --update-env-vars PANEL_ENV=production,PANEL_APP=data-lunch-app
 
 ssl-cert:
 	mkdir -p ./ssl/conf/live/${DOMAIN}/
@@ -87,7 +83,7 @@ ssl-cert:
 rm-ssl-cert:
 	rm -R ./ssl
 
-all: build
+all: ssl-cert up-build
 
 clean:
 	docker system prune -f
