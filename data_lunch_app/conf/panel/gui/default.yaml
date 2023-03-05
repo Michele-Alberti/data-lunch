@@ -1,0 +1,85 @@
+# APP
+title: Data-Lunch
+
+# FAVICON & LOGO
+favicon_filename: favicon.ico
+favicon_static_dir: images
+favicon_path: ${panel.gui.favicon_static_dir}/${panel.gui.favicon_filename}
+logo_filename: favicon.ico
+logo_static_dir: images
+logo_path: ${panel.gui.logo_static_dir}/${panel.gui.logo_filename}
+
+# RESTAURANT LUNCHES
+restaurant_emoji: "🍴"
+food_emoji: [
+    "🍲",
+    "🌯",
+    "🌮",
+    "🌭",
+    "🥯",
+    "🍕",
+    "🍖",
+    "🍔",
+    "🥪",
+    "🍗",
+    "🥗",
+    "🥙",
+    "🍟",
+    "🥩",
+    "🥕",
+    "🥦",
+    "🥬",
+    "🥨",
+    "🥣",
+    "🍱",
+    "🍝",
+    "🍜",
+    ]
+
+# TAKEAWAY LUNCHES
+takeaway_id: TAKEAWAY
+takeaway_emoji: "🥡"
+takeaway_alert_icon_options: 'class="fa-solid fa-triangle-exclamation fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"'
+takeaway_alert_text_options: 'class="fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"'
+
+# ORDERS' TABLE
+# Name of the column with total values for orders
+total_column_name: totale
+
+# CUSTOMIZABLE GRAPHIC OBJECTS
+# Instantiate a panel object to be rendered on app's header
+# Set to null to ignore
+# e.g: _target_: panel.pane.HTML with _args_: - <img src="${panel.favicon_path}"> 
+header_object: null
+
+# CSS
+# Restaurant lunches
+time_style_res_col:
+  background-color: powderblue
+  border-radius: 1.2rem
+  padding: 1rem
+  font-size: 1.8rem
+  font-weight: bold
+  line-height: 1.25rem
+time_style_time_col:
+  background-color: powderblue
+  border-radius: .8rem
+  padding: .5rem 0rem
+  font-size: 1.25rem
+  font-weight: bold
+  line-height: 1.5rem
+# Takeaway lunches
+takeaway_style_res_col:
+  background-color: "#FFBA08"
+  border-radius: 1.2rem
+  padding: 1rem
+  font-size: 1.8rem
+  font-weight: bold
+  line-height: 1.25rem
+takeaway_style_time_col:
+  background-color: "#FFBA08"
+  border-radius: .8rem
+  padding: .5rem 0rem
+  font-size: 1.25rem
+  font-weight: bold
+  line-height: 1.5rem

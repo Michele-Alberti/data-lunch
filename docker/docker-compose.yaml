@@ -14,6 +14,7 @@ services:
       PANEL_ENV: ${PANEL_ENV}
       DOCKER_USERNAME: ${DOCKER_USERNAME}
       PORT: 5000
+    command: ${PANEL_ARGS}
   nginx:
     image: nginx:latest
     volumes:

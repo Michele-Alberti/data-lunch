@@ -1,9 +1,14 @@
+defaults:
+  - _self_ #configs from the Defaults List are overriding config.yaml
+  - gui: default
+#  - _self_ #config.yaml is overriding configs from the Defaults List
+
 # APP
 file_name: menu_file
 export_file_name: lunch_order.xlsx
 nthreads: null
-title: Data-Lunch
-favicon_path: images/favicon.ico
+
+# OPTIONS
 # Dashboard options
 result_column_text: "# Orders"
 time_column_text: "#### Summary"
@@ -27,43 +32,8 @@ menu_items_to_concat:
 # Notifications
 notifications:
   duration: 0
-
-# ORDERS' TABLES
-# Name of the column with total values for orders
-total_column_name: totale
 # Drop unused menus entries in orders tables (drop unused if true)
 drop_unused_menu_items: true
-
-# RESTAURANT LUNCHES
-restaurant_emoji: "&#127860;"
-food_emoji: [
-    "&#127858;",
-    "&#127791;",
-    "&#127790;",
-    "&#127789;",
-    "&#129391;",
-    "&#127829;",
-    "&#127830;",
-    "&#127828;",
-    "&#129386;",
-    "&#127831;",
-    "&#129367;",
-    "&#129369;",
-    "&#127839;",
-    "&#129385;",
-    "&#129365;",
-    "&#129382;",
-    "&#129388;",
-    "&#129384;",
-    "&#129379;",
-    "&#127857;",
-    "&#127837;",
-    "&#127836;",
-    ]
-
-# TAKEAWAY LUNCHES
-takeaway_id: TAKEAWAY
-takeaway_emoji: "&#129377;"
 
 # QUERIES
 # Orders
@@ -94,35 +64,3 @@ scheduled_tasks: # Set to [] empty list to turn it off
 #    hour: 15
 #    minute: 0
 #    period: 1d
-
-# CSS
-# Restaurant lunches
-time_style_res_col:
-  background-color: powderblue
-  border-radius: 1.2rem
-  padding: 1rem
-  font-size: 1.8rem
-  font-weight: bold
-  line-height: 1.25rem
-time_style_time_col:
-  background-color: powderblue
-  border-radius: .8rem
-  padding: .5rem 0rem
-  font-size: 1.25rem
-  font-weight: bold
-  line-height: 1.5rem
-# Takeaway lunches
-takeaway_style_res_col:
-  background-color: "#FFBA08"
-  border-radius: 1.2rem
-  padding: 1rem
-  font-size: 1.8rem
-  font-weight: bold
-  line-height: 1.25rem
-takeaway_style_time_col:
-  background-color: "#FFBA08"
-  border-radius: .8rem
-  padding: .5rem 0rem
-  font-size: 1.25rem
-  font-weight: bold
-  line-height: 1.5rem

@@ -69,20 +69,23 @@ def create_app(config: DictConfig) -> pn.Template:
             lambda context: on_session_destroyed(config, context)
         )
 
-    pn.extension(raw_css=[gui.sidenav_css, gui.tabulator_css, gui.button_css])
-
     # DASHBOARD BASE TEMPLATE
     log.debug("instantiate base template")
     # Create web app template
     app = pn.template.VanillaTemplate(
-        title=config.panel.title,
+        title=config.panel.gui.title,
         sidebar_width=gui.sidebar_width,
-        favicon=config.panel.favicon_path,
+        favicon=config.panel.gui.favicon_path,
+        logo=config.panel.gui.logo_path,
     )
 
     # Set panel extensions
     log.debug("set extensions")
-    pn.extension(css_files=gui.css_files, js_files=gui.js_files)
+    pn.extension(
+        css_files=gui.css_files,
+        raw_css=gui.raw_css_list,
+        js_files=gui.js_files,
+    )
 
     # CONFIGURABLE OBJECTS
     # Since Person class need the config variable for initialization, every
@@ -94,7 +97,9 @@ def create_app(config: DictConfig) -> pn.Template:
     gi = gui.GraphicInterface(config, app, person)
 
     # DASHBOARD
-    # Build dashboard
+    # Build dashboard (the header object is used if defined)
+    if config.panel.gui.header_object:
+        app.header.append(gi.header_object)
     app.sidebar.append(gi.sidebar_tabs)
     app.main.append(gi.no_more_order_text)
     app.main.append(gi.main_header_row)

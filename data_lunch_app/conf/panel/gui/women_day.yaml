@@ -1,0 +1,25 @@
+defaults:
+  - default
+
+# LOGO
+logo_filename: ""
+logo_static_dir: ""
+logo_path: ""
+
+# CUSTOMIZABLE GRAPHIC OBJECTS
+# Instantiate a panel object to be rendered on app's header
+# Set to null to ignore
+# e.g: _target_: panel.pane.HTML with _args_: - <img src="${panel.favicon_path}"> 
+header_object:
+  _target_: panel.pane.HTML
+  _convert_: all
+  _args_:
+    - <img src="https://cdn-icons-png.flaticon.com/512/1558/1558553.png" height="100%" width="auto">
+  height: 50
+  style:
+    background-color: white
+    border-radius: 2rem
+    padding: 0.3rem
+    height: 50px
+    width: 50px
+    display: inline-block

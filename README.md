@@ -15,7 +15,7 @@ The ultimate web app for a well organized lunch.
   - [3.1. Pre-commit hooks](#31-pre-commit-hooks)
   - [3.2. Commitizen](#32-commitizen)
 - [4. Release strategy from `development` to `main` branch](#4-release-strategy-from-development-to-main-branch)
-- [5. Deployment With Google Cloud App Engine](#5-deployment-with-google-cloud-app-engine)
+- [5. Deployment With Google Cloud Compute Engine](#5-deployment-with-google-cloud-compute-engine)
 
 ## 2. Development environment setup
 
@@ -196,12 +196,7 @@ git merge main --no-ff
 
 Use _"update files from last release"_ or the default text as commit message.
 
-## 5. Deployment With Google Cloud App Engine
+## 5. Deployment With Google Cloud Compute Engine
 
-To deploy the repository on _Google's App Engine_ a requirement.txt is needed.  
-Use the following commands.
-
-```
-conda activate data-lunch
-pip list --format=freeze > requirements.txt
-```
+To deploy the repository on _Google's App Compute Engine_ you need to install _Docker_ to a _VM instance_ and then pull the image from an image registry.  
+Read the `makefile` to see the commands for running the _web container_ (or a _Docker compose system_).
