@@ -557,7 +557,9 @@ def df_list_by_lunch_time(
         df_users_restaurant = df_users.loc[
             :, [c for c in df_users.columns if c not in takeaway_list]
         ]
-        df_users_takeaways = df_users.loc[:, takeaway_list]
+        df_users_takeaways = df_users.loc[
+            :, [c for c in df_users.columns if c in takeaway_list]
+        ]
 
         def clean_up_table(config, df_in):
             # Add columns of totals
