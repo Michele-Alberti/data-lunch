@@ -1,3 +1,9 @@
+## v1.19.1 (2023-03-07)
+
+### Fix
+
+- **core.py**: fix bug caused by takeaway orders under specific circumstances
+
 ## v1.19.0 (2023-03-05)
 
 ### Feat
