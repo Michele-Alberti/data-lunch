@@ -29,6 +29,14 @@ menu_items_to_concat:
   - Dolce
   - Caffé
   - Altro
+salad_list: |
+  🌱 <strong>Primavera:</strong> 🥬 + <i>pomodorini, mozzarella, carciofi, funghi, olive.</i> <br>
+  ⛰️ <strong>Valtellina:</strong> 🥬 + <i>rucola, pomodorini, bresaola, grana.</i> <br>
+  🍋 <strong>Sorrento:</strong> 🥬 + <i>pomodorini, bufala, olive, noci, carciofi.</i> <br>
+  🍗 <strong>Chicken Salad:</strong> 🥬 + <i>pomodorini, mozzarella, mais, pollo.</i> <br>
+  🧨 <strong>Esplosiva:</strong> 🥬 + <i>pomodorini, tonno, fagioli, cipolle.</i> <br>
+  🤪 <strong>Follie:</strong> 🥬 + <i>pomodori secchi, melanzane, tonno, acciughe.</i> <br>
+
 # Notifications
 notifications:
   duration: 0

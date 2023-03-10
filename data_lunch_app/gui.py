@@ -290,6 +290,18 @@ class GraphicInterface:
         self.confirm_message.visible = False
 
         # SIDEBAR -------------------------------------------------------------
+        # TEXTS
+        # Foldable salad menu
+        self.salad_menu = pn.pane.HTML(
+            f"""
+            <details>
+                <summary><strong>Salad menu</strong></summary>
+                {config.panel.salad_list}
+            </details>
+            """,
+            width=sidebar_width,
+        )
+
         # WIDGET
         # Person data
         self.person_widget = pn.Param(person.param, width=sidebar_width)
@@ -320,7 +332,12 @@ class GraphicInterface:
         # COLUMNS
         # Create column for person data
         self.person_column = pn.Column(
-            person_text, self.person_widget, name="User", width=sidebar_width
+            person_text,
+            self.person_widget,
+            pn.Spacer(height=5),
+            self.salad_menu,
+            name="User",
+            width=sidebar_width,
         )
         # Create column for uploading image/Excel with the menu
         self.sidebar_menu_upload_col = pn.Column(
