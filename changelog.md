@@ -1,3 +1,10 @@
+## v1.20.0 (2023-03-12)
+
+### Feat
+
+- add salad menu
+- **quotes.xlsx**: add new quotes
+
 ## v1.19.1 (2023-03-07)
 
 ### Fix
