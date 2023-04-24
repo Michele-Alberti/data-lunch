@@ -20,15 +20,6 @@ from . import gui
 log = logging.getLogger(__name__)
 
 
-# UTILITY FUNCTIONS -----------------------------------------------------------
-def on_session_destroyed(config: DictConfig, session_context):
-    # If google cloud is configured, upload the sqlite database to storage
-    # bucket
-    if config.db.gcloud_storage:
-        log.info("uploading database file to bucket")
-        hydra.utils.call(config.db.gcloud_storage.upload)
-
-
 # APP FACTORY FUNCTION --------------------------------------------------------
 
 
@@ -41,11 +32,7 @@ def create_app(config: DictConfig) -> pn.Template:
     pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
 
     log.info("initialize database")
-    # If configured, download the sqlite database from google cloud bucket
-    if config.db.gcloud_storage:
-        log.info("downloading database file from bucket")
-        hydra.utils.call(config.db.gcloud_storage.download)
-    # Then create tables
+    # Create tables
     models.create_database(config)
 
     log.info("instantiate Panel app")
@@ -59,15 +46,6 @@ def create_app(config: DictConfig) -> pn.Template:
     session = models.create_session(config)
     if models.get_flag(session=session, id="no_more_orders") is None:
         models.set_flag(session=session, id="no_more_orders", value=False)
-
-    # Set action to run when sessions are destroyed
-    # If google cloud is configured, download the sqlite database from storage
-    # bucket
-    if config.db.gcloud_storage:
-        log.debug("set 'on_session_destroy' actions")
-        pn.state.on_session_destroyed(
-            lambda context: on_session_destroyed(config, context)
-        )
 
     # DASHBOARD BASE TEMPLATE
     log.debug("instantiate base template")
