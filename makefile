@@ -73,7 +73,13 @@ gcp-revoke:
 ssl-cert:
 	mkdir -p ./ssl/conf/live/${DOMAIN}/
 	curl https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > ./ssl/conf/options-ssl-nginx.conf
-	openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048
+	find ./ssl/conf/ -name "ssl-dhparams.pem" -type f -mtime +1 -delete 
+	if [[ ! -f ./ssl/conf/ssl-dhparams.pem ]] ;	then \
+		echo "building dhparam"; \
+		openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048; \
+	else \
+		echo "dhparam already exists" ;\
+	fi;
 	openssl req -nodes -x509 -newkey rsa:2048 -keyout ./ssl/conf/live/${DOMAIN}/privkey.pem -out ./ssl/conf/live/${DOMAIN}/fullchain.pem  -subj "/C=IT/ST=Lombardia/L=Milan/O=MIC/OU=IT/CN=${DOMAIN}/"
 
 rm-ssl-cert:

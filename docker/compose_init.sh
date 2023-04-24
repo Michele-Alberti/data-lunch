@@ -28,8 +28,17 @@
 
     # Install Let's Encrypt best practice SSL potions
     curl https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > ./ssl/conf/options-ssl-nginx.conf
-    # Install dhparams
-    openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048
+
+    # Delete dhparam if older than 30 days
+    find ./ssl/conf/ -name "ssl-dhparams.pem" -type f -mtime +15 -delete 
+
+    # Install dhparams (if missing)
+	if [[ ! -f ./ssl/conf/ssl-dhparams.pem ]]; then
+		echo "building dhparam"
+		openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048
+	else
+		echo "dhparam already exists"
+	fi
 else
     make ssl-cert
 fi
