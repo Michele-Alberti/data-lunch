@@ -15,7 +15,7 @@ The ultimate web app for a well organized lunch.
   - [3.1. Pre-commit hooks](#31-pre-commit-hooks)
   - [3.2. Commitizen](#32-commitizen)
 - [4. Release strategy from `development` to `main` branch](#4-release-strategy-from-development-to-main-branch)
-- [5. Deployment With Google Cloud Compute Engine](#5-deployment-with-google-cloud-compute-engine)
+- [5. Google Cloud Platform utilities](#5-google-cloud-platform-utilities)
 
 ## 2. Development environment setup
 
@@ -46,11 +46,11 @@ The following environment variables are required for running the _web app_ or th
 `PANEL_ENV` | _str_ | development
 `PORT` | _int_ | 5000
 `DOCKER_USERNAME` | _str_ | your _Docker Hub_ username (used by `makefile`)
-`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile`)
+`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile` for _GCP's CLI_ authentication)
 `CERT_EMAIL` | _str_ | email for _SSL certificates_
 `DOMAIN` | _str_ | domain name, e.g. mywebapp.com
 `MAIL_USER` | _str_ | email client user (for sending emails with the current instance IP)
-`MAIL_APP_PASSWORD` | _str_ | email client user (for sending emails with the current instance IP)
+`MAIL_APP_PASSWORD` | _str_ | email client password (for sending emails with the current instance IP)
 `MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (for sending emails with the current instance IP)
 `DUCKDNS_URL` | _str_ | _URL_ used to update dynamic address (with _Duck DNS_)
 `IMAGE_VERSION` | _str_ | _Docker_ image version (typically `stable`or `latest`)
@@ -99,15 +99,19 @@ To build and run the dockerized system you have to install [Docker](https://docs
 Call the following `make` command to start the build process.
 
 ```
-make up-build
+make up-init up-build
 ```
+
+`up-init` initialize the _ssl certificate_ based on the selected environment (as set in the environment variable `PANEL_ENV`, i.e. _development_ or _production_).  
+Call only `make` (without arguments) to trigger the same command.  
+Not initializing _ssl certificate folders_ will result in an `nginx` container failure on start-up.
 
 The two images are built and the two containers are started.  
 
 You can then access your web app at `http://localhost:4000`.
 
 > **Note:**  
-> You can also use `make up` to spin up the containers if you do not need to re-build any image.
+> You can also use `make up` to spin up the containers if you do not need to re-build any image or initialize ssl certificate folders.
 
 ### 2.5. Running a single container
 
@@ -119,7 +123,7 @@ make build
 make run
 ```
 
-You can then access your web app at `http://localhost:5000`.
+You can then access your web app at `http://localhost:5000` (if the deafult `PORT` is selected).
 
 ## 3. Additional installations before contributing
 
@@ -196,7 +200,6 @@ git merge main --no-ff
 
 Use _"update files from last release"_ or the default text as commit message.
 
-## 5. Deployment With Google Cloud Compute Engine
+## 5. Google Cloud Platform utilities
 
-To deploy the repository on _Google's App Compute Engine_ you need to install _Docker_ to a _VM instance_ and then pull the image from an image registry.  
-Read the `makefile` to see the commands for running the _web container_ (or a _Docker compose system_).
+The makefile has two rules for conviniently setting up and removing authentication credentials for _Google Cloud Platform_ command line interface: `gcp-config` and `gcp-revoke`.
