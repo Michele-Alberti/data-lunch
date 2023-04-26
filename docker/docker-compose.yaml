@@ -8,12 +8,12 @@ services:
     volumes:
       - ./shared_data:/app/shared_data
     expose:
-      - "5000" # Expose port 5000 to an ephemeral port (used by load balancer)
+      - ${PORT} # Expose port from env variable to an ephemeral port (used by load balancer)
     environment:
       PANEL_APP: ${PANEL_APP}
       PANEL_ENV: ${PANEL_ENV}
       DOCKER_USERNAME: ${DOCKER_USERNAME}
-      PORT: 5000
+      PORT: ${PORT}
     command: ${PANEL_ARGS}
   nginx:
     image: nginx:latest
@@ -25,10 +25,11 @@ services:
       - web
     environment:
       DOMAIN: ${DOMAIN}
+      PORT: ${PORT}
     ports:
       - "443:443" # port 443 available on localhost
       - "80:80" # port 80 available on localhost
-    command: /bin/bash -c "echo 'selected domain $DOMAIN' && envsubst '$$DOMAIN' < /etc/nginx/template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    command: /bin/bash -c "echo 'selected domain $DOMAIN - selected port $PORT' && envsubst '$$DOMAIN $$PORT' < /etc/nginx/template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
   certbot:
     image: certbot/certbot:latest
     volumes:

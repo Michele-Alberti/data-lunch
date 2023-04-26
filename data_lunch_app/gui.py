@@ -88,7 +88,9 @@ raw_css_list = [header_css, sidenav_css, tabulator_css, button_css]
 
 # JS FILES --------------------------------------------------------------------
 # Font awesome icons
-js_files = {"fa-icon": "https://kit.fontawesome.com/377fe96f85.js"}
+js_files = {
+    "fa-icon": 'https://kit.fontawesome.com/377fe96f85.js" crossorigin="anonymous'
+}
 
 
 # STATIC TEXTS ----------------------------------------------------------------

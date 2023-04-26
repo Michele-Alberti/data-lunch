@@ -26,7 +26,7 @@ pull:
 	docker pull ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
 
 run-it:
 	docker run --rm --entrypoint "" -e PANEL_ENV=development -it ${IMAGEFULLNAME} /bin/sh
@@ -70,20 +70,22 @@ gcp-config:
 gcp-revoke:
 	gcloud auth application-default revoke
 
-gcp-build: build
-	docker tag ${IMAGEFULLNAME} us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION}
-	docker push us-east1-docker.pkg.dev/${GCLOUD_PROJECT}/mic-datalunch-p-are-usea1-repo-6vk4/web:${VERSION}
-
 ssl-cert:
 	mkdir -p ./ssl/conf/live/${DOMAIN}/
 	curl https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > ./ssl/conf/options-ssl-nginx.conf
-	openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048
+	find ./ssl/conf/ -name "ssl-dhparams.pem" -type f -mtime +1 -delete 
+	if [[ ! -f ./ssl/conf/ssl-dhparams.pem ]] ;	then \
+		echo "building dhparam"; \
+		openssl dhparam -out ./ssl/conf/ssl-dhparams.pem 2048; \
+	else \
+		echo "dhparam already exists" ;\
+	fi;
 	openssl req -nodes -x509 -newkey rsa:2048 -keyout ./ssl/conf/live/${DOMAIN}/privkey.pem -out ./ssl/conf/live/${DOMAIN}/fullchain.pem  -subj "/C=IT/ST=Lombardia/L=Milan/O=MIC/OU=IT/CN=${DOMAIN}/"
 
 rm-ssl-cert:
 	rm -R ./ssl
 
-all: ssl-cert up-build
+all: up-init up-build
 
 clean:
 	docker system prune -f

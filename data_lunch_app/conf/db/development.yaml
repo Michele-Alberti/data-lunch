@@ -6,20 +6,3 @@ engine:
   _target_: sqlalchemy.create_engine
   url: ${db.url}
 menu_table: menu
-# GOOGLE CLOUD
-gcloud_project: ${oc.env:GCLOUD_PROJECT, not_defined}
-gcloud_bucket: mic-datalunch-p-csb-usea1-web-jxk8
-# STORAGE DB FILE IN BUCKET
-gcloud_storage: null # Set to null to turn off database download from bucket
-#  upload:
-#    _target_: data_lunch_app.cloud.upload_to_gcloud
-#    source_file_name: ${db.db_path}
-#    destination_blob_name: ${db.name}.db
-#    bucket_name: ${db.gcloud_bucket}
-#    project: ${db.gcloud_project}
-#  download:
-#    _target_: data_lunch_app.cloud.download_from_gcloud
-#    source_blob_name: ${db.name}.db
-#    destination_file_name: ${db.db_path}
-#    bucket_name: ${db.gcloud_bucket}
-#    project: ${db.gcloud_project}
