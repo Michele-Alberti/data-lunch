@@ -1,3 +1,13 @@
+## v1.20.1 (2023-04-26)
+
+### Fix
+
+- **gui.py**: add anonymous crossorigin to fontawesome script
+
+### Refactor
+
+- remove unused gcp features and improve 'all' label in makefile
+
 ## v1.20.0 (2023-03-12)
 
 ### Feat
