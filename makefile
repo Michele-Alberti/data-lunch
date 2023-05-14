@@ -68,6 +68,8 @@ gcp-config:
 	gcloud auth application-default set-quota-project ${GCLOUD_PROJECT}
 
 gcp-revoke:
+	gcloud config configurations activate default
+	gcloud config configurations delete ${APP}
 	gcloud auth application-default revoke
 
 ssl-cert:
