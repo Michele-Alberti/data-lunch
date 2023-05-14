@@ -12,6 +12,8 @@ services:
     environment:
       PANEL_APP: ${PANEL_APP}
       PANEL_ENV: ${PANEL_ENV}
+      GCLOUD_PROJECT: ${GCLOUD_PROJECT}
+      GCLOUD_BUCKET: ${GCLOUD_BUCKET}
       DOCKER_USERNAME: ${DOCKER_USERNAME}
       PORT: ${PORT}
     command: ${PANEL_ARGS}

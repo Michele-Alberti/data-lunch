@@ -26,13 +26,13 @@ pull:
 	docker pull ${IMAGEFULLNAME}
 
 run: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=production -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} -e GCLOUD_BUCKET=${GCLOUD_BUCKET} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
 
 run-it:
 	docker run --rm --entrypoint "" -e PANEL_ENV=development -it ${IMAGEFULLNAME} /bin/sh
 
 run-development: 
-	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
+	docker run -d --name ${RUNNAME} -v ${PWD}/shared_data:/app/shared_data -p 127.0.0.1:${PORT}:${PORT} -e PANEL_ENV=development -e PORT=${PORT} -e GCLOUD_PROJECT=${GCLOUD_PROJECT} -e GCLOUD_BUCKET=${GCLOUD_BUCKET} -e DOCKER_USERNAME=${DOCKER_USERNAME} ${IMAGEFULLNAME} ${PANEL_ARGS}
 
 stop: 
 	docker stop ${RUNNAME}
