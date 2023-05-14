@@ -1,3 +1,9 @@
+## v1.21.0 (2023-05-14)
+
+### Feat
+
+- add upload database to gcp storage to config files
+
 ## v1.20.1 (2023-04-26)
 
 ### Fix
