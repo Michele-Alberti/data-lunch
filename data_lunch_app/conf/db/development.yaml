@@ -1,8 +1,7 @@
+defaults:
+  - default
+
 shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, shared_data}
-name: lunch
-db_path: ${db.shared_data_folder}/${db.name}.db
-url: sqlite:///${db.db_path}
-engine:
-  _target_: sqlalchemy.create_engine
-  url: ${db.url}
-menu_table: menu
+# SAVE DATABASE TO CLOUD STORAGE
+ext_storage_upload:
+    enabled: false # Set to false to turn off database upload completely

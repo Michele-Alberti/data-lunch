@@ -1,8 +1,3 @@
-shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, /app/shared_data}
-name: lunch
-db_path: ${db.shared_data_folder}/${db.name}.db
-url: sqlite:///${db.db_path}
-engine:
-  _target_: sqlalchemy.create_engine
-  url: ${db.url}
-menu_table: menu
+defaults:
+  - default
+
