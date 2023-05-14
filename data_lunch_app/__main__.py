@@ -13,10 +13,12 @@ log = logging.getLogger(__name__)
 @hydra.main(config_path="conf", config_name="config")
 def run_app(config: DictConfig):
     # Starting scheduled cleaning
-    schedule_task(
-        config.panel.scheduled_tasks.scheduled_cleaning,
-        lambda: clean_files_db(config),
-    )
+    if config.panel.scheduled_tasks:
+        for task in config.panel.scheduled_tasks:
+            schedule_task(
+                **task.kwargs,
+                callable=hydra.utils.instantiate(task.callable, config),
+            )
 
     # Call the app factory function
     log.info("calling app factory function")
@@ -26,34 +28,37 @@ def run_app(config: DictConfig):
     pn.serve(lambda: create_app(config), **config.server)
 
 
-def schedule_task(task: DictConfig, function: Callable):
-    # Starting scheduled tasks
-    if task:
-        log.info(f"starting task '{task.name}'")
-        start_time = dt.datetime.today().replace(
-            hour=task.hour,
-            minute=task.minute,
-        )
-        # Set start time to tomorrow if the time already passed
-        if start_time < dt.datetime.now():
-            start_time = start_time + dt.timedelta(days=1)
-        log.info(
-            f"starting time: {start_time.strftime('%Y-%m-%d %H:%M')} - period: {task.period}"
-        )
+def schedule_task(
+    name: str,
+    enabled: bool,
+    hour: int | None,
+    minute: int | None,
+    period: str,
+    callable: Callable,
+):
+    # Starting scheduled tasks (if enabled)
+    if enabled:
+        log.info(f"starting task '{name}'")
+        if (hour is not None) and (minute is not None):
+            start_time = dt.datetime.today().replace(
+                hour=hour,
+                minute=minute,
+            )
+            # Set start time to tomorrow if the time already passed
+            if start_time < dt.datetime.now():
+                start_time = start_time + dt.timedelta(days=1)
+            log.info(
+                f"starting time: {start_time.strftime('%Y-%m-%d %H:%M')} - period: {period}"
+            )
+        else:
+            start_time = None
+            log.info(f"starting time: now - period: {period}")
         pn.state.schedule_task(
-            f"data_lunch_{task.name}",
-            function,
-            period=task.period,
+            f"data_lunch_{name}",
+            callable,
+            period=period,
             at=start_time,
         )
-
-
-async def clean_files_db(config: DictConfig):
-    log.info(f"clean task (files and db) executed at {dt.datetime.now()}")
-    # Delete files
-    delete_files(config)
-    # Clean tables
-    clean_tables(config)
 
 
 # Call for hydra
