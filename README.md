@@ -46,7 +46,8 @@ The following environment variables are required for running the _web app_ or th
 `PANEL_ENV` | _str_ | development
 `PORT` | _int_ | 5000
 `DOCKER_USERNAME` | _str_ | your _Docker Hub_ username (used by `makefile`)
-`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile` for _GCP's CLI_ authentication)
+`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile` for _GCP's CLI_ authentication and for uploading to _gcp_ storage, if active)
+`GCLOUD_BUCKET` | _str_ | _Google Cloud Platform_ `bucket` (used for uploading database to _gcp_ storage, if active)
 `CERT_EMAIL` | _str_ | email for _SSL certificates_
 `DOMAIN` | _str_ | domain name, e.g. mywebapp.com
 `MAIL_USER` | _str_ | email client user (for sending emails with the current instance IP)
