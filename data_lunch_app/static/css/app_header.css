@@ -1,0 +1,8 @@
+/* Import a special font for the title */
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
+
+.app-header .title {
+font-family: "Silkscreen", cursive;
+font-size: 2rem;
+line-height: 2rem;
+}

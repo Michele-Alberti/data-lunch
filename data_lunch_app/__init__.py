@@ -5,7 +5,7 @@ import pathlib
 import hydra
 import logging
 import panel as pn
-from omegaconf import DictConfig, open_dict
+from omegaconf import DictConfig, OmegaConf
 
 # Database imports
 from . import models
@@ -55,14 +55,12 @@ def create_app(config: DictConfig) -> pn.Template:
         sidebar_width=gui.sidebar_width,
         favicon=config.panel.gui.favicon_path,
         logo=config.panel.gui.logo_path,
-    )
-
-    # Set panel extensions
-    log.debug("set extensions")
-    pn.extension(
-        css_files=gui.css_files,
-        raw_css=gui.raw_css_list,
-        js_files=gui.js_files,
+        css_files=OmegaConf.to_container(
+            config.panel.gui.template_css_files, resolve=True
+        ),
+        raw_css=OmegaConf.to_container(
+            config.panel.gui.template_raw_css, resolve=True
+        ),
     )
 
     # CONFIGURABLE OBJECTS
@@ -85,7 +83,7 @@ def create_app(config: DictConfig) -> pn.Template:
     app.main.append(pn.Spacer(height=15))
     app.main.append(gi.menu_flexbox)
     app.main.append(gi.buttons_flexbox)
-    app.main.append(pn.layout.Divider(sizing_mode="stretch_width"))
+    app.main.append(gi.results_divider)
     app.main.append(gi.res_col)
     app.modal.append(gi.error_message)
     app.modal.append(gi.confirm_message)

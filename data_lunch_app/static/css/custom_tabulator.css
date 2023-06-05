@@ -1,0 +1,4 @@
+/* Gray borders */
+.tabulator {
+    border: 1.5px solid lightgray !important;
+}

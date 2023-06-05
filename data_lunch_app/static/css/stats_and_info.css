@@ -1,0 +1,14 @@
+/* Stats colored sections */
+#stats-locals {
+    color: green;
+}
+#stats-guests {
+    color: darkorange;
+}
+
+.icon-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}

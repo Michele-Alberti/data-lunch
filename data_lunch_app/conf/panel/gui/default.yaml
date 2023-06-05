@@ -2,12 +2,51 @@
 title: Data-Lunch
 
 # FAVICON & LOGO
-favicon_filename: favicon.ico
 favicon_static_dir: images
+favicon_filename: favicon.ico
 favicon_path: ${panel.gui.favicon_static_dir}/${panel.gui.favicon_filename}
 logo_filename: favicon.ico
 logo_static_dir: images
 logo_path: ${panel.gui.logo_static_dir}/${panel.gui.logo_filename}
+
+# CSS FILES
+css_static_dir: css
+css_files:
+  # App header
+  app_header_filename: app_header.css
+  app_header_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.app_header_filename}
+  # Tabulator
+  no_more_orders: no_more_orders.css
+  no_more_orders_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.no_more_orders}
+  # Tabulator
+  custom_tabulator_filename: custom_tabulator.css
+  custom_tabulator_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.custom_tabulator_filename}
+  # Stats & Info
+  stats_info_filename: stats_and_info.css
+  stats_info_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.stats_info_filename}
+  # Stats tabulator
+  stats_tabulator_filename: stats_tabulator.css
+  stats_tabulator_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.stats_tabulator_filename}
+  # Labels
+  labels_filename: labels.css
+  labels_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.labels_filename}
+
+# TEMPLATE CSS
+template_css_files:
+  - ${panel.gui.css_files.app_header_path}
+template_raw_css: []
+
+# CSS CLASSES (used by time labels)
+# Restaurant lunches
+time_class_res_col:
+  - time-label-results-column
+time_class_time_col:
+  - time-label-time-column
+# Takeaway lunches
+takeaway_class_res_col:
+  - takeaway-label-results-column
+takeaway_class_time_col:
+  - takeaway-label-time-column
 
 # RESTAURANT LUNCHES
 restaurant_emoji: "🍴"
@@ -39,8 +78,13 @@ food_emoji: [
 # TAKEAWAY LUNCHES
 takeaway_id: TAKEAWAY
 takeaway_emoji: "🥡"
-takeaway_alert_icon_options: 'class="fa-solid fa-triangle-exclamation fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"'
-takeaway_alert_text_options: 'class="fa-fade fa-sm" style="--fa-animation-duration: 1.5s;"'
+takeaway_alert_icon_options: 'class="flashing-animation"'
+takeaway_svg_icon: |-
+  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-triangle-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M11.94 2a2.99 2.99 0 0 1 2.45 1.279l.108 .164l8.431 14.074a2.989 2.989 0 0 1 -2.366 4.474l-.2 .009h-16.856a2.99 2.99 0 0 1 -2.648 -4.308l.101 -.189l8.425 -14.065a2.989 2.989 0 0 1 2.555 -1.438zm.07 14l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor"></path>
+  </svg>
+takeaway_alert_text_options: 'class="flashing-animation"'
 
 # ORDERS' TABLE
 # Name of the column with total values for orders
@@ -51,35 +95,3 @@ total_column_name: totale
 # Set to null to ignore
 # e.g: _target_: panel.pane.HTML with _args_: - <img src="${panel.favicon_path}"> 
 header_object: null
-
-# CSS
-# Restaurant lunches
-time_style_res_col:
-  background-color: powderblue
-  border-radius: 1.2rem
-  padding: 1rem
-  font-size: 1.8rem
-  font-weight: bold
-  line-height: 1.25rem
-time_style_time_col:
-  background-color: powderblue
-  border-radius: .8rem
-  padding: .5rem 0rem
-  font-size: 1.25rem
-  font-weight: bold
-  line-height: 1.5rem
-# Takeaway lunches
-takeaway_style_res_col:
-  background-color: "#FFBA08"
-  border-radius: 1.2rem
-  padding: 1rem
-  font-size: 1.8rem
-  font-weight: bold
-  line-height: 1.25rem
-takeaway_style_time_col:
-  background-color: "#FFBA08"
-  border-radius: .8rem
-  padding: .5rem 0rem
-  font-size: 1.25rem
-  font-weight: bold
-  line-height: 1.5rem

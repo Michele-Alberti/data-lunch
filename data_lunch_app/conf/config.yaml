@@ -13,8 +13,5 @@ local_timezone: Europe/Rome
 docker_username: ${oc.env:DOCKER_USERNAME, not_declared}
 
 hydra:
-  # disable changing of cwd as it interferes with flask auto-restart
-  run:
-    dir: .
   # output files creation
   output_subdir: null

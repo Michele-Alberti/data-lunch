@@ -1,0 +1,27 @@
+.no-more-order-flag {
+    font-size: 1.25rem;
+    color: crimson;
+    background-color: whitesmoke;
+    border-left: 0.5rem solid crimson;
+    padding: 0.5rem
+}
+
+.icon-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+@keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
+
+.flashing-animation {
+    animation: fade-in 1.5s ease infinite alternate;
+}
