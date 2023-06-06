@@ -1,3 +1,15 @@
+## v2.0.0 (2023-06-06)
+
+### BREAKING CHANGE
+
+- update panel to version 1.0.4 introducing the shadow DOM approach for panel widgets
+
+### Feat
+
+- **gui.py**: improve button flexbox and remove stretch from menu flexbox
+- add config for major_release (gui) and a new favicon
+- update environments to python 3.11 including a breaking change to panel library
+
 ## v1.21.0 (2023-05-14)
 
 ### Feat
