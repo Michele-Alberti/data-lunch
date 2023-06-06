@@ -8,9 +8,10 @@ The ultimate web app for a well organized lunch.
 - [2. Development environment setup](#2-development-environment-setup)
   - [2.1. Miniconda](#21-miniconda)
   - [2.2. Environment variables](#22-environment-variables)
-  - [2.3. Install data-lunch CLI](#23-install-data-lunch-cli)
-  - [2.4. Running the docker-compose system](#24-running-the-docker-compose-system)
-  - [2.5. Running a single container](#25-running-a-single-container)
+  - [2.3. Setup the development environment](#23-setup-the-development-environment)
+  - [2.4. Manually install data-lunch CLI](#24-manually-install-data-lunch-cli)
+  - [2.5. Running the docker-compose system](#25-running-the-docker-compose-system)
+  - [2.6. Running a single container](#26-running-a-single-container)
 - [3. Additional installations before contributing](#3-additional-installations-before-contributing)
   - [3.1. Pre-commit hooks](#31-pre-commit-hooks)
   - [3.2. Commitizen](#32-commitizen)
@@ -25,8 +26,9 @@ The following steps will guide you through the installation procedure.
 
 [<img style="position: relative; bottom: 3px;" src="https://docs.conda.io/en/latest/_images/conda_logo.svg" alt="Conda" width="80"/>](https://docs.conda.io/en/latest/) is required for creating the development environment (it is suggested to install [Miniconda](https://docs.conda.io/en/latest/miniconda.html)).
 
-From terminal navigate to the repository base directory.\
-Use the following command in your terminal to create an environment named `data-lunch`.
+Use the terminal for navigating to the repository base directory.\
+Use the following command in your terminal to create an environment named `data-lunch` manually.  
+Otherwise use the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) to activate the guided installing procedure.
 
 ```
 conda env create -f environment.yml
@@ -44,6 +46,7 @@ The following environment variables are required for running the _web app_ or th
 |----------|:------:|-------|
 `PANEL_APP` | _str_ | data-lunch-app (used by `makefile`)
 `PANEL_ENV` | _str_ | development
+`PANEL_ARGS` | _str_ | additional arguments passed to _Hydra_ (e.g. `panel/gui=major_release`)
 `PORT` | _int_ | 5000
 `DOCKER_USERNAME` | _str_ | your _Docker Hub_ username (used by `makefile`)
 `GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile` for _GCP's CLI_ authentication and for uploading to _gcp_ storage, if active)
@@ -56,8 +59,19 @@ The following environment variables are required for running the _web app_ or th
 `DUCKDNS_URL` | _str_ | _URL_ used to update dynamic address (with _Duck DNS_)
 `IMAGE_VERSION` | _str_ | _Docker_ image version (typically `stable`or `latest`)
 
+### 2.3. Setup the development environment
 
-### 2.3. Install data-lunch CLI
+Use the setup script (`setup_dev_env.sh`) to install all the required development tools.
+
+Use `source` to properly launch the script.
+
+```
+source setup_dev_env.sh
+```
+
+### 2.4. Manually install data-lunch CLI
+
+> This step is not required if the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) is used.
 
 The CLI is distributed with setuptools instead of using Unix shebangs.  
 It is a very simple utility to initialize and delete the app database. There are different use cases:
@@ -88,7 +102,7 @@ data-lunch --version
 data-lunch --help
 ```
 
-### 2.4. Running the docker-compose system
+### 2.5. Running the docker-compose system
 
 Since this app will be deployed with an hosting service a _Dockerfile_ to build a container image is available.  
 The docker compose file (see `docker-compose.yaml`) builds the web app container along with a _load balancer_ (the _nginx_ container)
@@ -114,7 +128,7 @@ You can then access your web app at `http://localhost:4000`.
 > **Note:**  
 > You can also use `make up` to spin up the containers if you do not need to re-build any image or initialize ssl certificate folders.
 
-### 2.5. Running a single container
+### 2.6. Running a single container
 
 It is possible to launch a single server by calling the following command.
 
@@ -128,6 +142,8 @@ You can then access your web app at `http://localhost:5000` (if the deafult `POR
 
 ## 3. Additional installations before contributing
 
+> This step is not required if the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) is used.
+
 Before contributing please create the `pre-commit` and `commitizen` environments.
 
 ```
@@ -137,6 +153,8 @@ conda env create -f commitizen.yml
 ```
 
 ### 3.1. Pre-commit hooks
+
+> This step is not required if the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) is used.
 
 Then install the precommit hooks.
 
@@ -153,6 +171,8 @@ pre-commit run --all-files
 ```
 
 ### 3.2. Commitizen
+
+> This step is not required if the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) is used.
 
 The _Commitizen_ hook checks that rules for _conventional commits_ are respected in commits messages.
 Use the following command to enjoy _Commitizen's_ interactive prompt.
@@ -202,5 +222,7 @@ git merge main --no-ff
 Use _"update files from last release"_ or the default text as commit message.
 
 ## 5. Google Cloud Platform utilities
+
+> This step is not required if the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) is used.
 
 The makefile has two rules for conviniently setting up and removing authentication credentials for _Google Cloud Platform_ command line interface: `gcp-config` and `gcp-revoke`.
