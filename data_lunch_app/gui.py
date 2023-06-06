@@ -143,9 +143,10 @@ class GraphicInterface:
         self.send_order_button = pnw.Button(
             name="Send Order",
             button_type="success",
-            width=150,
+            height=45,
             icon="circle-check-filled",
             icon_size="2em",
+            sizing_mode="stretch_width",
         )
         # Create toggle button that stop orders (used in time column)
         # Initialized to False, but checked on app creation
@@ -153,17 +154,19 @@ class GraphicInterface:
             name="Stop Orders",
             button_style="outline",
             button_type="warning",
-            width=150,
+            height=45,
             icon="alarm",
             icon_size="2em",
+            sizing_mode="stretch_width",
         )
         # Create delete order
         self.delete_order_button = pnw.Button(
             name="Delete Order",
             button_type="danger",
-            width=150,
+            height=45,
             icon="trash-filled",
             icon_size="2em",
+            sizing_mode="stretch_width",
         )
 
         # ROWS
@@ -182,7 +185,6 @@ class GraphicInterface:
         # FLEXBOXES
         self.menu_flexbox = pn.FlexBox(
             *[self.dataframe, pn.Spacer(width=5), self.time_col],
-            sizing_mode="stretch_height",
             min_width=465,
         )
         self.buttons_flexbox = pn.FlexBox(
@@ -191,10 +193,12 @@ class GraphicInterface:
                 self.toggle_no_more_order_button,
                 self.delete_order_button,
             ],
-            min_width=510,
+            flex_wrap="nowrap",
+            min_width=465,
+            sizing_mode="stretch_width",
         )
         self.results_divider = pn.layout.Divider(
-            sizing_mode="stretch_width", min_width=510
+            sizing_mode="stretch_width", min_width=465
         )
 
         # CALLBACKS
