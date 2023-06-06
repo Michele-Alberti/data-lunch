@@ -9,8 +9,14 @@ from .core import delete_files, clean_tables
 
 log = logging.getLogger(__name__)
 
+# Set panel extensions
+log.debug("set extensions")
+pn.extension(
+    "tabulator",
+)
 
-@hydra.main(config_path="conf", config_name="config")
+
+@hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def run_app(config: DictConfig):
     # Starting scheduled cleaning
     if config.panel.scheduled_tasks:

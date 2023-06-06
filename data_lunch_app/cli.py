@@ -29,7 +29,9 @@ def cli(ctx):
     """
 
     # global initialization
-    initialize(config_path="conf", job_name="data_lunch_cli")
+    initialize(
+        config_path="conf", job_name="data_lunch_cli", version_base="1.3"
+    )
     config = compose(config_name="config")
     ctx.obj = {"config": config}
 
@@ -90,7 +92,7 @@ def delete_database(obj):
 @click.confirmation_option()
 @click.pass_obj
 def clean_tables(obj):
-    """Clean 'users', 'menu' and 'orders' tables."""
+    """Clean 'users', 'menu', 'orders' and 'flags' tables."""
 
     # Drop table
     try:

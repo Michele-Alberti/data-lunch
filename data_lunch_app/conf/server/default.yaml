@@ -6,4 +6,5 @@ verbose: false
 open: false
 static_dirs:
   images: ./data_lunch_app/static/images
+  css: ./data_lunch_app/static/css
 compress_response: true

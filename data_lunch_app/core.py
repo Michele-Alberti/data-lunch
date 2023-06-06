@@ -6,7 +6,7 @@ import socket
 import subprocess
 from . import __version__
 from . import models
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
@@ -266,8 +266,11 @@ def reload_menu(
                     "diners_n": grumbling_stomachs,
                     "emoji": config.panel.gui.takeaway_emoji,
                     "is_takeaway": True,
-                    "takeaway_alert_sign": f"{gi.takeaway_alert_sign}&nbsp{gi.takeaway_alert_text}",
-                    "style": dict(config.panel.gui.takeaway_style_res_col),
+                    "takeaway_alert_sign": f"&nbsp{gi.takeaway_alert_sign}&nbsp{gi.takeaway_alert_text}",
+                    "css_classes": OmegaConf.to_container(
+                        config.panel.gui.takeaway_class_res_col, resolve=True
+                    ),
+                    "stylesheets": [config.panel.gui.css_files.labels_path],
                 }
                 time_col_label_kwargs = {
                     "time": time.replace(config.panel.gui.takeaway_id, ""),
@@ -278,14 +281,20 @@ def reload_menu(
                     "sizing_mode": "stretch_width",
                     "is_takeaway": True,
                     "takeaway_alert_sign": gi.takeaway_alert_sign,
-                    "style": dict(config.panel.gui.takeaway_style_time_col),
+                    "css_classes": OmegaConf.to_container(
+                        config.panel.gui.takeaway_class_time_col, resolve=True
+                    ),
+                    "stylesheets": [config.panel.gui.css_files.labels_path],
                 }
             else:
                 res_col_label_kwargs = {
                     "time": time,
                     "diners_n": grumbling_stomachs,
                     "emoji": random.choice(config.panel.gui.food_emoji),
-                    "style": dict(config.panel.gui.time_style_res_col),
+                    "css_classes": OmegaConf.to_container(
+                        config.panel.gui.time_class_res_col, resolve=True
+                    ),
+                    "stylesheets": [config.panel.gui.css_files.labels_path],
                 }
                 time_col_label_kwargs = {
                     "time": time,
@@ -295,7 +304,10 @@ def reload_menu(
                     "per_icon": "&#10006; ",
                     "align": ("center", "center"),
                     "sizing_mode": "stretch_width",
-                    "style": dict(config.panel.gui.time_style_time_col),
+                    "css_classes": OmegaConf.to_container(
+                        config.panel.gui.time_class_time_col, resolve=True
+                    ),
+                    "stylesheets": [config.panel.gui.css_files.labels_path],
                 }
             # Add text to result column
             gi.res_col.append(pn.Spacer(height=10))
@@ -334,7 +346,10 @@ def reload_menu(
     )
     # Stats top text
     stats_text = gi.build_stats_text(
-        df_stats, __version__, get_host_name(config)
+        df_stats=df_stats,
+        version=__version__,
+        host_name=get_host_name(config),
+        stylesheets=[config.panel.gui.css_files.stats_info_path],
     )
     # Add value and non-editable option to stats table
     gi.stats_widget.editors = {c: None for c in df_stats.columns}
