@@ -58,6 +58,8 @@ The following environment variables are required for running the _web app_ or th
 `MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (for sending emails with the current instance IP)
 `DUCKDNS_URL` | _str_ | _URL_ used to update dynamic address (with _Duck DNS_)
 `IMAGE_VERSION` | _str_ | _Docker_ image version (typically `stable`or `latest`)
+`DATA_LUNCH_COOKIE_SECRET` | _str_ | _Secret_ used for securing the authentication cookie (use `panel secret` for generating a valid one)
+`DATA_LUNCH_OAUTH_ENC_KEY` | _str_ | _Encription key_ used by the OAuth algrithm for encryption (use `panel oauth-secret` for generating a valid one)
 
 ### 2.3. Setup the development environment
 
