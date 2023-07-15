@@ -1,0 +1,26 @@
+defaults:
+  - default
+
+# SERVER SCHEDULED ACTIVITIES
+scheduled_tasks: # Set to [] empty list to turn it off
+  # CLEANING
+  - kwargs:
+      name: scheduled cleaning
+      enabled: false
+      hour: null
+      minute: null
+      period: 30min
+    callable:
+      _target_: data_lunch_app.scheduled_tasks.clean_files_db
+  - kwargs:
+      name: database upload
+      enabled: ${db.ext_storage_upload.enabled}
+      hour: null
+      minute: null
+      period: 30min
+    callable:
+      _target_: data_lunch_app.scheduled_tasks.upload_db_to_gcp_storage
+      source_file_name: ${db.ext_storage_upload.source_file_name}
+      destination_blob_name: ${db.ext_storage_upload.destination_blob_name}
+      bucket_name: ${db.ext_storage_upload.bucket_name}
+      project: ${db.ext_storage_upload.project}
