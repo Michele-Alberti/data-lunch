@@ -16,6 +16,8 @@ services:
       GCLOUD_BUCKET: ${GCLOUD_BUCKET}
       DOCKER_USERNAME: ${DOCKER_USERNAME}
       PORT: ${PORT}
+      DATA_LUNCH_COOKIE_SECRET: ${DATA_LUNCH_COOKIE_SECRET}
+      DATA_LUNCH_OAUTH_ENC_KEY: ${DATA_LUNCH_OAUTH_ENC_KEY}
     command: ${PANEL_ARGS}
   nginx:
     image: nginx:latest
