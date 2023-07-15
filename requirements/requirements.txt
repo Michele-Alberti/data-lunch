@@ -1,9 +1,11 @@
 setuptools==67.8.0
 click==8.0.4
+cryptography==39.0.1
 ipykernel==6.19.2
 ipywidgets==8.0.4
 openpyxl==3.0.10
 pandas==1.5.3
+passlib==1.7.4
 tqdm==4.65.0
 panel==1.0.4
 sqlalchemy==1.4.39

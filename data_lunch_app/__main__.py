@@ -31,7 +31,11 @@ def run_app(config: DictConfig):
     # Pass the create_app function as a lambda function to ensure that each
     # invocation has a dedicated state variable (users' selections are not
     # shared between instances)
-    pn.serve(lambda: create_app(config), **config.server)
+    pn.serve(
+        lambda: create_app(config),
+        auth_provider=hydra.utils.instantiate(config.auth),
+        **config.server,
+    )
 
 
 def schedule_task(

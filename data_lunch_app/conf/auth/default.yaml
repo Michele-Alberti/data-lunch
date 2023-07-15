@@ -1,0 +1,2 @@
+_target_: data_lunch_app.auth.DataLunchProvider
+basic_login_template: data_lunch_app/templates/login.html
