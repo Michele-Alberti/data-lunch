@@ -13,6 +13,9 @@ from .models import Menu, Orders, Users, Stats
 # Import functions from core
 from .core import clean_tables as clean_tables_func
 
+# Auth
+from .auth import add_user_hashed_password, remove_user
+
 # Version
 __version__ = pkg_resources.require("data_lunch")[0].version
 
@@ -52,6 +55,38 @@ def clean_caches(obj):
     pn.state.clear_caches()
 
     click.secho("Caches cleared", fg="green")
+
+
+@cli.group()
+@click.pass_obj
+def credentials(obj):
+    """Manage users credentials."""
+
+
+@credentials.command("add")
+@click.argument("user")
+@click.argument("password")
+@click.pass_obj
+def add_user_psw(obj, user, password):
+    """Add users credentials."""
+
+    # Clear action
+    add_user_hashed_password(user, password)
+
+    click.secho(f"User '{user}' added", fg="green")
+
+
+@credentials.command("remove")
+@click.confirmation_option()
+@click.argument("user")
+@click.pass_obj
+def remove_user_psw(obj, user):
+    """Remove user."""
+
+    # Clear action
+    remove_user(user)
+
+    click.secho(f"User '{user}' removed", fg="green")
 
 
 @cli.group()
