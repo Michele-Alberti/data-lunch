@@ -1,13 +1,24 @@
 #! python
+# This script send an email to recipients by using the selected account.
+# The email contains the external IP and the domain of the virtual machine.
+# In addition the password for the guest user is set and sent with
+# the same email.
+# The other script arguments are passed to Hydra.
 
+import data_lunch_app.auth as auth
+from hydra import compose, initialize
+import html
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 import requests
-import time
 import os
+import sys
+
+# Command arguments (for Hydra)
+hydra_args = sys.argv[1:]
 
 # Environment variables
 username = os.environ["MAIL_USER"]
@@ -21,8 +32,22 @@ metadata_server = "http://metadata.google.internal/computeMetadata/v1/instance/n
 metadata_flavor = {"Metadata-Flavor": "Google"}
 external_ip = requests.get(metadata_server, headers=metadata_flavor).text
 
+# Guest user password
+# Global initialization (Hydra)
+initialize(
+    config_path="../data_lunch_app/conf",
+    job_name="script_send_email_with_ip",
+    version_base="1.3",
+)
+config = compose(config_name="config", overrides=hydra_args)
+# Generate a random password
+guest_password = auth.generate_password(
+    special_chars=config.panel.psw_special_chars
+)
+# Add hashed password to credentials file
+auth.add_user_hashed_password("guest", guest_password)
+
 # Message
-timestr = time.strftime("(%Y-%m-%d)")
 send_from = mail_user
 send_to = recipients
 body = f"""\
@@ -36,6 +61,10 @@ body = f"""\
        Se non sei collegato alla rete aziendale, oppure se sei su rete mobile,
        puoi collegarti a
        <strong><a href="https://{domain}/">{domain}</a></strong>.
+    </p>
+    <p>
+      Per l'accesso con l'utente <i>guest</i> usare la password:<br><br>
+      {html.escape(guest_password)}
     </p>
   </body>
 </html>
