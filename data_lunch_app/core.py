@@ -12,11 +12,16 @@ from io import BytesIO
 from PIL import Image
 from pytesseract import pytesseract
 import random
+import re
 from sqlalchemy import func
 from sqlalchemy.sql.expression import true as sql_true
+from time import sleep
 
 # Graphic interface imports (after class definition)
 from . import gui
+
+# Authentication
+from . import auth
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
@@ -212,6 +217,16 @@ def reload_menu(
 
         return
 
+    # Guest graphic configuration
+    if auth.get_username_from_cookie(config.server.cookie_secret) == "guest":
+        # If guest show guest type selection group
+        gi.person_widget.widgets["guest"].disabled = False
+        gi.person_widget.widgets["guest"].visible = True
+    else:
+        # If authenticated users hide guest type selection group
+        gi.person_widget.widgets["guest"].disabled = True
+        gi.person_widget.widgets["guest"].visible = False
+
     # Reload menu
     engine = models.create_engine(config)
     df = pd.read_sql_table("menu", engine, index_col="id")
@@ -242,13 +257,15 @@ def reload_menu(
         # Titles
         gi.res_col.append(config.panel.result_column_text)
         gi.time_col.append(gi.time_col_title)
-        # Build guests list
-        guests_list = [
-            user.id
-            for user in session.query(models.Users)
-            .filter(models.Users.guest == sql_true())
-            .all()
-        ]
+        # Build guests list (one per each guest types)
+        guests_lists = {}
+        for guest_type in config.panel.guest_types:
+            guests_lists[guest_type] = [
+                user.id
+                for user in session.query(models.Users)
+                .filter(models.Users.guest == guest_type)
+                .all()
+            ]
         # Loop through lunch times
         for time, df in df_dict.items():
             # Find the number of grumbling stomachs
@@ -315,7 +332,7 @@ def reload_menu(
             # Add non editable table to result column
             gi.res_col.append(
                 gi.build_order_table(
-                    config, df=df, time=time, guests_list=guests_list
+                    config, df=df, time=time, guests_lists=guests_lists
                 )
             )
             # Add also a label to lunch time column
@@ -326,17 +343,28 @@ def reload_menu(
     # Clean stats column
     gi.sidebar_stats_col.clear()
     # Update stats
-    # Find how many people eat today and add value to database stats table
-    today_count = session.query(func.count(models.Users.id)).scalar()
-    today_guests_count = (
+    # Find how many people eat today (total number) and add value to database
+    # stats table (when adding a stats if guest is not specified None is used
+    # as default)
+    today_locals_count = (
         session.query(func.count(models.Users.id))
-        .filter(models.Users.guest == sql_true())
+        .filter(models.Users.guest == "NotAGuest")
         .scalar()
     )
-    new_stat = models.Stats(
-        hungry_people=today_count, hungry_guests=today_guests_count
-    )
+    new_stat = models.Stats(hungry_people=today_locals_count)
     session.add(new_stat)
+    # For each guest type find how many guests eat today
+    for guest_type in config.panel.guest_types:
+        today_guests_count = (
+            session.query(func.count(models.Users.id))
+            .filter(models.Users.guest == guest_type)
+            .scalar()
+        )
+        new_stat = models.Stats(
+            guest=guest_type, hungry_people=today_guests_count
+        )
+        session.add(new_stat)
+    # Commit stats
     session.commit()
 
     # Group stats by month and return how many people had lunch
@@ -350,6 +378,19 @@ def reload_menu(
         version=__version__,
         host_name=get_host_name(config),
         stylesheets=[config.panel.gui.css_files.stats_info_path],
+    )
+    # Remove NotAGuest (non-guest users)
+    df_stats.Guest = df_stats.Guest.replace(
+        "NotAGuest", config.panel.stats_locals_column_name
+    )
+    # Pivot table on guest type
+    df_stats = df_stats.pivot(
+        columns="Guest",
+        index=config.panel.stats_id_cols,
+        values="Hungry People",
+    ).reset_index()
+    df_stats[config.panel.gui.total_column_name.title()] = df_stats.sum(
+        axis="columns", numeric_only=True
     )
     # Add value and non-editable option to stats table
     gi.stats_widget.editors = {c: None for c in df_stats.columns}
@@ -390,6 +431,45 @@ def send_order(
 
         return
 
+    # Check if a guests is using a name reserved to an authenticated user
+    if (
+        auth.get_username_from_cookie(config.server.cookie_secret) == "guest"
+    ) and (person.username in auth.list_users()):
+        pn.state.notifications.error(
+            f"{person.username} is a reserved name<br>Please choose a different one",
+            duration=config.panel.notifications.duration,
+        )
+
+        # Reload the menu
+        reload_menu(
+            None,
+            config,
+            gi,
+        )
+
+        return
+
+    # Check if an authenticated user is ordering for an invalid name
+    if (
+        auth.get_username_from_cookie(config.server.cookie_secret) != "guest"
+    ) and (
+        person.username
+        not in (name for name in auth.list_users() if name != "guest")
+    ):
+        pn.state.notifications.error(
+            f"{person.username} is not a valid name<br>for an authenticated user<br>Please choose a different one",
+            duration=config.panel.notifications.duration,
+        )
+
+        # Reload the menu
+        reload_menu(
+            None,
+            config,
+            gi,
+        )
+
+        return
+
     # Write order into database table
     df = gi.dataframe.value.copy()
     df_order = df[df.order]
@@ -406,14 +486,24 @@ def send_order(
         else:
             # Place order
             try:
-                # Add User (note is empty by default, guest is false
-                # by default)
-                new_user = models.Users(
-                    id=person.username,
-                    guest=person.guest,
-                    takeaway=person.takeaway,
-                    note=person.note,
-                )
+                # Add User (note is empty by default)
+                # Do not pass guest for authenticated users (default to NotAGuest)
+                if (
+                    auth.get_username_from_cookie(config.server.cookie_secret)
+                    == "guest"
+                ):
+                    new_user = models.Users(
+                        id=person.username,
+                        guest=person.guest,
+                        takeaway=person.takeaway,
+                        note=person.note,
+                    )
+                else:
+                    new_user = models.Users(
+                        id=person.username,
+                        takeaway=person.takeaway,
+                        note=person.note,
+                    )
                 session.add(new_user)
                 # Add orders as long table (one row for each item selected by a user)
                 for index, row in df_order.iterrows():
@@ -496,6 +586,25 @@ def delete_order(
         return
 
     if person.username:
+        # Check if a guests is deleting an order of an authenticated user
+        if (
+            auth.get_username_from_cookie(config.server.cookie_secret)
+            == "guest"
+        ) and (person.username in auth.list_users()):
+            pn.state.notifications.error(
+                f"You are not authorized<br>to delete<br>{person.username}'s order",
+                duration=config.panel.notifications.duration,
+            )
+
+            # Reload the menu
+            reload_menu(
+                None,
+                config,
+                gi,
+            )
+
+            return
+
         # Delete user
         num_rows_deleted_users = (
             session.query(models.Users)
@@ -633,8 +742,9 @@ def download_dataframe(
     if df_dict:
         for time, df in df_dict.items():
             log.info(f"writing sheet {time}")
-            df.to_excel(writer, sheet_name=time.replace(":", "."))
-            writer.save()  # Important!
+            df.to_excel(writer, sheet_name=time.replace(":", "."), startrow=1)
+            writer.sheets[time.replace(":", ".")].cell(1, 1, "Time - " + time)
+            writer.close()  # Important!
             bytes_io.seek(0)  # Important!
 
         # Message prompt
@@ -659,3 +769,49 @@ def download_dataframe(
         )
 
     return bytes_io
+
+
+def submit_password(gi: gui.GraphicInterface, config: DictConfig):
+    # Check if old password is correct
+    if auth.verify_and_update_hash(
+        user=auth.get_username_from_cookie(config.server.cookie_secret),
+        password=gi.password_widget.object.old_password,
+    ):
+        # Check if new password match repeat password
+        if (
+            gi.password_widget.object.new_password
+            == gi.password_widget.object.repeat_new_password
+        ):
+            # Check if password is valid with regex
+            if re.fullmatch(
+                config.panel.psw_regex, gi.password_widget.object.new_password
+            ):
+                # Green light: update the password!
+                auth.add_user_hashed_password(
+                    user=auth.get_username_from_cookie(
+                        config.server.cookie_secret
+                    ),
+                    password=gi.password_widget.object.new_password,
+                )
+                pn.state.notifications.success(
+                    "Password updated<br>Logging out",
+                    duration=config.panel.notifications.duration,
+                )
+                # Logout
+                sleep(4)
+                auth.force_logout()
+            else:
+                pn.state.notifications.error(
+                    "Password requirements not satisfied<br>Check again!",
+                    duration=config.panel.notifications.duration,
+                )
+        else:
+            pn.state.notifications.error(
+                "Password are different!",
+                duration=config.panel.notifications.duration,
+            )
+    else:
+        pn.state.notifications.error(
+            "Incorrect old password!",
+            duration=config.panel.notifications.duration,
+        )
