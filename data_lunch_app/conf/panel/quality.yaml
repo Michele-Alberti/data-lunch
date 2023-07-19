@@ -24,3 +24,15 @@ scheduled_tasks: # Set to [] empty list to turn it off
       destination_blob_name: ${db.ext_storage_upload.destination_blob_name}
       bucket_name: ${db.ext_storage_upload.bucket_name}
       project: ${db.ext_storage_upload.project}
+  - kwargs:
+      name: credentials upload
+      enabled: ${db.ext_storage_upload.enabled}
+      hour: null
+      minute: null
+      period: 30min
+    callable:
+      _target_: data_lunch_app.scheduled_tasks.upload_db_to_gcp_storage
+      source_file_name: data_lunch_app/credentials.json
+      destination_blob_name: credentials.json
+      bucket_name: ${db.ext_storage_upload.bucket_name}
+      project: ${db.ext_storage_upload.project}
