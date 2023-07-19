@@ -37,6 +37,29 @@ def upload_to_gcloud(
         log.warning("google storage upload exception\n\t" + str(e))
 
 
+def upload_to_gcloud_from_string(
+    source_string: str,
+    destination_blob_name: str,
+    bucket_name: str,
+    project: str,
+):
+    # Create storage client
+    storage_client = storage.Client(project=project)
+
+    try:
+        # Get bucket
+        bucket = storage_client.bucket(bucket_name)
+        # Create blob
+        blob = bucket.blob(destination_blob_name)
+        # Upload
+        blob.upload_from_string(source_string)
+        log.info(
+            f"file uploaded from string to bucket '{bucket_name}' at '{destination_blob_name}' successfully"
+        )
+    except Exception as e:
+        log.warning("google storage upload exception\n\t" + str(e))
+
+
 def download_from_gcloud(
     source_blob_name: str,
     destination_file_name: str,
@@ -58,3 +81,27 @@ def download_from_gcloud(
         )
     except Exception as e:
         log.warning("google storage download exception\n\t" + str(e))
+
+
+def download_from_gcloud_as_bytes(
+    source_blob_name: str,
+    bucket_name: str,
+    project: str,
+):
+    # Create storage client
+    storage_client = storage.Client(project=project)
+
+    try:
+        # Get bucket
+        bucket = storage_client.bucket(bucket_name)
+        # Create blob
+        blob = bucket.blob(source_blob_name)
+        # Download
+        bytes_object = blob.download_as_bytes()
+        log.info(
+            f"file '{source_blob_name}' downloaded to object successfully"
+        )
+    except Exception as e:
+        log.warning("google storage download exception\n\t" + str(e))
+
+    return bytes_object
