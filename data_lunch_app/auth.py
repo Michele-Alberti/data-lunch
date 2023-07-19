@@ -8,6 +8,11 @@ import panel as pn
 from panel.auth import OAuthProvider
 from panel.util import base64url_encode
 from panel.io.resources import BASIC_LOGIN_TEMPLATE, _env
+import secrets
+import string
+
+# Graphic interface
+from . import gui
 
 
 # LOGGER ----------------------------------------------------------------------
@@ -191,10 +196,61 @@ def remove_user(user: str) -> None:
         json.dump(credentials, credentials_file, indent=4)
 
 
-def get_username_from_cookie(cookie_secret) -> str:
+def list_users() -> list[str]:
+    # Load user from json file
+    try:
+        with open(credentials_filename) as credentials_file:
+            credentials = json.load(credentials_file)
+    except FileNotFoundError as e:
+        log.error("missing credential file")
+        raise e
+
+    # Return keys (users)
+    users_list = [key for key in credentials]
+    users_list.sort()
+
+    return users_list
+
+
+def get_username_from_cookie(cookie_secret: str) -> str:
     secure_cookie = pn.state.curdoc.session_context.request.cookies["user"]
     user = decode_signed_value(cookie_secret, "user", secure_cookie).decode(
         "utf-8"
     )
 
     return user
+
+
+def force_logout() -> None:
+    # Edit pathname to force logout
+    pn.state.location.pathname = (
+        pn.state.location.pathname.split("/")[0] + "/logout"
+    )
+    pn.state.location.reload = True
+
+
+def generate_password(
+    alphabet: str | None = None,
+    special_chars: str | None = "",
+    length: int = 12,
+) -> str:
+    # If alphabet is not avilable use a default one
+    if alphabet is None:
+        alphabet = string.ascii_letters + string.digits + special_chars
+    # Infinite loop for finding a valid password
+    while True:
+        password = "".join(secrets.choice(alphabet) for i in range(length + 1))
+        # Create special chars condition only if special chars is non-empty
+        if special_chars:
+            special_chars_condition = any(c in special_chars for c in password)
+        else:
+            special_chars_condition = True
+        if (
+            any(c.islower() for c in password)
+            and any(c.isupper() for c in password)
+            and any(c.isdigit() for c in password)
+            and special_chars_condition
+        ):
+            break
+
+    return password
