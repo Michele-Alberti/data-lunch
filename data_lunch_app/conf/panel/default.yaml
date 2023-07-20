@@ -102,7 +102,7 @@ scheduled_tasks: # Set to [] empty list to turn it off
       period: 60min
     callable:
       _target_: data_lunch_app.scheduled_tasks.upload_db_to_gcp_storage
-      source_file_name: data_lunch_app/credentials.json
+      source_file_name: ${db.shared_data_folder}/credentials.json
       destination_blob_name: credentials.json
       bucket_name: ${db.ext_storage_upload.bucket_name}
       project: ${db.ext_storage_upload.project}
