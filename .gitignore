@@ -440,4 +440,3 @@ dist
 /shared_data/
 /ssl/
 *.csv
-credentials.json

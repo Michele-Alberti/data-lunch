@@ -38,7 +38,9 @@ pwd_context = CryptContext(
 )
 
 # PROPERTIES ------------------------------------------------------------------
-credentials_filename = pathlib.Path(__file__).parent / "credentials.json"
+credentials_filename = (
+    pathlib.Path(__file__).parent.parent / "shared_data" / "credentials.json"
+)
 
 # CLASSES ---------------------------------------------------------------------
 
