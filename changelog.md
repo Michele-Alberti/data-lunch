@@ -1,3 +1,22 @@
+## v2.1.0 (2023-07-21)
+
+### Feat
+
+- add credentials upload to scheduled tasks in panel config files
+- add support for authenticated users and guests
+- **cloud.py**: add upload from string and download as bytes to GCP platform support functions
+- **cli.py**: add list users command to cli
+- **auth.py**: add password generator, logout function and list user function
+- **cli.py**: add authentication credentials management to the cli
+- add simple authentication
+- **no_sched_clean.yaml**: add panel config file with scheduled cleaning deactivated
+
+### Fix
+
+- fix credentials.json path in config
+- **auth.py**: move credentials.json into the folder shared_data
+- **login.html**: fix title and favicon of login page
+
 ## v2.0.0 (2023-06-06)
 
 ### BREAKING CHANGE
