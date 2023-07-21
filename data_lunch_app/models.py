@@ -2,6 +2,7 @@ import hydra
 import logging
 from sqlalchemy import (
     Column,
+    PrimaryKeyConstraint,
     ForeignKey,
     Integer,
     String,
@@ -11,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, relationship, Session
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, elements
 from sqlalchemy.sql import false as sql_false
 from omegaconf import DictConfig
 from datetime import datetime
@@ -80,7 +81,10 @@ class Users(db):
         nullable=False,
     )
     guest = Column(
-        Boolean, nullable=False, default=False, server_default=sql_false()
+        String(20),
+        nullable=False,
+        default="NotAGuest",
+        server_default="NotAGuest",
     )
     takeaway = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
@@ -98,19 +102,27 @@ class Users(db):
 
 
 class Stats(db):
+    # Primary key handled with __table_args__ bcause ON CONFLICT for composite
+    # primary key is available only with __table_args__
     __tablename__ = "stats"
-    id = Column(
+    __table_args__ = (
+        PrimaryKeyConstraint(
+            "date", "guest", name="stats_pk", sqlite_on_conflict="REPLACE"
+        ),
+    )
+    date = Column(
         Date,
-        primary_key=True,
         nullable=False,
         default=datetime.utcnow(),
         server_default=func.current_timestamp(),
-        sqlite_on_conflict_primary_key="REPLACE",
+    )
+    guest = Column(
+        String(20),
+        nullable=True,
+        default="NotAGuest",
+        server_default="NotAGuest",
     )
     hungry_people = Column(
-        Integer, nullable=False, default=0, server_default="0"
-    )
-    hungry_guests = Column(
         Integer, nullable=False, default=0, server_default="0"
     )
 

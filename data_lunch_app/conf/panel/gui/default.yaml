@@ -75,6 +75,11 @@ food_emoji: [
     "🍜",
     ]
 
+# GUESTS ICONS
+guest_icons: # Keys of this dict shall match guest_types in panel config
+  Edison Guest: "🔸"
+  External Guest: "💰"
+
 # TAKEAWAY LUNCHES
 takeaway_id: TAKEAWAY
 takeaway_emoji: "🥡"
@@ -95,3 +100,6 @@ total_column_name: totale
 # Set to null to ignore
 # e.g: _target_: panel.pane.HTML with _args_: - <img src="${panel.favicon_path}"> 
 header_object: null
+
+# PASSWORD
+psw_text: "### Password rules\n- Minimum eight characters\n- At least one lower case letter\n- At least one upper case letter\n- At least one number\n- At least one special character."

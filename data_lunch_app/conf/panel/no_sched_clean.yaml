@@ -6,7 +6,7 @@ scheduled_tasks: # Set to [] empty list to turn it off
   # CLEANING
   - kwargs:
       name: scheduled cleaning
-      enabled: true
+      enabled: false
       hour: null
       minute: null
       period: 30min

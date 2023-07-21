@@ -3,6 +3,7 @@ defaults:
   - panel: default
   - db: ${oc.env:PANEL_ENV}
   - server: ${oc.env:PANEL_ENV}
+  - auth: ${oc.env:PANEL_ENV}
   - override hydra/job_logging: custom
 #  - _self_ #config.yaml is overriding configs from the Defaults List
 

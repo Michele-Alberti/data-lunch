@@ -1,7 +1,7 @@
 import datetime
 from hydra.utils import instantiate
 import logging
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
@@ -13,6 +13,9 @@ from . import models
 
 # Core imports
 from . import core
+
+# Auth
+from . import auth
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +31,9 @@ class Person(param.Parameterized):
     lunch_time = param.ObjectSelector(
         default="12:30", doc="choose your lunch time", objects=["12:30"]
     )
-    guest = param.Boolean(default=False, doc="tick if you are a guest")
+    guest = param.ObjectSelector(
+        default="Guest", doc="select guest type", objects=["Guest"]
+    )
     takeaway = param.Boolean(
         default=False, doc="tick to order a takeaway meal"
     )
@@ -36,18 +41,39 @@ class Person(param.Parameterized):
 
     def __init__(self, config, **params):
         super().__init__(**params)
-        self.param["lunch_time"].objects = config.panel.lunch_times_options
+        # Set lunch times from config
+        self.param.lunch_time.objects = config.panel.lunch_times_options
+        # Set guest type from config
+        self.param.guest.objects = config.panel.guest_types
+        self.param.guest.default = config.panel.guest_types[0]
+        self.guest = config.panel.guest_types[0]
+        # Check user (a username is already set for authenticated users)
+        username = auth.get_username_from_cookie(
+            cookie_secret=config.server.cookie_secret
+        )
+        if username != "guest":
+            self.username = username
 
     def __str__(self):
         return f"PERSON:{self.name}"
+
+
+class PasswordRenewer(param.Parameterized):
+    old_password = param.String(default="")
+    new_password = param.String(default="")
+    repeat_new_password = param.String(default="")
+
+    def __str__(self):
+        return "PasswordRenewer"
 
 
 # STATIC TEXTS ----------------------------------------------------------------
 # Tabs section text
 person_text = """
 ### User Data
-Fill your name (duplicates are not allowed) and select the lunch time.<br>
-Click "Delete Order" to remove your orders.
+
+_Authenticated users_ do not need to fill the username.<br>
+_Guest users_ shall use a valid _unique_ name and select a guest type.
 """
 upload_text = """
 ### Menu Upload
@@ -286,7 +312,19 @@ class GraphicInterface:
 
         # WIDGET
         # Person data
-        self.person_widget = pn.Param(person.param, width=sidebar_width)
+        self.person_widget = pn.Param(
+            person.param,
+            widgets={
+                "guest": pn.widgets.RadioButtonGroup(
+                    options=OmegaConf.to_container(
+                        config.panel.guest_types, resolve=True
+                    ),
+                    button_type="primary",
+                    button_style="outline",
+                )
+            },
+            width=sidebar_width,
+        )
         # File upload
         self.file_widget = pnw.FileInput(
             accept=".png,.jpg,.jpeg,.xlsx", sizing_mode="stretch_width"
@@ -303,8 +341,24 @@ class GraphicInterface:
                 config.panel.gui.css_files.stats_tabulator_path,
             ],
         )
+        # Password renewer
+        self.password_widget = pn.Param(
+            PasswordRenewer().param,
+            name="Change password",
+            width=sidebar_width,
+        )
 
         # BUTTONS
+        # Logout button
+        self.logout_button = pnw.Button(
+            name="Logout",
+            button_type="danger",
+            button_style="outline",
+            height=45,
+            icon="logout",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
         # Create menu button
         self.build_menu_button = pnw.Button(
             name="Build Menu",
@@ -317,12 +371,24 @@ class GraphicInterface:
             filename=config.panel.file_name + ".xlsx",
             sizing_mode="stretch_width",
         )
+        # Password button
+        self.submit_password_button = pnw.Button(
+            name="Submit",
+            button_type="success",
+            button_style="outline",
+            height=45,
+            icon="key",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
 
         # COLUMNS
         # Create column for person data
         self.person_column = pn.Column(
             person_text,
             self.person_widget,
+            pn.Spacer(height=5),
+            self.logout_button,
             pn.Spacer(height=5),
             self.salad_menu,
             name="User",
@@ -346,18 +412,35 @@ class GraphicInterface:
         # Create column for statistics
         self.sidebar_stats_col = pn.Column(name="Stats", width=sidebar_width)
 
+        self.sidebar_password = pn.Column(
+            config.panel.gui.psw_text,
+            self.password_widget,
+            self.submit_password_button,
+            name="Password",
+            width=sidebar_width,
+        )
+
         # TABS
         # The person column is defined in the app factory function because lunch
         # times are configurable
         self.sidebar_tabs = pn.Tabs(
             self.person_column,
-            self.sidebar_menu_upload_col,
-            self.sidebar_download_orders_col,
-            self.sidebar_stats_col,
             width=sidebar_width,
         )
 
+        # Append password only for non-guest users
+        if (
+            auth.get_username_from_cookie(config.server.cookie_secret)
+            != "guest"
+        ):
+            self.sidebar_tabs.append(self.sidebar_menu_upload_col)
+            self.sidebar_tabs.append(self.sidebar_download_orders_col)
+            self.sidebar_tabs.append(self.sidebar_stats_col)
+            self.sidebar_tabs.append(self.sidebar_password)
+
         # CALLBACKS
+        # Logout callback
+        self.logout_button.on_click(lambda e: auth.force_logout())
         # Build menu button callback
         self.build_menu_button.on_click(
             lambda e: core.build_menu(
@@ -367,6 +450,10 @@ class GraphicInterface:
                 self,
             )
         )
+        # Submit password button callback
+        self.submit_password_button.on_click(
+            lambda e: core.submit_password(self, config)
+        )
 
     # UTILITY FUNCTIONS
     # MAIN SECTION
@@ -375,15 +462,15 @@ class GraphicInterface:
         config: DictConfig,
         df: pd.DataFrame,
         time: str,
-        guests_list: list[str] = [],
+        guests_lists: list[str] = [],
     ) -> pnw.Tabulator:
         # Add guest icon to users' id
-        df.columns = [
-            f"{c} 💰"
-            if (c in guests_list) and (c != config.panel.gui.total_column_name)
-            else c
-            for c in df.columns
-        ]
+        columns_with_guests_icons = df.columns.to_series()
+        for guest_type, guests_list in guests_lists.items():
+            columns_with_guests_icons[
+                columns_with_guests_icons.isin(guests_list)
+            ] += f" {config.panel.gui.guest_icons[guest_type]}"
+        df.columns = columns_with_guests_icons.to_list()
         # Create table widget
         orders_table_widget = pnw.Tabulator(
             name=time,
@@ -440,8 +527,8 @@ class GraphicInterface:
             <h3>Statistics</h3>
             <div>
                 Grumbling stomachs fed:<br>
-                <span id="stats-locals">Locals&nbsp;&nbsp;{df_stats['Starving Locals'].sum()}</span><br>
-                <span id="stats-guests">Guests&nbsp;&nbsp;{df_stats['Ravenous Guests'].sum()}</span><br>
+                <span id="stats-locals">Locals&nbsp;&nbsp;{df_stats[df_stats["Guest"] == "NotAGuest"]['Hungry People'].sum()}</span><br>
+                <span id="stats-guests">Guests&nbsp;&nbsp;{df_stats[df_stats["Guest"] != "NotAGuest"]['Hungry People'].sum()}</span><br>
                 =================<br>
                 <strong>TOTAL&nbsp;&nbsp;{df_stats['Hungry People'].sum()}</strong><br>
                 <br>
