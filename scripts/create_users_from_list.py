@@ -60,12 +60,13 @@ domain = os.environ["DOMAIN"]
 send_from = mail_sender
 
 # MIME
-msg = MIMEMultipart()
-msg["From"] = send_from
-msg["Date"] = formatdate(localtime=True)
-msg["Subject"] = "[Data-Lunch] Login Credentials"
-
 for user in new_users_names_df.itertuples():
+    # Build MIME object (for each user)
+    msg = MIMEMultipart()
+    msg["From"] = send_from
+    msg["Date"] = formatdate(localtime=True)
+    msg["Subject"] = "[Data-Lunch] Login Credentials"
+
     # Generate a random password
     password = auth.generate_password(
         special_chars=config.panel.psw_special_chars
