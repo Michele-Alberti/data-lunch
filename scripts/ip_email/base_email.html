@@ -1,0 +1,142 @@
+<!-- Uses the template from https://github.com/bokeh/bokeh/tree/branch-3.2/examples/server/app/server_auth -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <title>Data-Lunch Login</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <style>
+        /* Import a special font for the title */
+        @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,700;1,300&display=swap');
+        /* Rules */
+        *{
+            margin:0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html{
+            height: 100%;
+        }
+        body{
+            font: normal 1.25rem "Segoe UI", sans-serif;
+            line-height: 1.6;
+            min-height: 10rem;
+            background: #fafafa;
+        }
+        header{
+            font: bold 1.25rem "Space Mono", sans-serif;
+            line-height: 1.6;
+            width: 100%;
+            color: #ffffff;
+            background: #0072B5;
+            padding: 1.5rem;
+        }
+        main {
+            font: normal 1.25rem Roboto, sans-serif;
+            width: 100%;
+            min-height: 20rem;
+            background: #fafafa;
+            padding: 2.5rem;
+        }
+        footer {
+            font: normal 1.25rem "Space Mono", sans-serif;
+            width: 100%;
+            height: 4rem;
+            color: #ffffff;
+            background: #0072B5;
+            padding: auto;
+        }
+        header p , footer p {
+            text-align: center;
+        }
+        header p {
+            padding-bottom: .25rem;
+        }
+        main p {
+            padding-bottom: 1.25rem;
+        }
+        h4 {
+            font: normal 1.5rem "Silkscreen", cursive;
+            line-height: 2.5rem;
+            color: #0072B5;
+        }
+        a {
+            color: #0072B5;
+        }
+        #title {
+            font: normal 3rem "Silkscreen", cursive;
+            line-height: 3rem;
+        }
+        .logo-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+            gap: .5rem;
+        }
+        .logo-text-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            gap: .5rem;
+        }
+        .footer-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .user-password {
+            background-color: #0072B5;
+            color: #ffffff;
+        }
+        .button {
+            margin: 1rem 0rem;
+            background-color: #0072B5; /* Green */
+            border: none;
+            color: white;
+            padding: .5rem 1rem;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            border-radius: 1.2rem;
+        }
+        .button:hover {
+            background-color: #000000;
+            opacity: .7;
+        }
+        .info-panel {
+            font-size: 1.25rem;
+            color: #0072B5;
+            background-color: whitesmoke;
+            border-left: 0.5rem solid #0072B5;
+            padding: 0.5rem
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+              <img src="cid:{{attachment_cid}}" alt="pizza_logo">
+            <div class="logo-text-container">
+              <h3 id="title">Data<br>Lunch</h3>
+              <p></p>
+            </div>
+        </div>
+        <div>
+            <p>The ultimate web app for a well organized lunch.</p>
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer-container">
+        <div>
+            <p>🍕 Buon appetito!</p>
+        </div>
+    </footer>
+</body>
+</html>

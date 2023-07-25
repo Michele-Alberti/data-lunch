@@ -1,0 +1,35 @@
+{% extends "base_email.html" %}
+{% block content %}
+    <div>
+        <p>Buongiorno, Data-Lunch è online!</p>
+        <h4>Indirizzo</h4>
+        <p>
+            la web app è disponibile all'indirizzo
+            <strong><a href="https://{{domain}}/">{{domain}}</a></strong>,
+            anche da rete aziendale.
+        </p>
+        <h4>Guest User</h4>
+        <p>
+        Per l'accesso con l'utente <i>guest</i> usare la credenziali:
+        <table>
+            <tr>
+            <td><strong>username:</strong></td>
+            <td class="user-password">guest</td>
+            </tr>
+            <tr>
+            <td><strong>password:</strong></td>
+            <td class="user-password">{{password}}</td>
+            </tr>
+        </table>
+        </p>
+        <h4>Emergenze</h4>
+        <p>
+            In caso il link precedente non funzioni, cliccare il pulsante sottostante:<br>
+            <a class="button" href="https://{{external_ip}}">⚠️ Connessione</a>
+            <p class="info-panel">
+            <em>Nella schermata di avvertimento "la connessione non è privata" (con il browser Edge)
+                clicca su "Avanzate" e poi "Procedi su...".</em>
+            </p>
+        </p>
+    </div>
+{% endblock %}

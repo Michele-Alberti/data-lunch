@@ -11,10 +11,11 @@
 import ssl
 import smtplib
 import html
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import formatdate
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from email.message import EmailMessage
+from email.utils import formatdate, make_msgid
 import os
+import pathlib
 
 # Password
 import data_lunch_app.auth as auth
@@ -49,6 +50,18 @@ new_users_names_df = pd.read_excel(
 if new_users_names_df.empty:
     raise (ValueError("the dataframe with usernames and emails is empty"))
 
+# Jinja template
+template_folder = pathlib.Path(__file__).parent / "ip_email"
+env = Environment(
+    loader=FileSystemLoader(template_folder.resolve()),
+    autoescape=select_autoescape(["html", "xml"]),
+)
+template = env.get_template("user_credentials.html")
+
+# Logo image
+image_filename = template_folder / "pizza_and_slice.png"
+attachment_cid = make_msgid()
+
 # EMAIL CLIENT ----------------------------------------------------------------
 # Environment variables
 mail_username = os.environ["MAIL_USER"]
@@ -61,43 +74,40 @@ send_from = mail_sender
 
 # MIME
 for user in new_users_names_df.itertuples():
-    # Build MIME object (for each user)
-    msg = MIMEMultipart()
-    msg["From"] = send_from
-    msg["Date"] = formatdate(localtime=True)
-    msg["Subject"] = "[Data-Lunch] Login Credentials"
-
     # Generate a random password
     password = auth.generate_password(
         special_chars=config.panel.psw_special_chars
     )
     # Add hashed password to credentials file
     auth.add_user_hashed_password(user.name, password)
-    # Send email to user
-    # Recipient (built from username)
-    send_to = user.email
-    msg["To"] = send_to
-    # Body
-    body = f"""\
-            <html>
-            <body>
-                <h3>Data-Lunch Login Credentials</h3>
-                <p>
-                    <strong>USERNAME:</strong> {user.name}<br>
-                    <strong>PASSWORD:</strong> {html.escape(password)}<br>
-                </p>
-            </body>
-            </html>
-            """
 
-    msg.attach(MIMEText(body, "html"))
+    # Send email to user: recipient (built from username)
+    send_to = user.email
+    # Body
+    body = template.render(
+        username=user.name,
+        password=html.escape(password),
+        attachment_cid=attachment_cid[1:-1],
+    )
+
+    # Build MIME object (for each user)
+    msg = EmailMessage()
+    msg["From"] = send_from
+    msg["To"] = send_to
+    msg["Date"] = formatdate(localtime=True)
+    msg["Subject"] = "[Data-Lunch] Login Credentials"
+
+    # Attach
+    msg.set_content(body, "html")
+    with open(image_filename, "rb") as image_file:
+        msg.add_related(image_file.read(), "image", "jpeg", cid=attachment_cid)
+
     # Server
     context = ssl.create_default_context()
-    smtp = smtplib.SMTP("smtp.gmail.com", 587)
-    smtp.ehlo()
-    smtp.starttls(context=context)
-    smtp.login(mail_username, mail_password)
-    smtp.sendmail(send_from, send_to.split(","), msg.as_string())
-    smtp.quit()
+    with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+        smtp.ehlo()
+        smtp.starttls(context=context)
+        smtp.login(mail_username, mail_password)
+        smtp.send_message(msg)
 
     print(f"email for user '{user.name}' sent to {user.email}")
