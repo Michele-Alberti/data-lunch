@@ -8,13 +8,14 @@
 import data_lunch_app.auth as auth
 from hydra import compose, initialize
 import html
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 import smtplib
 import ssl
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import formatdate
+from email.message import EmailMessage
+from email.utils import formatdate, make_msgid
 import requests
 import os
+import pathlib
 import sys
 
 # Command arguments (for Hydra)
@@ -47,44 +48,46 @@ guest_password = auth.generate_password(
 # Add hashed password to credentials file
 auth.add_user_hashed_password("guest", guest_password)
 
+# Jinja template
+template_folder = pathlib.Path(__file__).parent / "ip_email"
+env = Environment(
+    loader=FileSystemLoader(template_folder.resolve()),
+    autoescape=select_autoescape(["html", "xml"]),
+)
+template = env.get_template("ip_email.html")
+
+# Logo image
+image_filename = template_folder / "pizza_and_slice.png"
+attachment_cid = make_msgid()
+
 # Message
 send_from = mail_user
 send_to = recipients
-body = f"""\
-<html>
-  <body>
-    <p>Buongiorno, Data-Lunch è online!<br><br>
-       Per accedere all'app da rete aziendale (o con connessione VPN) clicca
-       <strong><a href="https://{external_ip}">qui</a></strong>.<br>
-       <em>Nella schermata di avvertimento "la connessione non è privata" (con il browser Edge)
-       clicca su "Avanzate" e poi "Procedi su...".</em><br><br>
-       Se non sei collegato alla rete aziendale, oppure se sei su rete mobile,
-       puoi collegarti a
-       <strong><a href="https://{domain}/">{domain}</a></strong>.
-    </p>
-    <p>
-      Per l'accesso con l'utente <i>guest</i> usare la password:<br><br>
-      {html.escape(guest_password)}
-    </p>
-  </body>
-</html>
-"""
+body = template.render(
+    domain=domain,
+    password=html.escape(guest_password),
+    external_ip=external_ip,
+    attachment_cid=attachment_cid[1:-1],
+)
 
 # MIME
-msg = MIMEMultipart()
+msg = EmailMessage()
 msg["From"] = send_from
 msg["To"] = send_to
 msg["Date"] = formatdate(localtime=True)
 msg["Subject"] = "[Data-Lunch] VM instance IP"
-msg.attach(MIMEText(body, "html"))
+
+# Attach
+msg.set_content(body, "html")
+with open(image_filename, "rb") as image_file:
+    msg.add_related(image_file.read(), "image", "jpeg", cid=attachment_cid)
 
 # Server
 context = ssl.create_default_context()
-smtp = smtplib.SMTP("smtp.gmail.com", 587)
-smtp.ehlo()
-smtp.starttls(context=context)
-smtp.login(username, password)
-smtp.sendmail(send_from, send_to.split(","), msg.as_string())
-smtp.quit()
+with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+    smtp.ehlo()
+    smtp.starttls(context=context)
+    smtp.login(username, password)
+    smtp.send_message(msg)
 
 print("email with external IP sent")
