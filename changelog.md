@@ -1,3 +1,13 @@
+## v2.2.0 (2023-07-25)
+
+### Feat
+
+- add jinja template for ip and users emails
+
+### Fix
+
+- **create_users_from_lists.py**: fix error in MIME object creation
+
 ## v2.1.0 (2023-07-21)
 
 ### Feat
