@@ -86,7 +86,7 @@ for user in new_users_names_df.itertuples():
     # Body
     body = template.render(
         username=user.name,
-        password=html.escape(password),
+        password=password,
         attachment_cid=attachment_cid[1:-1],
     )
 
