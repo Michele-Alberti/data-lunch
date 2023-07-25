@@ -1,3 +1,9 @@
+## v2.2.1 (2023-07-25)
+
+### Fix
+
+- remove password escaping in email scripts
+
 ## v2.2.0 (2023-07-25)
 
 ### Feat
