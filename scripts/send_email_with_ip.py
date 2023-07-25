@@ -65,7 +65,7 @@ send_from = mail_user
 send_to = recipients
 body = template.render(
     domain=domain,
-    password=html.escape(guest_password),
+    password=guest_password,
     external_ip=external_ip,
     attachment_cid=attachment_cid[1:-1],
 )
