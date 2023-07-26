@@ -1,3 +1,13 @@
+## v2.3.0 (2023-07-26)
+
+### Feat
+
+- move guest credentials from email to password tab
+
+### Fix
+
+- **auth.py**: fix error in generated password length
+
 ## v2.2.1 (2023-07-25)
 
 ### Fix
