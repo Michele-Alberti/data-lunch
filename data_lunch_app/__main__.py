@@ -4,6 +4,7 @@ import hydra
 import panel as pn
 from typing import Callable
 from omegaconf import DictConfig
+from . import auth
 from . import create_app
 from .core import delete_files, clean_tables
 
@@ -18,6 +19,13 @@ pn.extension(
 
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def run_app(config: DictConfig):
+    # Generate a random password
+    guest_password = auth.generate_password(
+        special_chars=config.panel.psw_special_chars
+    )
+    # Add hashed password to credentials file
+    auth.add_user_hashed_password("guest", guest_password)
+
     # Starting scheduled cleaning
     if config.panel.scheduled_tasks:
         for task in config.panel.scheduled_tasks:
@@ -32,7 +40,7 @@ def run_app(config: DictConfig):
     # invocation has a dedicated state variable (users' selections are not
     # shared between instances)
     pn.serve(
-        lambda: create_app(config),
+        lambda: create_app(config=config, guest_password=guest_password),
         auth_provider=hydra.utils.instantiate(config.auth),
         **config.server,
     )

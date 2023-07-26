@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 # APP FACTORY FUNCTION --------------------------------------------------------
 
 
-def create_app(config: DictConfig) -> pn.Template:
+def create_app(config: DictConfig, guest_password: str = "") -> pn.Template:
     """Panel app factory function"""
 
     log.info("starting initialization process")
@@ -70,7 +70,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create person instance, widget and column
     log.debug("instantiate person class and graphic graphic interface")
     person = gui.Person(config, name="User")
-    gi = gui.GraphicInterface(config, app, person)
+    gi = gui.GraphicInterface(config, app, person, guest_password)
 
     # DASHBOARD
     # Build dashboard (the header object is used if defined)

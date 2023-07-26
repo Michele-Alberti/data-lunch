@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 # OPTIONS AND DEFAULTS --------------------------------------------------------
 # App
 sidebar_width = 400
+sidebar_content_width = sidebar_width - 10
 
 
 # CLASS -----------------------------------------------------------------------
@@ -87,6 +88,10 @@ download_text = """
 Download the order list.
 """
 
+guest_user_text = """
+### Guest user
+"""
+
 
 # QUOTES ----------------------------------------------------------------------
 # Quote table
@@ -99,7 +104,13 @@ df_quote = df_quotes.sample(n=1, random_state=seed_day)
 
 # USER INTERFACE CLASS ========================================================
 class GraphicInterface:
-    def __init__(self, config: DictConfig, app: pn.Template, person: Person):
+    def __init__(
+        self,
+        config: DictConfig,
+        app: pn.Template,
+        person: Person,
+        guest_password: str = "",
+    ):
         # HEADER SECTION ------------------------------------------------------
         # WIDGET
         # Create PNG pane with app icon
@@ -307,7 +318,7 @@ class GraphicInterface:
                 {config.panel.salad_list}
             </details>
             """,
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
 
         # WIDGET
@@ -323,7 +334,7 @@ class GraphicInterface:
                     button_style="outline",
                 )
             },
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
         # File upload
         self.file_widget = pnw.FileInput(
@@ -334,7 +345,7 @@ class GraphicInterface:
         self.stats_widget = pnw.Tabulator(
             name="Statistics",
             hidden_columns=["index"],
-            width=sidebar_width - 20,
+            width=sidebar_content_width - 20,
             layout="fit_columns",
             stylesheets=[
                 config.panel.gui.css_files.custom_tabulator_path,
@@ -344,8 +355,31 @@ class GraphicInterface:
         # Password renewer
         self.password_widget = pn.Param(
             PasswordRenewer().param,
+            widgets={
+                "old_password": pnw.PasswordInput(
+                    name="Old password", placeholder="Old Password"
+                ),
+                "new_password": pnw.PasswordInput(
+                    name="New password", placeholder="New Password"
+                ),
+                "repeat_new_password": pnw.PasswordInput(
+                    name="Repeat new password",
+                    placeholder="Repeat New Password",
+                ),
+            },
             name="Change password",
-            width=sidebar_width,
+            width=sidebar_content_width,
+        )
+        # Guest password text
+        self.guest_username_widget = pnw.TextInput(
+            name="Username",
+            placeholder="If empty reload this page.",
+            value="guest",
+        )
+        self.guest_password_widget = pnw.PasswordInput(
+            name="Password",
+            placeholder="If empty reload this page.",
+            value=rf"{guest_password}",
         )
 
         # BUTTONS
@@ -392,7 +426,7 @@ class GraphicInterface:
             pn.Spacer(height=5),
             self.salad_menu,
             name="User",
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
         # Create column for uploading image/Excel with the menu
         self.sidebar_menu_upload_col = pn.Column(
@@ -400,24 +434,31 @@ class GraphicInterface:
             self.file_widget,
             self.build_menu_button,
             name="Menu Upload",
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
         # Create column for downloading Excel with orders
         self.sidebar_download_orders_col = pn.Column(
             download_text,
             self.download_button,
             name="Download Orders",
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
         # Create column for statistics
-        self.sidebar_stats_col = pn.Column(name="Stats", width=sidebar_width)
+        self.sidebar_stats_col = pn.Column(
+            name="Stats", width=sidebar_content_width
+        )
 
         self.sidebar_password = pn.Column(
             config.panel.gui.psw_text,
             self.password_widget,
             self.submit_password_button,
+            pn.Spacer(height=5),
+            pn.layout.Divider(),
+            guest_user_text,
+            self.guest_username_widget,
+            self.guest_password_widget,
             name="Password",
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
 
         # TABS
@@ -425,7 +466,7 @@ class GraphicInterface:
         # times are configurable
         self.sidebar_tabs = pn.Tabs(
             self.person_column,
-            width=sidebar_width,
+            width=sidebar_content_width,
         )
 
         # Append password only for non-guest users
