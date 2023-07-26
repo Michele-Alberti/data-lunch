@@ -241,7 +241,7 @@ def generate_password(
         alphabet = string.ascii_letters + string.digits + special_chars
     # Infinite loop for finding a valid password
     while True:
-        password = "".join(secrets.choice(alphabet) for i in range(length + 1))
+        password = "".join(secrets.choice(alphabet) for i in range(length))
         # Create special chars condition only if special chars is non-empty
         if special_chars:
             special_chars_condition = any(c in special_chars for c in password)
