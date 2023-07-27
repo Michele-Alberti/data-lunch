@@ -68,7 +68,7 @@ stats_id_cols:
 stats_locals_column_name: Officine MI # Non-guest users (used to fill NaNs)
 
 # PASSWORD
-psw_special_chars: '*.!@$%^&(){}\[\]:;<>,.?/~_+-=|\\'
+psw_special_chars: ';:,.+-=_#!$%&?^*@'
 psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${panel.psw_special_chars}]).{8,}$
 
 # SERVER SCHEDULED ACTIVITIES

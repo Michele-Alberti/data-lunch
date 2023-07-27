@@ -14,5 +14,11 @@ local_timezone: Europe/Rome
 docker_username: ${oc.env:DOCKER_USERNAME, not_declared}
 
 hydra:
+  # disable changing of cwd
+  run:
+    dir: .
   # output files creation
   output_subdir: null
+  # Do not change working directory
+  job:
+    chdir: false
