@@ -1,3 +1,9 @@
+## v2.3.2 (2023-07-27)
+
+### Fix
+
+- **gui.py**: remove rf string from guest password widget
+
 ## v2.3.1 (2023-07-27)
 
 ### Fix
