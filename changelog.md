@@ -1,3 +1,9 @@
+## v2.3.1 (2023-07-27)
+
+### Fix
+
+- fix configuration for current directory, password special char and auth expiry
+
 ## v2.3.0 (2023-07-26)
 
 ### Feat
