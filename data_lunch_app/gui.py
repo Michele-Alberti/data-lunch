@@ -379,7 +379,7 @@ class GraphicInterface:
         self.guest_password_widget = pnw.PasswordInput(
             name="Password",
             placeholder="If empty reload this page.",
-            value=rf"{guest_password}",
+            value=guest_password,
         )
 
         # BUTTONS
