@@ -97,59 +97,70 @@ def clean_tables(config: DictConfig):
 def set_guest_user_password(config: DictConfig) -> str:
     # If guest user is requested return a password, otherwise return ""
     if config.panel.guest_user:
-        session = models.create_session(config)
-        # If flag does not exist use the default value
-        if (
-            models.get_flag(session=session, id="reset_guest_user_password")
-            is None
-        ):
-            models.set_flag(
-                session=session,
-                id="reset_guest_user_password",
-                value=config.panel.default_reset_guest_user_password_flag,
-            )
-        # If the guest password pickle does not exist set reset flag to True
-        if not guest_password_filename.exists():
-            log.warning(
-                "missing pickle with guest user password, a new password is saved to pickle"
-            )
-            models.set_flag(
-                session=session, id="reset_guest_user_password", value=True
-            )
-        # Generate a random password only if requested (check on flag)
-        # otherwise load from pickle
-        if models.get_flag(session=session, id="reset_guest_user_password"):
-            guest_password = auth.generate_password(
-                special_chars=config.panel.psw_special_chars
-            )
-            # Add hashed password to credentials file
-            auth.add_user_hashed_password("guest", guest_password)
-            # Turn off reset user password (in order to reset it only once)
-            models.set_flag(
-                session=session, id="reset_guest_user_password", value=False
-            )
-            # Save encrypted guest password to local pickle file
-            with open(guest_password_filename, "wb") as pickle_file:
-                if pn.state.encryption:
-                    encrypted_guest_password = pn.state.encryption.encrypt(
-                        guest_password.encode("utf-8")
-                    ).decode("utf-8")
-                else:
-                    encrypted_guest_password = guest_password
-                pickle.dump(encrypted_guest_password, pickle_file)
-        else:
-            # Load from pickle
-            with open(guest_password_filename, "rb") as pickle_file:
-                # If it is not possible to load it is probably because the file is missing
-                try:
-                    guest_password = pickle.load(pickle_file)
+        # Start a transaction to acquire a lock on database
+        session = models.create_exclusive_session(config)
+        with session.begin():
+            # If flag does not exist use the default value
+            if (
+                models.get_flag(
+                    session=session, id="reset_guest_user_password"
+                )
+                is None
+            ):
+                models.set_flag(
+                    session=session,
+                    id="reset_guest_user_password",
+                    value=config.panel.default_reset_guest_user_password_flag,
+                )
+            # If the guest password pickle does not exist set reset flag to True
+            if not guest_password_filename.exists():
+                log.warning(
+                    "missing pickle with guest user password, a new password is saved to pickle"
+                )
+                models.set_flag(
+                    session=session, id="reset_guest_user_password", value=True
+                )
+            # Generate a random password only if requested (check on flag)
+            # otherwise load from pickle
+            if models.get_flag(
+                session=session, id="reset_guest_user_password"
+            ):
+                # Turn off reset user password (in order to reset it only once)
+                # This statement also acquire a lock on database (so it is
+                # called first)
+                models.set_flag(
+                    session=session,
+                    id="reset_guest_user_password",
+                    value=False,
+                )
+                # Create password
+                guest_password = auth.generate_password(
+                    special_chars=config.panel.psw_special_chars
+                )
+                # Add hashed password to credentials file
+                auth.add_user_hashed_password("guest", guest_password)
+                # Save encrypted guest password to local pickle file
+                with open(guest_password_filename, "wb") as pickle_file:
                     if pn.state.encryption:
-                        guest_password = pn.state.encryption.decrypt(
+                        encrypted_guest_password = pn.state.encryption.encrypt(
                             guest_password.encode("utf-8")
                         ).decode("utf-8")
-                except Exception:
-                    log.error("can't read guest user password")
-                    raise
+                    else:
+                        encrypted_guest_password = guest_password
+                    pickle.dump(encrypted_guest_password, pickle_file)
+            else:
+                # Load from pickle
+                with open(guest_password_filename, "rb") as pickle_file:
+                    # If it is not possible to load it is probably because the file is missing
+                    try:
+                        guest_password = pickle.load(pickle_file)
+                        if pn.state.encryption:
+                            guest_password = pn.state.encryption.decrypt(
+                                guest_password.encode("utf-8")
+                            ).decode("utf-8")
+                    except Exception:
+                        log.error("can't read guest user password")
+                        raise
     else:
         guest_password = ""
 
