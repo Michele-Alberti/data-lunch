@@ -4,7 +4,7 @@ channels:
   - conda-forge
   - pyviz
 dependencies:
-  - python=3.11.3
+  - python=3.11.4
   - setuptools=67.8.0
   - click=8.0.4
   - cryptography=39.0.1

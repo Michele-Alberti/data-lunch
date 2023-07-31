@@ -6,7 +6,6 @@ from typing import Callable
 from omegaconf import DictConfig
 from . import auth
 from . import create_app
-from .core import delete_files, clean_tables
 
 log = logging.getLogger(__name__)
 
@@ -19,13 +18,6 @@ pn.extension(
 
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def run_app(config: DictConfig):
-    # Generate a random password
-    guest_password = auth.generate_password(
-        special_chars=config.panel.psw_special_chars
-    )
-    # Add hashed password to credentials file
-    auth.add_user_hashed_password("guest", guest_password)
-
     # Starting scheduled cleaning
     if config.panel.scheduled_tasks:
         for task in config.panel.scheduled_tasks:
@@ -34,13 +26,27 @@ def run_app(config: DictConfig):
                 callable=hydra.utils.instantiate(task.callable, config),
             )
 
+    if config.server.oauth_encryption_key:
+        log.info("initialize encryption")
+        try:
+            from cryptography.fernet import Fernet
+        except ImportError:
+            raise ImportError(
+                "Using OAuth2 provider with Panel requires the "
+                "cryptography library. Install it with `pip install "
+                "cryptography` or `conda install cryptography`."
+            )
+        pn.state.encryption = Fernet(config.server.oauth_encryption_key)
+    else:
+        log.warning("OAuth has not been configured with an encryption key")
+
     # Call the app factory function
     log.info("calling app factory function")
     # Pass the create_app function as a lambda function to ensure that each
     # invocation has a dedicated state variable (users' selections are not
     # shared between instances)
     pn.serve(
-        lambda: create_app(config=config, guest_password=guest_password),
+        lambda: create_app(config=config),
         auth_provider=hydra.utils.instantiate(config.auth),
         **config.server,
     )

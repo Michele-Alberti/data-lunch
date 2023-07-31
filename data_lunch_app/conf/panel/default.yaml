@@ -70,10 +70,21 @@ stats_locals_column_name: Officine MI # Non-guest users (used to fill NaNs)
 # PASSWORD
 psw_special_chars: ';:,.+-=_#!$%&?^*@'
 psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${panel.psw_special_chars}]).{8,}$
+# Guest user password flag default value
+# If true a new password for guest user is set everytime the main function is called
+guest_user: true
+default_reset_guest_user_password_flag: true
 
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
-  # CLEANING
+  - kwargs:
+      name: reset guest password
+      enabled: true
+      hour: null
+      minute: null
+      period: 1d
+    callable:
+      _target_: data_lunch_app.scheduled_tasks.reset_guest_user_password
   - kwargs:
       name: scheduled cleaning
       enabled: true

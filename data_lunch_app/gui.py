@@ -381,6 +381,14 @@ class GraphicInterface:
             placeholder="If empty reload this page.",
             value=guest_password,
         )
+        # Turn off guest user if no password is set (empty string)
+        if not guest_password:
+            self.guest_username_widget.value = ""
+            self.guest_username_widget.disabled = True
+            self.guest_username_widget.placeholder = "NOT ACTIVE"
+            self.guest_password_widget.value = ""
+            self.guest_password_widget.disabled = True
+            self.guest_password_widget.placeholder = "NOT ACTIVE"
 
         # BUTTONS
         # Logout button

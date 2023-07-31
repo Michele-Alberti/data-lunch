@@ -3,7 +3,14 @@ defaults:
 
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
-  # CLEANING
+  - kwargs:
+      name: reset guest password
+      enabled: true
+      hour: null
+      minute: null
+      period: 1d
+    callable:
+      _target_: data_lunch_app.scheduled_tasks.reset_guest_user_password
   - kwargs:
       name: scheduled cleaning
       enabled: true
