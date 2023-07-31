@@ -1,8 +1,10 @@
 import logging
 import datetime as dt
+from omegaconf import DictConfig
+
 from . import core
 from . import cloud
-from omegaconf import DictConfig
+from . import models
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
@@ -22,6 +24,23 @@ def clean_files_db(config: DictConfig):
         core.delete_files(config)
         # Clean tables
         core.clean_tables(config)
+
+    return scheduled_function
+
+
+def reset_guest_user_password(config: DictConfig):
+    """return a callable object for resetting guest user password"""
+
+    async def scheduled_function():
+        log.info(f"reset guest user password executed at {dt.datetime.now()}")
+        # Create session
+        session = models.create_session(config)
+        # Change reset flag
+        models.set_flag(
+            session=session, id="reset_guest_user_password", value=True
+        )
+        # Reset password
+        core.set_guest_user_password(config)
 
     return scheduled_function
 
