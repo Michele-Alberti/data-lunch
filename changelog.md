@@ -1,3 +1,9 @@
+## v2.4.1 (2023-07-31)
+
+### Fix
+
+- use BEGIN EXCLUSIVE transaction for setting the guest user password
+
 ## v2.4.0 (2023-07-31)
 
 ### Feat
