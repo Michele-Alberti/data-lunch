@@ -1,3 +1,13 @@
+## v2.4.0 (2023-07-31)
+
+### Feat
+
+- add set_guest_user_password function to set or reset guest user password
+
+### Fix
+
+- move guest user password creation from __main__.py to __init__.py
+
 ## v2.3.2 (2023-07-27)
 
 ### Fix
