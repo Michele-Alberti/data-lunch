@@ -162,6 +162,29 @@ def create_session(config: DictConfig) -> Session:
     return session
 
 
+def create_exclusive_session(config: DictConfig) -> Session:
+    """Database exclusive session factory function
+    Database is locked until the transaction is completed (to be used to avoid
+    race conditions)"""
+    engine = create_engine(config)
+
+    # Alter begin statement
+    @event.listens_for(engine, "connect")
+    def do_connect(dbapi_connection, connection_record):
+        # disable pysqlite's emitting of the BEGIN statement entirely.
+        # also stops it from emitting COMMIT before any DDL.
+        dbapi_connection.isolation_level = None
+
+    @event.listens_for(engine, "begin")
+    def do_begin(conn):
+        # Emit exclusive BEGIN
+        conn.exec_driver_sql("BEGIN EXCLUSIVE")
+
+    session = Session(engine)
+
+    return session
+
+
 def create_database(config: DictConfig) -> None:
     """Database factory function"""
     engine = create_engine(config)
