@@ -8,7 +8,7 @@ static_dirs:
   images: ./data_lunch_app/static/images
   css: ./data_lunch_app/static/css
 compress_response: true
-cookie_secret: ${oc.env:DATA_LUNCH_COOKIE_SECRET}
+cookie_secret: ${oc.env:DATA_LUNCH_COOKIE_SECRET} # Secure cookies are required (this vakue can't be null)
 oauth_expiry: 60
 oauth_encryption_key: ${oc.env:DATA_LUNCH_OAUTH_ENC_KEY}
 enable_xsrf_cookies: true

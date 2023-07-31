@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 # APP FACTORY FUNCTION --------------------------------------------------------
 
 
-def create_app(config: DictConfig, guest_password: str = "") -> pn.Template:
+def create_app(config: DictConfig) -> pn.Template:
     """Panel app factory function"""
 
     log.info("starting initialization process")
@@ -34,6 +34,10 @@ def create_app(config: DictConfig, guest_password: str = "") -> pn.Template:
     log.info("initialize database")
     # Create tables
     models.create_database(config)
+
+    # Generate a random password only if requested (check on flag)
+    log.info("set user password")
+    guest_password = core.set_guest_user_password(config)
 
     log.info("instantiate Panel app")
 
