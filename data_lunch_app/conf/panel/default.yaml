@@ -73,13 +73,13 @@ psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${panel.psw_special_chars}]).
 # Guest user password flag default value
 # If true a new password for guest user is set everytime the main function is called
 guest_user: true
-default_reset_guest_user_password_flag: true
+default_reset_guest_user_password_flag: false
 
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
   - kwargs:
       name: reset guest password
-      enabled: true
+      enabled: false
       hour: null
       minute: null
       period: 1d
