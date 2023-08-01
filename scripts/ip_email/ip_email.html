@@ -1,21 +1,19 @@
 {% extends "base_email.html" %}
 {% block content %}
-    <div>
-        <p>Buongiorno, Data-Lunch è online!</p>
-        <h4>Indirizzo</h4>
-        <p>
-            la web app è disponibile all'indirizzo
-            <strong><a href="https://{{domain}}/">{{domain}}</a></strong>,
-            anche da rete aziendale.
+    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">Buongiorno, Data-Lunch è online!</p>
+    <h4 style="font-size:24px;margin:0 0 20px 0; font: normal 1.5rem 'Silkscreen',sans-serif; color:#0072B5;">Rete Aziendale</h4>
+    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
+        Per collegarsi, cliccare il pulsante sottostante:<br>
+        <a href="https://{{external_ip}}" style="margin: 1rem 0rem; background-color: #0072B5; border: none; color: white; padding: .5rem 1rem; text-align: center; text-decoration: none; display: inline-block; font-size: 1rem; border-radius: 1.2rem;">🍔 Connessione</a>
+        <p style="font-size: 1.25rem; color: #0072B5; background-color: whitesmoke; border-left: 0.5rem solid #0072B5; padding: 0.5rem; margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
+        <em>Nella schermata di avvertimento "la connessione non è privata" (con il browser Edge)
+            clicca su "Avanzate" e poi "Procedi su...".</em>
         </p>
-        <h4>Emergenze</h4>
-        <p>
-            In caso il link precedente non funzioni, cliccare il pulsante sottostante:<br>
-            <a class="button" href="https://{{external_ip}}">⚠️ Connessione</a>
-            <p class="info-panel">
-            <em>Nella schermata di avvertimento "la connessione non è privata" (con il browser Edge)
-                clicca su "Avanzate" e poi "Procedi su...".</em>
-            </p>
-        </p>
-    </div>
+    </p>
+    <h4 style="font-size:24px;margin:0 0 20px 0; font: normal 1.5rem 'Silkscreen',sans-serif; color:#0072B5;">Rete Esterna</h4>
+    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;">
+        La web app è disponibile all'indirizzo
+        <strong><a href="https://{{domain}}/" style="color:#0072B5;text-decoration:underline;">{{domain}}</a></strong>,
+        da rete esterna o mobile.
+    </p>
 {% endblock %}
