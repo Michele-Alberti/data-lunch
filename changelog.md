@@ -1,3 +1,9 @@
+## v2.4.2 (2023-08-01)
+
+### Fix
+
+- fix encoding in password handling
+
 ## v2.4.1 (2023-07-31)
 
 ### Fix
