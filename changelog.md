@@ -1,3 +1,9 @@
+## v2.4.3 (2023-08-01)
+
+### Fix
+
+- hotfix for guest user password problem
+
 ## v2.4.2 (2023-08-01)
 
 ### Fix
