@@ -34,11 +34,12 @@ def reset_guest_user_password(config: DictConfig):
     async def scheduled_function():
         log.info(f"reset guest user password executed at {dt.datetime.now()}")
         # Create session
-        session = models.create_session(config)
-        # Change reset flag
-        models.set_flag(
-            session=session, id="reset_guest_user_password", value=True
-        )
+        session = models.create_exclusive_session(config)
+        with session.begin():
+            # Change reset flag
+            models.set_flag(
+                session=session, id="reset_guest_user_password", value=True
+            )
         # Reset password
         core.set_guest_user_password(config)
 

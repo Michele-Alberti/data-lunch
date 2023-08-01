@@ -1,6 +1,7 @@
 import logging
 import json
 from passlib.context import CryptContext
+from passlib.utils import saslprep
 import pathlib
 import tornado
 from tornado.web import RequestHandler, decode_signed_value
@@ -137,7 +138,9 @@ def add_user_hashed_password(user: str, password: str) -> None:
         credentials = {}
 
     # Update credentials
-    credentials.update({user: pwd_context.hash(password)})
+    credentials.update(
+        {user: pwd_context.hash(saslprep(password).encode("utf-8"))}
+    )
 
     # Save to json file
     with open(credentials_filename, "w") as credentials_file:
@@ -170,7 +173,9 @@ def verify_and_update_hash(user: str, password: str) -> bool | None:
     hash = get_hash_from_user(user)
 
     if hash:
-        valid, new_hash = pwd_context.verify_and_update(password, hash)
+        valid, new_hash = pwd_context.verify_and_update(
+            saslprep(password).encode("utf-8"), hash
+        )
         if valid:
             if new_hash:
                 replace_user_hash(user, new_hash)
