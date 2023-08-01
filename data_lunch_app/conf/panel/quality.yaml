@@ -5,7 +5,7 @@ defaults:
 scheduled_tasks: # Set to [] empty list to turn it off
   - kwargs:
       name: reset guest password
-      enabled: true
+      enabled: false
       hour: null
       minute: null
       period: 1d
