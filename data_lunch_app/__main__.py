@@ -5,7 +5,7 @@ import panel as pn
 from typing import Callable
 from omegaconf import DictConfig
 from . import auth
-from . import create_app
+from . import create_app, create_backend
 
 log = logging.getLogger(__name__)
 
@@ -42,11 +42,17 @@ def run_app(config: DictConfig):
 
     # Call the app factory function
     log.info("calling app factory function")
-    # Pass the create_app function as a lambda function to ensure that each
-    # invocation has a dedicated state variable (users' selections are not
-    # shared between instances)
+    # Pass the create_app and create_backend function as a lambda function to
+    # ensure that each invocation has a dedicated state variable (users'
+    # selections are not shared between instances)
+    # Pass a dictionary for a multipage app
+    pages = {
+        "": lambda: create_app(config=config),
+        "backend": lambda: create_backend(config=config),
+    }
+
     pn.serve(
-        lambda: create_app(config=config),
+        panels=pages,
         auth_provider=hydra.utils.instantiate(config.auth),
         **config.server,
     )

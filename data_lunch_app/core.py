@@ -1,7 +1,6 @@
 import panel as pn
 import pandas as pd
 import pathlib
-import pickle
 import logging
 import socket
 import subprocess
@@ -26,14 +25,6 @@ from . import auth
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
-
-
-# PROPERTIES ------------------------------------------------------------------
-guest_password_filename = (
-    pathlib.Path(__file__).parent.parent
-    / "shared_data"
-    / "guest_password.pickle"
-)
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -113,7 +104,7 @@ def set_guest_user_password(config: DictConfig) -> str:
                     value=config.panel.default_reset_guest_user_password_flag,
                 )
             # If the guest password pickle does not exist set reset flag to True
-            if not guest_password_filename.exists():
+            if not auth.guest_password_filename.exists():
                 log.warning(
                     "missing pickle with guest user password, a new password is saved to pickle"
                 )
@@ -140,27 +131,14 @@ def set_guest_user_password(config: DictConfig) -> str:
                 # Add hashed password to credentials file
                 auth.add_user_hashed_password("guest", guest_password)
                 # Save encrypted guest password to local pickle file
-                with open(guest_password_filename, "wb") as pickle_file:
-                    if pn.state.encryption:
-                        encrypted_guest_password = pn.state.encryption.encrypt(
-                            guest_password.encode("utf-8")
-                        ).decode("utf-8")
-                    else:
-                        encrypted_guest_password = guest_password
-                    pickle.dump(encrypted_guest_password, pickle_file)
+                auth.store_encrypted_guest_password(
+                    guest_password, auth.guest_password_filename
+                )
             else:
                 # Load from pickle
-                with open(guest_password_filename, "rb") as pickle_file:
-                    # If it is not possible to load it is probably because the file is missing
-                    try:
-                        guest_password = pickle.load(pickle_file)
-                        if pn.state.encryption:
-                            guest_password = pn.state.encryption.decrypt(
-                                guest_password.encode("utf-8")
-                            ).decode("utf-8")
-                    except Exception:
-                        log.error("can't read guest user password")
-                        raise
+                guest_password = auth.load_encrypted_guest_password(
+                    auth.guest_password_filename
+                )
     else:
         guest_password = ""
 
@@ -853,7 +831,7 @@ def download_dataframe(
     return bytes_io
 
 
-def submit_password(gi: gui.GraphicInterface, config: DictConfig):
+def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
     # Check if old password is correct
     if auth.verify_and_update_hash(
         user=auth.get_username_from_cookie(config.server.cookie_secret),
@@ -882,6 +860,7 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig):
                 # Logout
                 sleep(4)
                 auth.force_logout()
+                return True
             else:
                 pn.state.notifications.error(
                     "Password requirements not satisfied<br>Check again!",
@@ -897,3 +876,57 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig):
             "Incorrect old password!",
             duration=config.panel.notifications.duration,
         )
+
+    return False
+
+
+def backend_submit_password(
+    gi: gui.BackendInterface, config: DictConfig
+) -> bool:
+    # Check if new password match repeat password
+    if gi.password_widget.object.user:
+        if (
+            gi.password_widget.object.password
+            == gi.password_widget.object.repeat_password
+        ):
+            # Check if password is valid with regex
+            if re.fullmatch(
+                config.panel.psw_regex, gi.password_widget.object.password
+            ):
+                # Green light: update the password!
+                auth.add_user_hashed_password(
+                    user=gi.password_widget.object.user,
+                    password=gi.password_widget.object.password,
+                )
+                pn.state.notifications.success(
+                    "Credentials updated",
+                    duration=config.panel.notifications.duration,
+                )
+                # If guest user is being updated then dump the encrypted
+                # password to pickle
+                if gi.password_widget.object.user == "guest":
+                    auth.store_encrypted_guest_password(
+                        password=gi.password_widget.object.password,
+                        password_filename=auth.guest_password_filename,
+                    )
+
+                return True
+
+            else:
+                pn.state.notifications.error(
+                    "Password requirements not satisfied<br>Check again!",
+                    duration=config.panel.notifications.duration,
+                )
+
+        else:
+            pn.state.notifications.error(
+                "Password are different!",
+                duration=config.panel.notifications.duration,
+            )
+    else:
+        pn.state.notifications.error(
+            "Missing user!",
+            duration=config.panel.notifications.duration,
+        )
+
+    return False

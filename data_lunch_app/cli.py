@@ -12,10 +12,15 @@ from .models import db as sql_alchemy_db
 from .models import Menu, Orders, Users, Stats
 
 # Import functions from core
-from .core import clean_tables as clean_tables_func, guest_password_filename
+from .core import clean_tables as clean_tables_func
 
 # Auth
-from .auth import list_users, add_user_hashed_password, remove_user
+from .auth import (
+    list_users,
+    add_user_hashed_password,
+    remove_user,
+    guest_password_filename,
+)
 
 # Version
 __version__ = pkg_resources.require("data_lunch")[0].version

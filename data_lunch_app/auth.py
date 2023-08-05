@@ -3,6 +3,7 @@ import json
 from passlib.context import CryptContext
 from passlib.utils import saslprep
 import pathlib
+import pickle
 import tornado
 from tornado.web import RequestHandler, decode_signed_value
 import panel as pn
@@ -41,6 +42,11 @@ pwd_context = CryptContext(
 # PROPERTIES ------------------------------------------------------------------
 credentials_filename = (
     pathlib.Path(__file__).parent.parent / "shared_data" / "credentials.json"
+)
+guest_password_filename = (
+    pathlib.Path(__file__).parent.parent
+    / "shared_data"
+    / "guest_password.pickle"
 )
 
 # CLASSES ---------------------------------------------------------------------
@@ -196,11 +202,13 @@ def remove_user(user: str) -> None:
         raise e
 
     # Update credentials
-    credentials.pop(user)
+    removed_user = credentials.pop(user, None)
 
     # Save to json file
     with open(credentials_filename, "w") as credentials_file:
         json.dump(credentials, credentials_file, indent=4)
+
+    return removed_user
 
 
 def list_users() -> list[str]:
@@ -259,5 +267,36 @@ def generate_password(
             and special_chars_condition
         ):
             break
+
+    return password
+
+
+def store_encrypted_guest_password(
+    password: str, password_filename: str
+) -> None:
+    # Save encrypted guest password to local pickle file
+    with open(password_filename, "wb") as pickle_file:
+        if pn.state.encryption:
+            encrypted_guest_password = pn.state.encryption.encrypt(
+                password.encode("utf-8")
+            ).decode("utf-8")
+        else:
+            encrypted_guest_password = password
+        pickle.dump(encrypted_guest_password, pickle_file)
+
+
+def load_encrypted_guest_password(password_filename: str) -> str:
+    # Load from pickle
+    with open(password_filename, "rb") as pickle_file:
+        # If it is not possible to load it is probably because the file is missing
+        try:
+            password = pickle.load(pickle_file)
+            if pn.state.encryption:
+                password = pn.state.encryption.decrypt(
+                    password.encode("utf-8")
+                ).decode("utf-8")
+        except Exception:
+            log.error("can't read guest user password")
+            raise
 
     return password

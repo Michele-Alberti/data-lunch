@@ -111,3 +111,45 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("initialization process completed")
 
     return app
+
+
+def create_backend(config: DictConfig) -> pn.Column:
+    """Panel app factory function"""
+
+    log.info("initialize backend")
+
+    log.info("instantiate backend")
+
+    # Panel configurations
+    log.debug("set panel config and flags")
+    # Configurations
+    pn.config.nthreads = config.panel.nthreads
+    pn.config.notifications = True
+
+    # DASHBOARD
+    log.debug("instantiate base template")
+    # Create web app template
+    backend = pn.template.VanillaTemplate(
+        title=f"{config.panel.gui.title} Backend",
+        favicon=config.panel.gui.favicon_path,
+        logo=config.panel.gui.logo_path,
+        css_files=OmegaConf.to_container(
+            config.panel.gui.template_css_files, resolve=True
+        ),
+        raw_css=OmegaConf.to_container(
+            config.panel.gui.template_raw_css, resolve=True
+        ),
+    )
+
+    # CONFIGURABLE OBJECTS
+    backend_gi = gui.BackendInterface(config)
+
+    # DASHBOARD
+    # Build dashboard (the header object is used if defined)
+    backend.main.append(backend_gi.backend_main)
+
+    backend.servable()
+
+    log.info("initialization process completed")
+
+    return backend
