@@ -6,21 +6,25 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    TypeDecorator,
     Date,
     Boolean,
     event,
 )
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import declarative_base, relationship, Session
+from sqlalchemy.orm import declarative_base, relationship, validates, Session
 from sqlalchemy.sql import func, elements
 from sqlalchemy.sql import false as sql_false
 from omegaconf import DictConfig
 from datetime import datetime
 
+# Authentication
+from . import auth
+
 log = logging.getLogger(__name__)
 
 # Create database instance (with lazy loading)
-db = declarative_base()
+Data = declarative_base()
 
 
 # EVENTS ----------------------------------------------------------------------
@@ -33,10 +37,105 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 
-# MODELS ----------------------------------------------------------------------
+# CUSTOM COLUMNS --------------------------------------------------------------
+class Password(TypeDecorator):
+    """Allows storing and retrieving password hashes using PasswordHash."""
+
+    impl = String
+
+    def process_bind_param(
+        self, value: auth.PasswordHash | str, dialect
+    ) -> str:
+        """Ensure the value is a PasswordHash and then return its hash."""
+        return self._convert(value).hashed_password
+
+    def process_result_value(
+        self, value: str, dialect
+    ) -> auth.PasswordHash | None:
+        """Convert the hash to a PasswordHash, if it's non-NULL."""
+        if value is not None:
+            return auth.PasswordHash(value)
+
+    def validator(
+        self, password: auth.PasswordHash | str
+    ) -> auth.PasswordHash:
+        """Provides a validator/converter for @validates usage."""
+        return self._convert(password)
+
+    def _convert(self, value: auth.PasswordHash | str) -> auth.PasswordHash:
+        """Returns a PasswordHash from the given string.
+
+        PasswordHash instances or None values will return unchanged.
+        Strings will be hashed and the resulting PasswordHash returned.
+        Any other input will result in a TypeError.
+        """
+        if isinstance(value, auth.PasswordHash):
+            return value
+        elif isinstance(value, str):
+            return auth.PasswordHash.from_str(value)
+        elif value is not None:
+            raise TypeError(
+                f"Cannot initialize PasswordHash from type '{type(value)}'"
+            )
+
+        # Reached only if value is None
+        return None
 
 
-class Menu(db):
+class Encrypted(TypeDecorator):
+    """Allows storing and retrieving password hashes using PasswordHash."""
+
+    impl = String
+
+    def process_bind_param(
+        self, value: auth.PasswordEncrypt | str, dialect
+    ) -> str:
+        """Ensure the value is a PasswordEncrypt and then return the encrypted password."""
+        converted_value = self._convert(value)
+        if converted_value:
+            return converted_value.encrypted_password
+        else:
+            return None
+
+    def process_result_value(
+        self, value: str, dialect
+    ) -> auth.PasswordEncrypt | None:
+        """Convert the hash to a PasswordEncrypt, if it's non-NULL."""
+        if value is not None:
+            return auth.PasswordEncrypt(value)
+
+    def validator(
+        self, password: auth.PasswordEncrypt | str
+    ) -> auth.PasswordEncrypt:
+        """Provides a validator/converter for @validates usage."""
+        return self._convert(password)
+
+    def _convert(
+        self, value: auth.PasswordEncrypt | str
+    ) -> auth.PasswordEncrypt:
+        """Returns a PasswordEncrypt from the given string.
+
+        PasswordEncrypt instances or None values will return unchanged.
+        Strings will be encrypted and the resulting PasswordEncrypt returned.
+        Any other input will result in a TypeError.
+        """
+        if isinstance(value, auth.PasswordEncrypt):
+            return value
+        elif isinstance(value, str):
+            return auth.PasswordEncrypt.from_str(value)
+        elif value is not None:
+            raise TypeError(
+                f"Cannot initialize PasswordEncrypt from type '{type(value)}'"
+            )
+
+        # Reached only if value is None
+        return None
+
+
+# DATA MODELS -----------------------------------------------------------------
+
+
+class Menu(Data):
     __tablename__ = "menu"
     id = Column(Integer, primary_key=True)
     item = Column(String(250), unique=False, nullable=False)
@@ -51,7 +150,7 @@ class Menu(db):
         return f"<MENU_ITEM:{self.id} - {self.item}>"
 
 
-class Orders(db):
+class Orders(Data):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)
     user = Column(
@@ -73,7 +172,7 @@ class Orders(db):
         return f"<ORDER:{self.user}, {self.menu_item.item}>"
 
 
-class Users(db):
+class Users(Data):
     __tablename__ = "users"
     id = Column(
         String(100),
@@ -101,7 +200,7 @@ class Users(db):
         return f"<NOTE:{self.id}>"
 
 
-class Stats(db):
+class Stats(Data):
     # Primary key handled with __table_args__ bcause ON CONFLICT for composite
     # primary key is available only with __table_args__
     __tablename__ = "stats"
@@ -130,7 +229,7 @@ class Stats(db):
         return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
 
 
-class Flags(db):
+class Flags(Data):
     __tablename__ = "flags"
     id = Column(
         String(50),
@@ -142,6 +241,35 @@ class Flags(db):
 
     def __repr__(self):
         return f"<FLAG:{self.id} - value:{self.value}>"
+
+
+# CREDENTIALS MODELS ----------------------------------------------------------
+class Credentials(Data):
+    __tablename__ = "credentials"
+    user = Column(
+        String(100),
+        primary_key=True,
+        sqlite_on_conflict_primary_key="REPLACE",
+    )
+    password_hash = Column(Password(150), unique=False, nullable=False)
+    password_encrypted = Column(
+        Encrypted(150),
+        unique=False,
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
+
+    def __repr__(self):
+        return f"<USER:{self.user}>"
+
+    @validates("password_hash")
+    def _validate_password(self, key, password):
+        return getattr(type(self), key).type.validator(password)
+
+    @validates("password_encrypted")
+    def _validate_encrypted(self, key, password):
+        return getattr(type(self), key).type.validator(password)
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -188,21 +316,44 @@ def create_exclusive_session(config: DictConfig) -> Session:
 def create_database(config: DictConfig) -> None:
     """Database factory function"""
     engine = create_engine(config)
-    db.metadata.create_all(engine)
+    Data.metadata.create_all(engine)
+    # If no user exist create the default admin
+    session = create_session(config)
+    # Check if admin exists
+    if session.query(Credentials).get("admin") is None:
+        new_user = Credentials(
+            user="admin",
+            password_hash="admin",
+        )
+        session.add(new_user)
+        session.commit()
+    # Check if admin exists
+    if (
+        session.query(Credentials).get("guest") is None
+    ) and config.panel.guest_user:
+        new_user = Credentials(
+            user="guest",
+            password_hash="guest",
+            password_encrypted="guest",
+        )
+        session.add(new_user)
+        session.commit()
 
 
-def set_flag(session: Session, id: str, value: bool) -> None:
+def set_flag(config: DictConfig, id: str, value: bool) -> None:
     """Set value inside flag table"""
 
     # Write the selected flag (it will be overwritten if exists)
+    session = create_session(config)
     new_flag = Flags(id=id, value=value)
     session.add(new_flag)
     session.commit()
 
 
-def get_flag(session: Session, id: str) -> bool | None:
+def get_flag(config: DictConfig, id: str) -> bool | None:
     """Get the value of a flag"""
 
+    session = create_session(config)
     flag = session.query(Flags).get(id)
     if flag is None:
         value = None

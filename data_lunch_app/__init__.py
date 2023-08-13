@@ -47,9 +47,8 @@ def create_app(config: DictConfig) -> pn.Template:
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True
     # Set the no_more_orders flag if it is None (not found in flags table)
-    session = models.create_session(config)
-    if models.get_flag(session=session, id="no_more_orders") is None:
-        models.set_flag(session=session, id="no_more_orders", value=False)
+    if models.get_flag(config=config, id="no_more_orders") is None:
+        models.set_flag(config=config, id="no_more_orders", value=False)
 
     # DASHBOARD BASE TEMPLATE
     log.debug("instantiate base template")
@@ -100,11 +99,8 @@ def create_app(config: DictConfig) -> pn.Template:
         gi,
     )
     gi.reload_on_no_more_order(
-        models.get_flag(session=session, id="no_more_orders")
+        models.get_flag(config=config, id="no_more_orders")
     )
-
-    # Close database session
-    session.close()
 
     app.servable()
 
@@ -116,7 +112,14 @@ def create_app(config: DictConfig) -> pn.Template:
 def create_backend(config: DictConfig) -> pn.Column:
     """Panel app factory function"""
 
-    log.info("initialize backend")
+    log.info("starting initialization process")
+
+    log.debug("create 'shared_data' folder")
+    pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
+
+    log.info("initialize database")
+    # Create tables
+    models.create_database(config)
 
     log.info("instantiate backend")
 

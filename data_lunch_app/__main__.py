@@ -53,7 +53,7 @@ def run_app(config: DictConfig):
 
     pn.serve(
         panels=pages,
-        auth_provider=hydra.utils.instantiate(config.auth),
+        auth_provider=hydra.utils.instantiate(config.auth, config),
         **config.server,
     )
 
