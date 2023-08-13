@@ -1,15 +1,13 @@
 import click
 import pkg_resources
 from hydra import compose, initialize
-from omegaconf import OmegaConf
 import pandas as pd
 import panel as pn
 import pickle
 from .models import create_database, create_engine
 
 # Import database object
-from .models import db as sql_alchemy_db
-from .models import Menu, Orders, Users, Stats
+from .models import Data
 
 # Import functions from core
 from .core import clean_tables as clean_tables_func
@@ -75,7 +73,7 @@ def list_users_name(obj):
     """List users."""
 
     # Clear action
-    usernames = list_users()
+    usernames = list_users(config=obj["config"])
     click.secho("USERS:")
     click.secho("\n".join(usernames), fg="yellow")
     click.secho("\nDone", fg="green")
@@ -89,7 +87,7 @@ def add_user_psw(obj, user, password):
     """Add users credentials."""
 
     # Add hashed password to credentials file
-    add_user_hashed_password(user, password)
+    add_user_hashed_password(user, password, config=obj["config"])
 
     click.secho(f"User '{user}' added", fg="green")
 
@@ -119,7 +117,7 @@ def add_guest_psw(obj, password):
         )
 
     # Add hashed password to credentials file
-    add_user_hashed_password("guest", password)
+    add_user_hashed_password("guest", password, config=obj["config"])
     # Save encrypted guest password to local pickle file
     with open(guest_password_filename, "wb") as pickle_file:
         if pn.state.encryption:
@@ -141,7 +139,7 @@ def remove_user_psw(obj, user):
     """Remove user."""
 
     # Clear action
-    remove_user(user)
+    remove_user(user, config=obj["config"])
 
     click.secho(f"User '{user}' removed", fg="green")
 
@@ -172,7 +170,7 @@ def delete_database(obj):
     # Create database
     try:
         engine = create_engine(obj["config"])
-        sql_alchemy_db.metadata.drop_all(engine)
+        Data.metadata.drop_all(engine)
         click.secho("Database deleted", fg="green")
     except Exception as e:
         # Generic error

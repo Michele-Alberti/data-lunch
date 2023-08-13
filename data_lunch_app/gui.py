@@ -268,9 +268,8 @@ class GraphicInterface:
         @pn.depends(self.toggle_no_more_order_button, watch=True)
         def reload_on_no_more_order_callback(toggle_button: pnw.Toggle):
             # Update global variable
-            session = models.create_session(config)
             models.set_flag(
-                session=session, id="no_more_orders", value=toggle_button
+                config=config, id="no_more_orders", value=toggle_button
             )
 
             # Show "no more order" text
@@ -674,9 +673,6 @@ class BackendInterface:
                     </svg>
                     <span><strong>Access denied!</strong></span>
                 </div>
-                <div>
-                    Orders are closed, better luck next time.
-                </div>
             </div>
             """,
             margin=5,
@@ -708,7 +704,8 @@ class BackendInterface:
         )
         # User list
         self.users_tabulator = pn.widgets.Tabulator(
-            value=pd.DataFrame({"users": auth.list_users()}), name="Users"
+            value=pd.DataFrame({"users": auth.list_users(config=config)}),
+            name="Users",
         )
 
         # BUTTONS
@@ -778,7 +775,7 @@ class BackendInterface:
         # Add controls only for authenticated users
         if (
             auth.get_username_from_cookie(config.server.cookie_secret)
-            == "guest"
+            != "admin"
         ):
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
@@ -803,7 +800,7 @@ class BackendInterface:
         def submit_password_button_callback(self, config):
             success = core.backend_submit_password(self, config)
             if success:
-                self.reload_backend()
+                self.reload_backend(config)
 
         self.submit_password_button.on_click(
             lambda e: submit_password_button_callback(self, config)
@@ -811,9 +808,11 @@ class BackendInterface:
 
         # Delete user callback
         def delete_user_button_callback(self):
-            deleted_data = auth.remove_user(self.user_eraser.object.user)
+            deleted_data = auth.remove_user(
+                self.user_eraser.object.user, config=config
+            )
             if deleted_data:
-                self.reload_backend()
+                self.reload_backend(config)
                 pn.state.notifications.success(
                     f"User '{self.user_eraser.object.user}' deleted",
                     duration=config.panel.notifications.duration,
@@ -830,8 +829,10 @@ class BackendInterface:
 
     # UTILITY FUNCTIONS
     # MAIN SECTION
-    def reload_backend(self) -> None:
-        self.users_tabulator.value = pd.DataFrame({"users": auth.list_users()})
+    def reload_backend(self, config) -> None:
+        self.users_tabulator.value = pd.DataFrame(
+            {"users": auth.list_users(config=config)}
+        )
 
     def exit_backend(self) -> None:
         # Edit pathname to force logout
