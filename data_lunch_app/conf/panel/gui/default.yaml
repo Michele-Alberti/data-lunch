@@ -5,7 +5,7 @@ title: Data-Lunch
 favicon_static_dir: images
 favicon_filename: favicon.ico
 favicon_path: ${panel.gui.favicon_static_dir}/${panel.gui.favicon_filename}
-logo_filename: favicon.ico
+logo_filename: logo.png
 logo_static_dir: images
 logo_path: ${panel.gui.logo_static_dir}/${panel.gui.logo_filename}
 
