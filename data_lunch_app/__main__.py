@@ -1,6 +1,6 @@
-import logging
 import datetime as dt
 import hydra
+import logging
 import panel as pn
 from typing import Callable
 from omegaconf import DictConfig
@@ -26,19 +26,15 @@ def run_app(config: DictConfig):
                 callable=hydra.utils.instantiate(task.callable, config),
             )
 
-    if config.server.oauth_encryption_key:
-        log.info("initialize encryption")
-        try:
-            from cryptography.fernet import Fernet
-        except ImportError:
-            raise ImportError(
-                "Using OAuth2 provider with Panel requires the "
-                "cryptography library. Install it with `pip install "
-                "cryptography` or `conda install cryptography`."
-            )
-        pn.state.encryption = Fernet(config.server.oauth_encryption_key)
-    else:
-        log.warning("OAuth has not been configured with an encryption key")
+    # Set auth configurations
+    log.info("set auth config and encryption")
+    # Auth encryption
+    auth.set_app_auth_and_encryption(config)
+
+    log.info("set panel config")
+    # Configurations
+    pn.config.nthreads = config.panel.nthreads
+    pn.config.notifications = True
 
     # Call the app factory function
     log.info("calling app factory function")
@@ -53,7 +49,9 @@ def run_app(config: DictConfig):
 
     pn.serve(
         panels=pages,
-        auth_provider=hydra.utils.instantiate(config.auth, config),
+        auth_provider=hydra.utils.instantiate(
+            config.auth.auth_provider, config
+        ),
         **config.server,
     )
 

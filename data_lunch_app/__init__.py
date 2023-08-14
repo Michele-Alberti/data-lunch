@@ -42,10 +42,7 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("instantiate Panel app")
 
     # Panel configurations
-    log.debug("set panel config and flags")
-    # Configurations
-    pn.config.nthreads = config.panel.nthreads
-    pn.config.notifications = True
+    log.debug("set flags")
     # Set the no_more_orders flag if it is None (not found in flags table)
     if models.get_flag(config=config, id="no_more_orders") is None:
         models.set_flag(config=config, id="no_more_orders", value=False)

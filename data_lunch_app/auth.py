@@ -1,10 +1,10 @@
 import logging
 import json
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
+from omegaconf.errors import ConfigAttributeError
 from passlib.context import CryptContext
 from passlib.utils import saslprep
 import pathlib
-import pickle
 import panel as pn
 from panel.auth import OAuthProvider
 from panel.util import base64url_encode
@@ -124,13 +124,19 @@ class DataLunchLoginHandler(RequestHandler):
             self.clear_cookie("user")
             return
         self.set_secure_cookie(
-            "user", user, expires_days=pn.config.oauth_expiry
+            "user",
+            user,
+            expires_days=pn.config.oauth_expiry,
+            **self.config.auth.cookie_kwargs,
         )
         id_token = base64url_encode(json.dumps({"user": user}))
         if pn.state.encryption:
             id_token = pn.state.encryption.encrypt(id_token.encode("utf-8"))
         self.set_secure_cookie(
-            "id_token", id_token, expires_days=pn.config.oauth_expiry
+            "id_token",
+            id_token,
+            expires_days=pn.config.oauth_expiry,
+            **self.config.auth.cookie_kwargs,
         )
 
 
@@ -240,6 +246,35 @@ class PasswordEncrypt:
 
 
 # FUNCTIONS -------------------------------------------------------------------
+
+
+def set_app_auth_and_encryption(config: DictConfig) -> None:
+    try:
+        if config.auth.oauth_encryption_key:
+            try:
+                from cryptography.fernet import Fernet
+            except ImportError:
+                raise ImportError(
+                    "Using Data-Lunch authentication requires the "
+                    "cryptography library. Install it with `pip install "
+                    "cryptography` or `conda install cryptography`."
+                )
+            pn.config.oauth_encryption_key = (
+                config.auth.oauth_encryption_key.encode("ascii")
+            )
+            pn.state.encryption = Fernet(pn.config.oauth_encryption_key)
+    except ConfigAttributeError:
+        log.warning(
+            "missing authentication encryption key, generate a key with the `panel oauth-secret` CLI command and then provide it to hydra using the DATA_LUNCH_OAUTH_ENC_KEY environment variable"
+        )
+    # Cookie expiry date
+    try:
+        if config.auth.oauth_expiry:
+            pn.config.oauth_expiry = config.auth.oauth_expiry
+    except ConfigAttributeError:
+        log.warning(
+            "missing explicit authentication expiry date for cookies, defaults to 1 day"
+        )
 
 
 def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:

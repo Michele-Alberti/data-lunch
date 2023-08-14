@@ -3,7 +3,6 @@ import pkg_resources
 from hydra import compose, initialize
 import pandas as pd
 import panel as pn
-import pickle
 from .models import create_database, create_engine
 
 # Import database object
@@ -18,6 +17,7 @@ from .auth import (
     add_user_hashed_password,
     remove_user,
     guest_password_filename,
+    set_app_auth_and_encryption,
 )
 
 # Version
@@ -41,6 +41,9 @@ def cli(ctx):
     )
     config = compose(config_name="config")
     ctx.obj = {"config": config}
+
+    # Auth encryption
+    set_app_auth_and_encryption(config)
 
 
 @cli.group()
@@ -90,45 +93,6 @@ def add_user_psw(obj, user, password):
     add_user_hashed_password(user, password, config=obj["config"])
 
     click.secho(f"User '{user}' added", fg="green")
-
-
-@credentials.command("guest")
-@click.argument("password")
-@click.pass_obj
-def add_guest_psw(obj, password):
-    """Add users credentials."""
-
-    # Set encryption
-    config = obj["config"]
-    if config.server.oauth_encryption_key:
-        click.secho("initialize encryption", fg="green")
-        try:
-            from cryptography.fernet import Fernet
-        except ImportError:
-            raise ImportError(
-                "Using OAuth2 provider with Panel requires the "
-                "cryptography library. Install it with `pip install "
-                "cryptography` or `conda install cryptography`."
-            )
-        pn.state.encryption = Fernet(config.server.oauth_encryption_key)
-    else:
-        click.secho(
-            "OAuth has not been configured with an encryption key", fg="yellow"
-        )
-
-    # Add hashed password to credentials file
-    add_user_hashed_password("guest", password, config=obj["config"])
-    # Save encrypted guest password to local pickle file
-    with open(guest_password_filename, "wb") as pickle_file:
-        if pn.state.encryption:
-            encrypted_guest_password = pn.state.encryption.encrypt(
-                password.encode("utf-8")
-            ).decode("utf-8")
-        else:
-            encrypted_guest_password = password
-        pickle.dump(encrypted_guest_password, pickle_file)
-
-    click.secho("User 'guest' added", fg="green")
 
 
 @credentials.command("remove")
