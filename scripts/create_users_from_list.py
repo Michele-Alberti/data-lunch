@@ -79,7 +79,7 @@ for user in new_users_names_df.itertuples():
         special_chars=config.panel.psw_special_chars
     )
     # Add hashed password to credentials file
-    auth.add_user_hashed_password(user.name, password)
+    auth.add_user_hashed_password(user.name, password, config=config)
 
     # Send email to user: recipient (built from username)
     send_to = user.email

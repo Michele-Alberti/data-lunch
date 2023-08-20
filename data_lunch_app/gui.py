@@ -68,6 +68,31 @@ class PasswordRenewer(param.Parameterized):
         return "PasswordRenewer"
 
 
+# Backend password renewer is different from the normal password renewer
+# because no control on the old password is made.
+# This widget is used also for creating new users (for whom an old password do
+# not exist)
+
+
+class BackendPasswordRenewer(param.Parameterized):
+    user = param.String(
+        default="",
+        doc="username for password update (use 'guest' for guest user)",
+    )
+    password = param.String(default="")
+    repeat_password = param.String(default="")
+
+    def __str__(self):
+        return "BackendPasswordRenewer"
+
+
+class BackendUserEraser(param.Parameterized):
+    user = param.String(default="", doc="username to be deleted")
+
+    def __str__(self):
+        return "BackendUserEraser"
+
+
 # STATIC TEXTS ----------------------------------------------------------------
 # Tabs section text
 person_text = """
@@ -243,9 +268,8 @@ class GraphicInterface:
         @pn.depends(self.toggle_no_more_order_button, watch=True)
         def reload_on_no_more_order_callback(toggle_button: pnw.Toggle):
             # Update global variable
-            session = models.create_session(config)
             models.set_flag(
-                session=session, id="no_more_orders", value=toggle_button
+                config=config, id="no_more_orders", value=toggle_button
             )
 
             # Show "no more order" text
@@ -626,3 +650,193 @@ class GraphicInterface:
         )
 
         return {"stats": stats, "info": other_info}
+
+
+# BACKEND INTERFACE CLASS ========================================================
+class BackendInterface:
+    def __init__(
+        self,
+        config: DictConfig,
+    ):
+        # MAIN SECTION --------------------------------------------------------
+        # Backend main section
+
+        # TEXTS
+        # "no more order" message
+        self.access_denied_text = pn.pane.HTML(
+            """
+            <div class="no-more-order-flag">
+                <div class="icon-container">
+                    <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shield-lock-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M11.998 2l.118 .007l.059 .008l.061 .013l.111 .034a.993 .993 0 0 1 .217 .112l.104 .082l.255 .218a11 11 0 0 0 7.189 2.537l.342 -.01a1 1 0 0 1 1.005 .717a13 13 0 0 1 -9.208 16.25a1 1 0 0 1 -.502 0a13 13 0 0 1 -9.209 -16.25a1 1 0 0 1 1.005 -.717a11 11 0 0 0 7.531 -2.527l.263 -.225l.096 -.075a.993 .993 0 0 1 .217 -.112l.112 -.034a.97 .97 0 0 1 .119 -.021l.115 -.007zm.002 7a2 2 0 0 0 -1.995 1.85l-.005 .15l.005 .15a2 2 0 0 0 .995 1.581v1.769l.007 .117a1 1 0 0 0 1.993 -.117l.001 -1.768a2 2 0 0 0 -1.001 -3.732z" stroke-width="0" fill="currentColor"></path>
+                    </svg>
+                    <span><strong>Access denied!</strong></span>
+                </div>
+            </div>
+            """,
+            margin=5,
+            sizing_mode="stretch_width",
+            stylesheets=[config.panel.gui.css_files.no_more_orders_path],
+        )
+
+        # WIDGET
+        # Password renewer
+        self.password_widget = pn.Param(
+            BackendPasswordRenewer().param,
+            widgets={
+                "password": pnw.PasswordInput(
+                    name="New password", placeholder="New Password"
+                ),
+                "repeat_password": pnw.PasswordInput(
+                    name="Repeat new password",
+                    placeholder="Repeat New Password",
+                ),
+            },
+            name="Add/Update User Credentials",
+            width=sidebar_content_width,
+        )
+        # User eraser
+        self.user_eraser = pn.Param(
+            BackendUserEraser().param,
+            name="Delete User",
+            width=sidebar_content_width,
+        )
+        # User list
+        self.users_tabulator = pn.widgets.Tabulator(
+            value=pd.DataFrame({"users": auth.list_users(config=config)}),
+            name="Users",
+        )
+
+        # BUTTONS
+        # Logout button
+        self.exit_button = pnw.Button(
+            name="Exit",
+            button_type="warning",
+            height=45,
+            icon="door-exit",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        # Password button
+        self.submit_password_button = pnw.Button(
+            name="Submit",
+            button_type="success",
+            height=45,
+            icon="key",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        # Delete User button
+        self.delete_user_button = pnw.Button(
+            name="Delete",
+            button_type="danger",
+            height=45,
+            icon="trash-x-filled",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+
+        # COLUMN
+        # Create column with user credentials controls
+        self.add_update_user_column = pn.Column(
+            config.panel.gui.psw_text,
+            self.password_widget,
+            pn.VSpacer(),
+            self.submit_password_button,
+            pn.Spacer(height=5),
+            name="Add/Update Credentials",
+            width=sidebar_width,
+        )
+        # Create for deleting users
+        self.delete_user_column = pn.Column(
+            self.user_eraser,
+            pn.VSpacer(),
+            self.delete_user_button,
+            pn.Spacer(height=5),
+            name="Delete User",
+            width=sidebar_width,
+        )
+        # Create for deleting users
+        self.list_user_column = pn.Column(
+            self.users_tabulator,
+            pn.VSpacer(),
+            pn.Spacer(height=5),
+            name="Users",
+            width=sidebar_width,
+        )
+
+        # ROWS
+        self.backend_controls = pn.Row(
+            name="Actions",
+            sizing_mode="stretch_both",
+            min_height=450,
+        )
+        # Add controls only for authenticated users
+        if (
+            auth.get_username_from_cookie(config.server.cookie_secret)
+            != "admin"
+        ):
+            self.backend_controls.append(self.access_denied_text)
+            self.backend_controls.append(pn.Spacer(height=15))
+        else:
+            self.backend_controls.append(self.add_update_user_column)
+            self.backend_controls.append(self.delete_user_column)
+            self.backend_controls.append(self.list_user_column)
+
+        # Add exit button
+        self.backend_main = pn.Column(
+            self.backend_controls,
+            pn.Spacer(height=15),
+            self.exit_button,
+            width=sidebar_content_width * 3,
+        )
+
+        # CALLBACKS
+        # Exit callback
+        self.exit_button.on_click(lambda e: self.exit_backend())
+
+        # Submit password button callback
+        def submit_password_button_callback(self, config):
+            success = core.backend_submit_password(self, config)
+            if success:
+                self.reload_backend(config)
+
+        self.submit_password_button.on_click(
+            lambda e: submit_password_button_callback(self, config)
+        )
+
+        # Delete user callback
+        def delete_user_button_callback(self):
+            deleted_data = auth.remove_user(
+                self.user_eraser.object.user, config=config
+            )
+            if deleted_data:
+                self.reload_backend(config)
+                pn.state.notifications.success(
+                    f"User '{self.user_eraser.object.user}' deleted",
+                    duration=config.panel.notifications.duration,
+                )
+            else:
+                pn.state.notifications.error(
+                    f"User '{self.user_eraser.object.user}' does not exist",
+                    duration=config.panel.notifications.duration,
+                )
+
+        self.delete_user_button.on_click(
+            lambda e: delete_user_button_callback(self)
+        )
+
+    # UTILITY FUNCTIONS
+    # MAIN SECTION
+    def reload_backend(self, config) -> None:
+        self.users_tabulator.value = pd.DataFrame(
+            {"users": auth.list_users(config=config)}
+        )
+
+    def exit_backend(self) -> None:
+        # Edit pathname to force logout
+        pn.state.location.pathname = (
+            pn.state.location.pathname.split("/")[0] + "/"
+        )
+        pn.state.location.reload = True

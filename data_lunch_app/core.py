@@ -1,7 +1,6 @@
 import panel as pn
 import pandas as pd
 import pathlib
-import pickle
 import logging
 import socket
 import subprocess
@@ -26,14 +25,6 @@ from . import auth
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
-
-
-# PROPERTIES ------------------------------------------------------------------
-guest_password_filename = (
-    pathlib.Path(__file__).parent.parent
-    / "shared_data"
-    / "guest_password.pickle"
-)
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -90,77 +81,50 @@ def clean_tables(config: DictConfig):
     session.commit()
     log.info(f"deleted {num_rows_deleted} from table 'users'")
     # Clean flags
-    models.set_flag(session=session, id="no_more_orders", value=False)
+    models.set_flag(config=config, id="no_more_orders", value=False)
     log.info("reset values in table 'flags'")
 
 
 def set_guest_user_password(config: DictConfig) -> str:
     # If guest user is requested return a password, otherwise return ""
     if config.panel.guest_user:
-        # Start a transaction to acquire a lock on database
-        session = models.create_exclusive_session(config)
-        with session.begin():
-            # If flag does not exist use the default value
-            if (
-                models.get_flag(
-                    session=session, id="reset_guest_user_password"
-                )
-                is None
-            ):
-                models.set_flag(
-                    session=session,
-                    id="reset_guest_user_password",
-                    value=config.panel.default_reset_guest_user_password_flag,
-                )
-            # If the guest password pickle does not exist set reset flag to True
-            if not guest_password_filename.exists():
-                log.warning(
-                    "missing pickle with guest user password, a new password is saved to pickle"
-                )
-                models.set_flag(
-                    session=session, id="reset_guest_user_password", value=True
-                )
-            # Generate a random password only if requested (check on flag)
-            # otherwise load from pickle
-            if models.get_flag(
-                session=session, id="reset_guest_user_password"
-            ):
-                # Turn off reset user password (in order to reset it only once)
-                # This statement also acquire a lock on database (so it is
-                # called first)
-                models.set_flag(
-                    session=session,
-                    id="reset_guest_user_password",
-                    value=False,
-                )
-                # Create password
-                guest_password = auth.generate_password(
-                    special_chars=config.panel.psw_special_chars
-                )
-                # Add hashed password to credentials file
-                auth.add_user_hashed_password("guest", guest_password)
-                # Save encrypted guest password to local pickle file
-                with open(guest_password_filename, "wb") as pickle_file:
-                    if pn.state.encryption:
-                        encrypted_guest_password = pn.state.encryption.encrypt(
-                            guest_password.encode("utf-8")
-                        ).decode("utf-8")
-                    else:
-                        encrypted_guest_password = guest_password
-                    pickle.dump(encrypted_guest_password, pickle_file)
-            else:
-                # Load from pickle
-                with open(guest_password_filename, "rb") as pickle_file:
-                    # If it is not possible to load it is probably because the file is missing
-                    try:
-                        guest_password = pickle.load(pickle_file)
-                        if pn.state.encryption:
-                            guest_password = pn.state.encryption.decrypt(
-                                guest_password.encode("utf-8")
-                            ).decode("utf-8")
-                    except Exception:
-                        log.error("can't read guest user password")
-                        raise
+        # If flag does not exist use the default value
+        if (
+            models.get_flag(config=config, id="reset_guest_user_password")
+            is None
+        ):
+            models.set_flag(
+                config=config,
+                id="reset_guest_user_password",
+                value=config.panel.default_reset_guest_user_password_flag,
+            )
+        # Generate a random password only if requested (check on flag)
+        # otherwise load from pickle
+        if models.get_flag(config=config, id="reset_guest_user_password"):
+            # Turn off reset user password (in order to reset it only once)
+            # This statement also acquire a lock on database (so it is
+            # called first)
+            models.set_flag(
+                config=config,
+                id="reset_guest_user_password",
+                value=False,
+            )
+            # Create password
+            guest_password = auth.generate_password(
+                special_chars=config.panel.psw_special_chars
+            )
+            # Add hashed password to database
+            auth.add_user_hashed_password(
+                "guest", guest_password, config=config
+            )
+        else:
+            # Load from database
+            session = models.create_session(config)
+            guest_password = (
+                session.query(models.Credentials)
+                .get("guest")
+                .password_encrypted.decrypt()
+            )
     else:
         guest_password = ""
 
@@ -287,14 +251,14 @@ def reload_menu(
 
     # Check if someone changed the "no_more_order" toggle
     if gi.toggle_no_more_order_button.value != models.get_flag(
-        session=session, id="no_more_orders"
+        config=config, id="no_more_orders"
     ):
         # The following statement will trigger the toggle callback
         # which will call reload_menu once again
         # This is the reason why this if contains a return (without the return
         # the content will be reloaded twice)
         gi.toggle_no_more_order_button.value = models.get_flag(
-            session=session, id="no_more_orders"
+            config=config, id="no_more_orders"
         )
 
         return
@@ -498,7 +462,7 @@ def send_order(
     session = models.create_session(config)
 
     # Check if the "no more order" toggle button is pressed
-    if models.get_flag(session=session, id="no_more_orders"):
+    if models.get_flag(config=config, id="no_more_orders"):
         pn.state.notifications.error(
             "It is not possible to place new orders",
             duration=config.panel.notifications.duration,
@@ -516,7 +480,7 @@ def send_order(
     # Check if a guests is using a name reserved to an authenticated user
     if (
         auth.get_username_from_cookie(config.server.cookie_secret) == "guest"
-    ) and (person.username in auth.list_users()):
+    ) and (person.username in auth.list_users(config=config)):
         pn.state.notifications.error(
             f"{person.username} is a reserved name<br>Please choose a different one",
             duration=config.panel.notifications.duration,
@@ -536,7 +500,9 @@ def send_order(
         auth.get_username_from_cookie(config.server.cookie_secret) != "guest"
     ) and (
         person.username
-        not in (name for name in auth.list_users() if name != "guest")
+        not in (
+            name for name in auth.list_users(config=config) if name != "guest"
+        )
     ):
         pn.state.notifications.error(
             f"{person.username} is not a valid name<br>for an authenticated user<br>Please choose a different one",
@@ -652,7 +618,7 @@ def delete_order(
     session = models.create_session(config)
 
     # Check if the "no more order" toggle button is pressed
-    if models.get_flag(session=session, id="no_more_orders"):
+    if models.get_flag(config=config, id="no_more_orders"):
         pn.state.notifications.error(
             "It is not possible to delete orders",
             duration=config.panel.notifications.duration,
@@ -672,7 +638,7 @@ def delete_order(
         if (
             auth.get_username_from_cookie(config.server.cookie_secret)
             == "guest"
-        ) and (person.username in auth.list_users()):
+        ) and (person.username in auth.list_users(config=config)):
             pn.state.notifications.error(
                 f"You are not authorized<br>to delete<br>{person.username}'s order",
                 duration=config.panel.notifications.duration,
@@ -853,12 +819,14 @@ def download_dataframe(
     return bytes_io
 
 
-def submit_password(gi: gui.GraphicInterface, config: DictConfig):
+def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
+    # Get user's password hash
+    password_hash = auth.get_hash_from_user(
+        auth.get_username_from_cookie(config.server.cookie_secret),
+        config=config,
+    )
     # Check if old password is correct
-    if auth.verify_and_update_hash(
-        user=auth.get_username_from_cookie(config.server.cookie_secret),
-        password=gi.password_widget.object.old_password,
-    ):
+    if password_hash == gi.password_widget.object.old_password:
         # Check if new password match repeat password
         if (
             gi.password_widget.object.new_password
@@ -874,6 +842,7 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig):
                         config.server.cookie_secret
                     ),
                     password=gi.password_widget.object.new_password,
+                    config=config,
                 )
                 pn.state.notifications.success(
                     "Password updated<br>Logging out",
@@ -882,6 +851,7 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig):
                 # Logout
                 sleep(4)
                 auth.force_logout()
+                return True
             else:
                 pn.state.notifications.error(
                     "Password requirements not satisfied<br>Check again!",
@@ -897,3 +867,51 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig):
             "Incorrect old password!",
             duration=config.panel.notifications.duration,
         )
+
+    return False
+
+
+def backend_submit_password(
+    gi: gui.BackendInterface, config: DictConfig
+) -> bool:
+    # Check if new password match repeat password
+    if gi.password_widget.object.user:
+        if (
+            gi.password_widget.object.password
+            == gi.password_widget.object.repeat_password
+        ):
+            # Check if password is valid with regex
+            if re.fullmatch(
+                config.panel.psw_regex, gi.password_widget.object.password
+            ):
+                # Green light: update the password!
+                auth.add_user_hashed_password(
+                    user=gi.password_widget.object.user,
+                    password=gi.password_widget.object.password,
+                    config=config,
+                )
+                pn.state.notifications.success(
+                    "Credentials updated",
+                    duration=config.panel.notifications.duration,
+                )
+
+                return True
+
+            else:
+                pn.state.notifications.error(
+                    "Password requirements not satisfied<br>Check again!",
+                    duration=config.panel.notifications.duration,
+                )
+
+        else:
+            pn.state.notifications.error(
+                "Password are different!",
+                duration=config.panel.notifications.duration,
+            )
+    else:
+        pn.state.notifications.error(
+            "Missing user!",
+            duration=config.panel.notifications.duration,
+        )
+
+    return False

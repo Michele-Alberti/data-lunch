@@ -1,11 +1,11 @@
-import logging
 import datetime as dt
 import hydra
+import logging
 import panel as pn
 from typing import Callable
 from omegaconf import DictConfig
 from . import auth
-from . import create_app
+from . import create_app, create_backend
 
 log = logging.getLogger(__name__)
 
@@ -26,28 +26,32 @@ def run_app(config: DictConfig):
                 callable=hydra.utils.instantiate(task.callable, config),
             )
 
-    if config.server.oauth_encryption_key:
-        log.info("initialize encryption")
-        try:
-            from cryptography.fernet import Fernet
-        except ImportError:
-            raise ImportError(
-                "Using OAuth2 provider with Panel requires the "
-                "cryptography library. Install it with `pip install "
-                "cryptography` or `conda install cryptography`."
-            )
-        pn.state.encryption = Fernet(config.server.oauth_encryption_key)
-    else:
-        log.warning("OAuth has not been configured with an encryption key")
+    # Set auth configurations
+    log.info("set auth config and encryption")
+    # Auth encryption
+    auth.set_app_auth_and_encryption(config)
+
+    log.info("set panel config")
+    # Configurations
+    pn.config.nthreads = config.panel.nthreads
+    pn.config.notifications = True
 
     # Call the app factory function
     log.info("calling app factory function")
-    # Pass the create_app function as a lambda function to ensure that each
-    # invocation has a dedicated state variable (users' selections are not
-    # shared between instances)
+    # Pass the create_app and create_backend function as a lambda function to
+    # ensure that each invocation has a dedicated state variable (users'
+    # selections are not shared between instances)
+    # Pass a dictionary for a multipage app
+    pages = {
+        "": lambda: create_app(config=config),
+        "backend": lambda: create_backend(config=config),
+    }
+
     pn.serve(
-        lambda: create_app(config=config),
-        auth_provider=hydra.utils.instantiate(config.auth),
+        panels=pages,
+        auth_provider=hydra.utils.instantiate(
+            config.auth.auth_provider, config
+        ),
         **config.server,
     )
 
