@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data_lunch"
-version = "2.4.3"
+version = "2.5.0"
 description = "The ultimate web app for a well organized lunch."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -43,7 +43,7 @@ exclude = '''
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "2.4.3"
+version = "2.5.0"
 version_files = [
     "data_lunch_app/__init__.py",
     "pyproject.toml:version",
