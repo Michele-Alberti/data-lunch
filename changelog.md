@@ -1,3 +1,16 @@
+## v2.5.0 (2023-08-20)
+
+### Feat
+
+- move credentials from json file to database
+- add backend dashboard for managing users credentials
+
+### Fix
+
+- fix oauth_encryption_key and oauth_expiry usage
+- remove scheduled task 'credentials upload'
+- adapt gui and support code (cli, scripts, scheduled tasks) to the new credential system
+
 ## v2.4.3 (2023-08-01)
 
 ### Fix
