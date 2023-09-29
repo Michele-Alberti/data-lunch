@@ -1,5 +1,6 @@
 import hydra
 import logging
+import pathlib
 from sqlalchemy import (
     Column,
     PrimaryKeyConstraint,
@@ -315,6 +316,10 @@ def create_exclusive_session(config: DictConfig) -> Session:
 
 def create_database(config: DictConfig) -> None:
     """Database factory function"""
+    # Create directory if missing
+    log.debug("create 'shared_data' folder")
+    pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
+    # Create tables
     engine = create_engine(config)
     Data.metadata.create_all(engine)
     # If no user exist create the default admin

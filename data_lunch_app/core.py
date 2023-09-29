@@ -791,7 +791,11 @@ def download_dataframe(
         for time, df in df_dict.items():
             log.info(f"writing sheet {time}")
             df.to_excel(writer, sheet_name=time.replace(":", "."), startrow=1)
-            writer.sheets[time.replace(":", ".")].cell(1, 1, "Time - " + time)
+            writer.sheets[time.replace(":", ".")].cell(
+                1,
+                1,
+                f"Time - {time} | # {len([c for c in df.columns if c != config.panel.gui.total_column_name])}",
+            )
             writer.close()  # Important!
             bytes_io.seek(0)  # Important!
 

@@ -28,9 +28,6 @@ def create_app(config: DictConfig) -> pn.Template:
 
     log.info("starting initialization process")
 
-    log.debug("create 'shared_data' folder")
-    pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
-
     log.info("initialize database")
     # Create tables
     models.create_database(config)
@@ -110,9 +107,6 @@ def create_backend(config: DictConfig) -> pn.Column:
     """Panel app factory function"""
 
     log.info("starting initialization process")
-
-    log.debug("create 'shared_data' folder")
-    pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
 
     log.info("initialize database")
     # Create tables
