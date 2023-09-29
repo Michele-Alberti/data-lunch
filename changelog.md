@@ -1,3 +1,14 @@
+## v2.6.0 (2023-09-29)
+
+### Feat
+
+- **gui.py**: add icons to 'build menu' and 'download xlsx' buttons
+- **core.py**: add number of people to excel file exported by download_dataframe
+
+### Refactor
+
+- move shared data folder creation to models.py
+
 ## v2.5.0 (2023-08-20)
 
 ### Feat
