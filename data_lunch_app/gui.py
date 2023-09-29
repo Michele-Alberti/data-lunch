@@ -430,12 +430,16 @@ class GraphicInterface:
             name="Build Menu",
             button_type="primary",
             sizing_mode="stretch_width",
+            icon="tools-kitchen-2",
+            icon_size="2em",
         )
         # Download button and callback
         self.download_button = pn.widgets.FileDownload(
             callback=lambda: core.download_dataframe(config, app, self),
             filename=config.panel.file_name + ".xlsx",
             sizing_mode="stretch_width",
+            icon="download",
+            icon_size="2em",
         )
         # Password button
         self.submit_password_button = pnw.Button(
