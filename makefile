@@ -93,6 +93,14 @@ ssl-cert:
 rm-ssl-cert:
 	rm -R ./ssl
 
+generate-secrets:
+	@echo "\n*** START ***"
+	@echo "\nCOOKIE SECRET:"
+	@panel secret
+	@echo "\nENCRIPTION KEY:"
+	@panel oauth-secret
+	@echo "\n***  END  ***\n"
+
 all: up-init up-build
 
 clean:
