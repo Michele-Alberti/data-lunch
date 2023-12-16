@@ -230,7 +230,7 @@ class PasswordEncrypt:
         return encrypted_password
 
     def decrypt(self):
-        """Return encrypted password."""
+        """Return decrypted password."""
         if pn.state.encryption:
             password = pn.state.encryption.decrypt(
                 self.encrypted_password.encode("utf-8")
@@ -280,7 +280,7 @@ def set_app_auth_and_encryption(config: DictConfig) -> None:
 def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
     # Create session
     session = models.create_session(config)
-    # Load user from json file
+    # Load user from database
     user_credential = session.query(models.Credentials).get(user)
 
     # Get the hashed password
@@ -298,6 +298,8 @@ def add_user_hashed_password(
     # Create session
     session = models.create_session(config)
     # New credentials
+    # For guest user add also the encrypted password so that panle can show
+    # the decrypted guest password to logged users
     if user == "guest":
         new_user_credential = models.Credentials(
             user=user, password_hash=password, password_encrypted=password
