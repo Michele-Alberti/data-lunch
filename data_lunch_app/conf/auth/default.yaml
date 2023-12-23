@@ -1,10 +1,7 @@
-auth_provider:
-  _target_: data_lunch_app.auth.DataLunchProvider
-  basic_login_template: data_lunch_app/templates/login.html
 oauth_encryption_key: ${oc.env:DATA_LUNCH_OAUTH_ENC_KEY}
 oauth_expiry: 15
 # Set cookie function arguments (set to empty dict to turn off)
 cookie_kwargs:
- httponly: true
- secure: true
- samesite: strict
+  httponly: true
+  secure: true
+  samesite: strict

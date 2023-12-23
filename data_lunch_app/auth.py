@@ -55,17 +55,13 @@ guest_password_filename = (
 
 
 class DataLunchProvider(OAuthProvider):
-    def __init__(self, config, basic_login_template=None):
-        # Set basic template
-        if basic_login_template is None:
-            self._basic_login_template = BASIC_LOGIN_TEMPLATE
-        else:
-            with open(basic_login_template) as f:
-                self._basic_login_template = _env.from_string(f.read())
+    def __init__(self, config, login_template=None, logout_template=None):
         # Set Hydra config info
         self.config = config
 
-        super().__init__()
+        super().__init__(
+            login_template=login_template, logout_template=logout_template
+        )
 
     @property
     def login_url(self):
@@ -74,9 +70,7 @@ class DataLunchProvider(OAuthProvider):
     @property
     def login_handler(self):
         # Set basic template
-        DataLunchLoginHandler._basic_login_template = (
-            self._basic_login_template
-        )
+        DataLunchLoginHandler._login_template = self._login_template
         # Set Hydra config info
         DataLunchLoginHandler.config = self.config
 
@@ -90,7 +84,7 @@ class DataLunchLoginHandler(RequestHandler):
             errormessage = self.get_argument("error")
         except Exception:
             errormessage = ""
-        html = self._basic_login_template.render(errormessage=errormessage)
+        html = self._login_template.render(errormessage=errormessage)
         self.write(html)
 
     def check_permission(self, user, password):

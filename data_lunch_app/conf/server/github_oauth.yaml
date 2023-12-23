@@ -1,0 +1,8 @@
+defaults:
+  - /${oc.env:PANEL_ENV}
+
+oauth_provider: github
+oauth_key: ${oc.env:DATA_LUNCH_OAUTH_KEY}
+oauth_secret: ${oc.env:DATA_LUNCH_OAUTH_SECRET}
+login_template: data_lunch_app/templates/login_oauth.html
+logout_template: data_lunch_app/templates/logout.html

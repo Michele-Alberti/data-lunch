@@ -3,7 +3,8 @@ import hydra
 import logging
 import panel as pn
 from typing import Callable
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
+from omegaconf.errors import ConfigAttributeError
 from . import auth
 from . import create_app, create_backend
 
@@ -47,13 +48,31 @@ def run_app(config: DictConfig):
         "backend": lambda: create_backend(config=config),
     }
 
-    pn.serve(
-        panels=pages,
-        auth_provider=hydra.utils.instantiate(
-            config.auth.auth_provider, config
-        ),
-        **config.server,
+    # If config.server.auth_provider exists, update
+    # config.server.auth_provider key with the instantiated object
+    try:
+        auth_object = {
+            "auth_provider": hydra.utils.instantiate(
+                config.server.auth_provider, config
+            )
+        }
+        log.debug(
+            "auth_object dict set to instantiated object from config.server.auth_provider"
+        )
+    except ConfigAttributeError:
+        auth_object = {}
+        log.debug(
+            "missing config.server.auth_provider, auth_object dict left empty"
+        )
+
+    # Mask the auth_provider key from config.server to avoid a TypeError
+    # (multiple values for keyword argument 'auth_provider')
+    masked_server_config = OmegaConf.masked_copy(
+        config.server,
+        [k for k in config.server.keys() if k != "auth_provider"],
     )
+
+    pn.serve(panels=pages, **masked_server_config, **auth_object)
 
 
 def schedule_task(
