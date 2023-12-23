@@ -41,25 +41,27 @@ conda activate data-lunch
 ```
 ### 2.2. Environment variables
 
-The following environment variables are required for running the _web app_ or the _makefile_.
+The following environment variables are required for running the _web app_, the _makefile_ or _utility scripts_.
 | Variable | Type | Example Value |
 |----------|:------:|-------|
 `PANEL_APP` | _str_ | data-lunch-app (used by `makefile`)
 `PANEL_ENV` | _str_ | development
 `PANEL_ARGS` | _str_ | additional arguments passed to _Hydra_ (e.g. `panel/gui=major_release`)
 `PORT` | _int_ | 5000
-`DOCKER_USERNAME` | _str_ | your _Docker Hub_ username (used by `makefile`)
-`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id` (used by `makefile` for _GCP's CLI_ authentication and for uploading to _gcp_ storage, if active)
-`GCLOUD_BUCKET` | _str_ | _Google Cloud Platform_ `bucket` (used for uploading database to _gcp_ storage, if active)
+`DOCKER_USERNAME` | _str_ | your _Docker Hub_ username, used by `makefile` and stats panel to extract container name (optional)
+`GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id`, used by `makefile` for _GCP's CLI_ authentication and for uploading the database to _gcp_ storage, if active in web app configuration files (see panel.scheduled_tasks)
+`GCLOUD_BUCKET` | _str_ | _Google Cloud Platform_ `bucket`, used for uploading database to _gcp_ storage, if active in web app configuration files (see panel.scheduled_tasks)
 `CERT_EMAIL` | _str_ | email for _SSL certificates_
-`DOMAIN` | _str_ | domain name, e.g. mywebapp.com
-`MAIL_USER` | _str_ | email client user (for sending emails with the current instance IP)
-`MAIL_APP_PASSWORD` | _str_ | email client password (for sending emails with the current instance IP)
-`MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (for sending emails with the current instance IP)
-`DUCKDNS_URL` | _str_ | _URL_ used to update dynamic address (with _Duck DNS_)
-`IMAGE_VERSION` | _str_ | _Docker_ image version (typically `stable`or `latest`)
-`DATA_LUNCH_COOKIE_SECRET` | _str_ | _Secret_ used for securing the authentication cookie (use `panel secret` for generating a valid one)
-`DATA_LUNCH_OAUTH_ENC_KEY` | _str_ | _Encription key_ used by the OAuth algrithm for encryption (use `panel oauth-secret` for generating a valid one)
+`DOMAIN` | _str_ | mywebapp.com (domain name)
+`MAIL_USER` | _str_ | mywebappemail@email.com (email client user, used for sending emails with the current instance IP)
+`MAIL_APP_PASSWORD` | _str_ | email client password (used for sending emails with the current instance IP)
+`MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (used for sending emails with the current instance IP)
+`DUCKDNS_URL` | _str_ | _URL_ used in `compose_init.sh` to update dynamic address (see _Duck DNS's_ instructions for details)
+`IMAGE_VERSION` | _str_ | _stable_ (_Docker_ image version, typically `stable` or `latest`)
+`DATA_LUNCH_COOKIE_SECRET` | _str_ | _Secret_ used for securing the authentication cookie (use `make generate-secrets` to generate a valid secret)
+`DATA_LUNCH_OAUTH_ENC_KEY` | _str_ | _Encription key_ used by the OAuth algorithm for encryption (use `make generate-secrets` to generate a valid secret)
+`DATA_LUNCH_OAUTH_KEY` | _str_ | _OAuth Key_ used for configuring the OAuth provider (_GitHub_)
+`DATA_LUNCH_OAUTH_SECRET` | _str_ | _OAuth Secret_ used for configuring the OAuth provider (_GitHub_)
 
 ### 2.3. Setup the development environment
 
