@@ -1,0 +1,2 @@
+defaults:
+  - /${oc.env:PANEL_ENV}
