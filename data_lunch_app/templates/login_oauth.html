@@ -60,6 +60,7 @@
         }
         .form-button:hover{
             background: #005485;
+            text-align: center;
         }
         .form-header{
             text-align: center;
@@ -75,6 +76,10 @@
         font-size: 2rem;
         line-height: 2rem;
         }
+        .errormessage {
+            font-family: "Space Mono", monospace;
+            color: firebrick;
+        }
     </style>
 </head>
 <body>
@@ -84,7 +89,7 @@
                 <h1>Data-Lunch</h1>
             </div>
             <div class="form-group">
-                <span style="color:firebrick;font-weight:bold" class="errormessage">{{errormessage}}</span>
+                <span class="errormessage">{{errormessage}}</span>
             </div>
             <p></p>
             <!--Login Button-->
