@@ -86,8 +86,10 @@ def clean_tables(config: DictConfig):
 
 
 def set_guest_user_password(config: DictConfig) -> str:
-    # If guest user is requested return a password, otherwise return ""
-    if config.panel.guest_user:
+    """If guest user is requested return a password, otherwise return ""
+    This function always returns "" if basic auth is not used
+    """
+    if config.panel.guest_user and auth.is_basic_auth_active(config=config):
         # If flag does not exist use the default value
         if (
             models.get_flag(config=config, id="reset_guest_user_password")
@@ -264,7 +266,7 @@ def reload_menu(
         return
 
     # Guest graphic configuration
-    if auth.get_username_from_cookie(config.server.cookie_secret) == "guest":
+    if pn.state.user == "guest":
         # If guest show guest type selection group
         gi.person_widget.widgets["guest"].disabled = False
         gi.person_widget.widgets["guest"].visible = True
@@ -477,10 +479,13 @@ def send_order(
 
         return
 
-    # Check if a guests is using a name reserved to an authenticated user
+    # If auth is active, check if a guests is using a name reserved to an
+    # authenticated user
     if (
-        auth.get_username_from_cookie(config.server.cookie_secret) == "guest"
-    ) and (person.username in auth.list_users(config=config)):
+        pn.state.user == "guest"
+        and (person.username in auth.list_users(config=config))
+        and (auth.is_auth_active(config=config))
+    ):
         pn.state.notifications.error(
             f"{person.username} is a reserved name<br>Please choose a different one",
             duration=config.panel.notifications.duration,
@@ -496,9 +501,7 @@ def send_order(
         return
 
     # Check if an authenticated user is ordering for an invalid name
-    if (
-        auth.get_username_from_cookie(config.server.cookie_secret) != "guest"
-    ) and (
+    if pn.state.user != "guest" and (
         person.username
         not in (
             name for name in auth.list_users(config=config) if name != "guest"
@@ -536,10 +539,7 @@ def send_order(
             try:
                 # Add User (note is empty by default)
                 # Do not pass guest for authenticated users (default to NotAGuest)
-                if (
-                    auth.get_username_from_cookie(config.server.cookie_secret)
-                    == "guest"
-                ):
+                if pn.state.user == "guest":
                     new_user = models.Users(
                         id=person.username,
                         guest=person.guest,
@@ -634,11 +634,13 @@ def delete_order(
         return
 
     if person.username:
-        # Check if a guests is deleting an order of an authenticated user
+        # If auth is active, check if a guests is deleting an order of an
+        # authenticated user
         if (
-            auth.get_username_from_cookie(config.server.cookie_secret)
-            == "guest"
-        ) and (person.username in auth.list_users(config=config)):
+            pn.state.user == "guest"
+            and (person.username in auth.list_users(config=config))
+            and (auth.is_auth_active(config=config))
+        ):
             pn.state.notifications.error(
                 f"You are not authorized<br>to delete<br>{person.username}'s order",
                 duration=config.panel.notifications.duration,
@@ -825,47 +827,13 @@ def download_dataframe(
 
 def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
     # Get user's password hash
-    password_hash = auth.get_hash_from_user(
-        auth.get_username_from_cookie(config.server.cookie_secret),
-        config=config,
-    )
+    password_hash = auth.get_hash_from_user(pn.state.user, config=config)
     # Check if old password is correct
     if password_hash == gi.password_widget.object.old_password:
         # Check if new password match repeat password
-        if (
-            gi.password_widget.object.new_password
-            == gi.password_widget.object.repeat_new_password
-        ):
-            # Check if password is valid with regex
-            if re.fullmatch(
-                config.panel.psw_regex, gi.password_widget.object.new_password
-            ):
-                # Green light: update the password!
-                auth.add_user_hashed_password(
-                    user=auth.get_username_from_cookie(
-                        config.server.cookie_secret
-                    ),
-                    password=gi.password_widget.object.new_password,
-                    config=config,
-                )
-                pn.state.notifications.success(
-                    "Password updated<br>Logging out",
-                    duration=config.panel.notifications.duration,
-                )
-                # Logout
-                sleep(4)
-                auth.force_logout()
-                return True
-            else:
-                pn.state.notifications.error(
-                    "Password requirements not satisfied<br>Check again!",
-                    duration=config.panel.notifications.duration,
-                )
-        else:
-            pn.state.notifications.error(
-                "Password are different!",
-                duration=config.panel.notifications.duration,
-            )
+        return backend_submit_password(
+            gi=gi, config=config, user=pn.state.user, logout_on_success=True
+        )
     else:
         pn.state.notifications.error(
             "Incorrect old password!",
@@ -876,29 +844,47 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
 
 
 def backend_submit_password(
-    gi: gui.BackendInterface, config: DictConfig
+    gi: gui.GraphicInterface | gui.BackendInterface,
+    config: DictConfig,
+    user: str = None,
+    logout_on_success: bool = False,
 ) -> bool:
+    # Check if user is passed, otherwise check if backend widget
+    # (password_widget.object.user) is available
+    if not user:
+        username = gi.password_widget.object.user
+    else:
+        username = user
     # Check if new password match repeat password
-    if gi.password_widget.object.user:
+    if username:
         if (
-            gi.password_widget.object.password
-            == gi.password_widget.object.repeat_password
+            gi.password_widget.object.new_password
+            == gi.password_widget.object.repeat_new_password
         ):
-            # Check if password is valid with regex
+            # Check if new password is valid with regex
             if re.fullmatch(
-                config.panel.psw_regex, gi.password_widget.object.password
+                config.panel.psw_regex, gi.password_widget.object.new_password
             ):
                 # Green light: update the password!
                 auth.add_user_hashed_password(
-                    user=gi.password_widget.object.user,
-                    password=gi.password_widget.object.password,
+                    user=username,
+                    password=gi.password_widget.object.new_password,
                     config=config,
                 )
-                pn.state.notifications.success(
-                    "Credentials updated",
-                    duration=config.panel.notifications.duration,
-                )
 
+                # Logout if requested
+                if logout_on_success:
+                    pn.state.notifications.success(
+                        "Password updated<br>Logging out",
+                        duration=config.panel.notifications.duration,
+                    )
+                    sleep(4)
+                    auth.force_logout()
+                else:
+                    pn.state.notifications.success(
+                        "Password updated",
+                        duration=config.panel.notifications.duration,
+                    )
                 return True
 
             else:

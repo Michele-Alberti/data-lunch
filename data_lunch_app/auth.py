@@ -42,14 +42,7 @@ pwd_context = CryptContext(
 )
 
 # PROPERTIES ------------------------------------------------------------------
-credentials_filename = (
-    pathlib.Path(__file__).parent.parent / "shared_data" / "credentials.json"
-)
-guest_password_filename = (
-    pathlib.Path(__file__).parent.parent
-    / "shared_data"
-    / "guest_password.pickle"
-)
+# Intentionally left void
 
 # CLASSES ---------------------------------------------------------------------
 
@@ -242,6 +235,27 @@ class PasswordEncrypt:
 # FUNCTIONS -------------------------------------------------------------------
 
 
+def is_basic_auth_active(config: DictConfig) -> bool:
+    """Check config object and return true if basic authentication is active.
+    Return false otherwise."""
+
+    # Check if a valid auth key exists
+    auth_provider = config.server.get("auth_provider", None)
+
+    return auth_provider
+
+
+def is_auth_active(config: DictConfig) -> bool:
+    """Check config object and return true if basic authentication or OAuth is active.
+    Return false otherwise."""
+
+    # Check if a valid auth key exists
+    auth_provider = is_basic_auth_active(config=config)
+    oauth_provider = config.server.get("oauth_provider", None)
+
+    return auth_provider or oauth_provider
+
+
 def set_app_auth_and_encryption(config: DictConfig) -> None:
     try:
         if config.auth.oauth_encryption_key:
@@ -334,15 +348,6 @@ def list_users(config: DictConfig) -> list[str]:
     users_list.sort()
 
     return users_list
-
-
-def get_username_from_cookie(cookie_secret: str) -> str:
-    secure_cookie = pn.state.curdoc.session_context.request.cookies["user"]
-    user = decode_signed_value(cookie_secret, "user", secure_cookie).decode(
-        "utf-8"
-    )
-
-    return user
 
 
 def force_logout() -> None:

@@ -49,10 +49,8 @@ class Person(param.Parameterized):
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
         # Check user (a username is already set for authenticated users)
-        username = auth.get_username_from_cookie(
-            cookie_secret=config.server.cookie_secret
-        )
-        if username != "guest":
+        username = pn.state.user
+        if (username != "guest") and (username is not None):
             self.username = username
 
     def __str__(self):
@@ -79,8 +77,8 @@ class BackendPasswordRenewer(param.Parameterized):
         default="",
         doc="username for password update (use 'guest' for guest user)",
     )
-    password = param.String(default="")
-    repeat_password = param.String(default="")
+    new_password = param.String(default="")
+    repeat_new_password = param.String(default="")
 
     def __str__(self):
         return "BackendPasswordRenewer"
@@ -453,17 +451,22 @@ class GraphicInterface:
         )
 
         # COLUMNS
-        # Create column for person data
+        # Create column for person data (add logout button only if auth is active)
         self.person_column = pn.Column(
             person_text,
             self.person_widget,
             pn.Spacer(height=5),
-            self.logout_button,
-            pn.Spacer(height=5),
-            self.salad_menu,
             name="User",
             width=sidebar_content_width,
         )
+        if auth.is_auth_active(config=config):
+            self.person_column.append(pn.Spacer(height=5))
+            self.person_column.append(self.logout_button)
+        # Finally add salads
+        self.person_column.append(
+            self.salad_menu,
+        )
+
         # Create column for uploading image/Excel with the menu
         self.sidebar_menu_upload_col = pn.Column(
             upload_text,
@@ -505,15 +508,14 @@ class GraphicInterface:
             width=sidebar_content_width,
         )
 
-        # Append password only for non-guest users
-        if (
-            auth.get_username_from_cookie(config.server.cookie_secret)
-            != "guest"
-        ):
+        # Append upload, download and stats only for non-guest
+        # Append password only for non-guest users if auth is active
+        if pn.state.user != "guest":
             self.sidebar_tabs.append(self.sidebar_menu_upload_col)
             self.sidebar_tabs.append(self.sidebar_download_orders_col)
             self.sidebar_tabs.append(self.sidebar_stats_col)
-            self.sidebar_tabs.append(self.sidebar_password)
+            if auth.is_basic_auth_active(config=config):
+                self.sidebar_tabs.append(self.sidebar_password)
 
         # CALLBACKS
         # Logout callback
@@ -777,10 +779,7 @@ class BackendInterface:
             min_height=450,
         )
         # Add controls only for authenticated users
-        if (
-            auth.get_username_from_cookie(config.server.cookie_secret)
-            != "admin"
-        ):
+        if pn.state.user != "admin":
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:

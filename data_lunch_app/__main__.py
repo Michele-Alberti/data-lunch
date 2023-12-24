@@ -31,6 +31,9 @@ def run_app(config: DictConfig):
     log.info("set auth config and encryption")
     # Auth encryption
     auth.set_app_auth_and_encryption(config)
+    log.debug(
+        f'authentication {"" if auth.is_auth_active(config) else "not "}active'
+    )
 
     log.info("set panel config")
     # Configurations
@@ -42,11 +45,11 @@ def run_app(config: DictConfig):
     # Pass the create_app and create_backend function as a lambda function to
     # ensure that each invocation has a dedicated state variable (users'
     # selections are not shared between instances)
+    # Backend exist only if auth is active
     # Pass a dictionary for a multipage app
-    pages = {
-        "": lambda: create_app(config=config),
-        "backend": lambda: create_backend(config=config),
-    }
+    pages = {"": lambda: create_app(config=config)}
+    if auth.is_auth_active(config=config):
+        pages["backend"] = lambda: create_backend(config=config)
 
     # If config.server.auth_provider exists, update
     # config.server.auth_provider key with the instantiated object
