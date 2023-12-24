@@ -4,5 +4,7 @@ defaults:
 oauth_provider: github
 oauth_key: ${oc.env:DATA_LUNCH_OAUTH_KEY}
 oauth_secret: ${oc.env:DATA_LUNCH_OAUTH_SECRET}
+oauth_redirect_uri: https://localhost
 login_template: data_lunch_app/templates/login_oauth.html
 logout_template: data_lunch_app/templates/logout.html
+oauth_error_template: data_lunch_app/templates/error.html
