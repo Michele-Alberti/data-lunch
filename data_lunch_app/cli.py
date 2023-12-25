@@ -98,7 +98,7 @@ def add_auth_user(obj, user, is_admin):
 @click.argument("user")
 @click.pass_obj
 def remove_auth_user(obj, user):
-    """Remove user from both authenticated users and basic login credentials table."""
+    """Remove user from both authorized users and basic login credentials table."""
 
     # Clear action
     deleted_data = auth.remove_user(user, config=obj["config"])
@@ -152,7 +152,7 @@ def add_user_credential(obj, user, password, is_admin, is_guest):
 @click.argument("user")
 @click.pass_obj
 def remove_user_credential(obj, user):
-    """Remove user from both authenticated users and basic login credentials table."""
+    """Remove user from both authorized users and basic login credentials table."""
 
     # Clear action
     deleted_data = auth.remove_user(user, config=obj["config"])

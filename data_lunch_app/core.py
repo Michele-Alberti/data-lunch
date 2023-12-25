@@ -271,7 +271,7 @@ def reload_menu(
         gi.person_widget.widgets["guest"].disabled = False
         gi.person_widget.widgets["guest"].visible = True
     else:
-        # If authenticated users hide guest type selection group
+        # If user is authorized hide guest type selection group
         gi.person_widget.widgets["guest"].disabled = True
         gi.person_widget.widgets["guest"].visible = False
 
@@ -480,7 +480,7 @@ def send_order(
         return
 
     # If auth is active, check if a guests is using a name reserved to an
-    # authenticated user
+    # authorized user
     if (
         auth.is_guest(user=pn.state.user, config=config)
         and (person.username in auth.list_users(config=config))
@@ -500,7 +500,7 @@ def send_order(
 
         return
 
-    # Check if an authenticated user is ordering for an invalid name
+    # Check if an authorized user is ordering for an invalid name
     if (
         not auth.is_guest(user=pn.state.user, config=config)
         and (
@@ -514,7 +514,7 @@ def send_order(
         and (auth.is_auth_active(config=config))
     ):
         pn.state.notifications.error(
-            f"{person.username} is not a valid name<br>for an authenticated user<br>Please choose a different one",
+            f"{person.username} is not a valid name<br>for an authorized user<br>Please choose a different one",
             duration=config.panel.notifications.duration,
         )
 
@@ -544,7 +544,7 @@ def send_order(
             # Place order
             try:
                 # Add User (note is empty by default)
-                # Do not pass guest for authenticated users (default to NotAGuest)
+                # Do not pass guest for authorized users (default to NotAGuest)
                 if auth.is_guest(user=pn.state.user, config=config):
                     new_user = models.Users(
                         id=person.username,
@@ -641,7 +641,7 @@ def delete_order(
 
     if person.username:
         # If auth is active, check if a guests is deleting an order of an
-        # authenticated user
+        # authorized user
         if (
             auth.is_guest(user=pn.state.user, config=config)
             and (person.username in auth.list_users(config=config))
