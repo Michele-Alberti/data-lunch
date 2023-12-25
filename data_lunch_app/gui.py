@@ -22,6 +22,9 @@ log = logging.getLogger(__name__)
 
 # OPTIONS AND DEFAULTS --------------------------------------------------------
 # App
+header_row_height = 55
+header_button_width = 50
+generic_button_height = 45
 sidebar_width = 400
 sidebar_content_width = sidebar_width - 10
 
@@ -48,7 +51,7 @@ class Person(param.Parameterized):
         self.param.guest.objects = config.panel.guest_types
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
-        # Check user (a username is already set for authenticated users)
+        # Check user (a username is already set for authorized users)
         username = pn.state.user
         if not auth.is_guest(user=username, config=config) and (
             username is not None
@@ -111,7 +114,7 @@ class BackendUserEraser(param.Parameterized):
 person_text = """
 ### User Data
 
-_Authenticated users_ do not need to fill the username.<br>
+_Authorized users_ do not need to fill the username.<br>
 _Guest users_ shall use a valid _unique_ name and select a guest type.
 """
 upload_text = """
@@ -153,6 +156,55 @@ class GraphicInterface:
         # WIDGET
         # Create PNG pane with app icon
         self.header_object = instantiate(config.panel.gui.header_object)
+
+        # BUTTONS
+        # Backend button
+        self.backend_button = pnw.Button(
+            name="",
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="adjustments-filled",
+            icon_size="2em",
+        )
+        # Logout button
+        self.logout_button = pnw.Button(
+            name="",
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="logout",
+            icon_size="2em",
+        )
+
+        # ROW
+        # Create column for person data (add logout button only if auth is active)
+        self.header_row = pn.Row(
+            height=header_row_height,
+            sizing_mode="stretch_width",
+        )
+        # Append a graphic element to the left side of header
+        if config.panel.gui.header_object:
+            self.header_row.append(self.header_object)
+        # Append a controls to the right side of header
+        if auth.is_auth_active(config=config):
+            self.header_row.append(pn.HSpacer())
+            if auth.is_admin(user=pn.state.user, config=config):
+                self.header_row.append(self.backend_button)
+            self.header_row.append(self.logout_button)
+            self.header_row.append(
+                pn.pane.HTML(
+                    styles=dict(background="white"), width=2, height=45
+                )
+            )
+
+        # CALLBACKS
+        # Backend callback
+        self.backend_button.on_click(lambda e: auth.open_backend())
+        # Logout callback
+        self.logout_button.on_click(lambda e: auth.force_logout())
 
         # MAIN SECTION --------------------------------------------------------
         # Elements required for build the main section of the web app
@@ -210,7 +262,7 @@ class GraphicInterface:
             button_style="outline",
             button_type="light",
             width=45,
-            height=45,
+            height=generic_button_height,
             icon="reload",
             icon_size="2em",
         )
@@ -218,7 +270,7 @@ class GraphicInterface:
         self.send_order_button = pnw.Button(
             name="Send Order",
             button_type="success",
-            height=45,
+            height=generic_button_height,
             icon="circle-check-filled",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -229,7 +281,7 @@ class GraphicInterface:
             name="Stop Orders",
             button_style="outline",
             button_type="warning",
-            height=45,
+            height=generic_button_height,
             icon="alarm",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -238,7 +290,7 @@ class GraphicInterface:
         self.delete_order_button = pnw.Button(
             name="Delete Order",
             button_type="danger",
-            height=45,
+            height=generic_button_height,
             icon="trash-filled",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -428,16 +480,6 @@ class GraphicInterface:
             self.guest_password_widget.placeholder = "NOT ACTIVE"
 
         # BUTTONS
-        # Logout button
-        self.logout_button = pnw.Button(
-            name="Logout",
-            button_type="danger",
-            button_style="outline",
-            height=45,
-            icon="logout",
-            icon_size="2em",
-            sizing_mode="stretch_width",
-        )
         # Create menu button
         self.build_menu_button = pnw.Button(
             name="Build Menu",
@@ -459,14 +501,14 @@ class GraphicInterface:
             name="Submit",
             button_type="success",
             button_style="outline",
-            height=45,
+            height=generic_button_height,
             icon="key",
             icon_size="2em",
             sizing_mode="stretch_width",
         )
 
         # COLUMNS
-        # Create column for person data (add logout button only if auth is active)
+        # Create column for person data
         self.person_column = pn.Column(
             person_text,
             self.person_widget,
@@ -474,9 +516,6 @@ class GraphicInterface:
             name="User",
             width=sidebar_content_width,
         )
-        if auth.is_auth_active(config=config):
-            self.person_column.append(pn.Spacer(height=5))
-            self.person_column.append(self.logout_button)
         # Finally add salads
         self.person_column.append(
             self.salad_menu,
@@ -533,8 +572,6 @@ class GraphicInterface:
                 self.sidebar_tabs.append(self.sidebar_password)
 
         # CALLBACKS
-        # Logout callback
-        self.logout_button.on_click(lambda e: auth.force_logout())
         # Build menu button callback
         self.build_menu_button.on_click(
             lambda e: core.build_menu(
@@ -679,6 +716,37 @@ class BackendInterface:
         self,
         config: DictConfig,
     ):
+        # HEADER SECTION ------------------------------------------------------
+        # WIDGET
+
+        # BUTTONS
+        self.exit_button = pnw.Button(
+            name="",
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="door-exit",
+            icon_size="2em",
+        )
+
+        # ROW
+        # Create column for person data (add logout button only if auth is active)
+        self.header_row = pn.Row(
+            height=header_row_height,
+            sizing_mode="stretch_width",
+        )
+        # Append a controls to the right side of header
+        self.header_row.append(pn.HSpacer())
+        self.header_row.append(self.exit_button)
+        self.header_row.append(
+            pn.pane.HTML(styles=dict(background="white"), width=2, height=45)
+        )
+
+        # CALLBACKS
+        # Exit callback
+        self.exit_button.on_click(lambda e: self.exit_backend())
+
         # MAIN SECTION --------------------------------------------------------
         # Backend main section
 
@@ -720,7 +788,7 @@ class BackendInterface:
         # Add user (only oauth)
         self.add_auth_user_widget = pn.Param(
             BackendAddAuthUser().param,
-            name="Add Authenticated User",
+            name="Add Authorized User",
             width=sidebar_content_width,
         )
         # User eraser
@@ -732,24 +800,15 @@ class BackendInterface:
         # User list
         self.users_tabulator = pn.widgets.Tabulator(
             value=auth.list_users_guests_and_privileges(config),
-            name="Users",
         )
 
         # BUTTONS
-        # Logout button
-        self.exit_button = pnw.Button(
-            name="Exit",
-            button_type="warning",
-            height=45,
-            icon="door-exit",
-            icon_size="2em",
-            sizing_mode="stretch_width",
-        )
+        # Exit button
         # Password button
         self.submit_password_button = pnw.Button(
             name="Submit",
             button_type="success",
-            height=45,
+            height=generic_button_height,
             icon="key",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -758,7 +817,7 @@ class BackendInterface:
         self.add_auth_user_button = pnw.Button(
             name="Add",
             button_type="success",
-            height=45,
+            height=generic_button_height,
             icon="user-plus",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -767,7 +826,7 @@ class BackendInterface:
         self.delete_user_button = pnw.Button(
             name="Delete",
             button_type="danger",
-            height=45,
+            height=generic_button_height,
             icon="user-minus",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -781,7 +840,6 @@ class BackendInterface:
             pn.VSpacer(),
             self.submit_password_button,
             pn.Spacer(height=5),
-            name="Add/Update Credentials",
             width=sidebar_width,
         )
         # Create column with user authenthication controls (oauth)
@@ -789,8 +847,6 @@ class BackendInterface:
             self.add_auth_user_widget,
             pn.VSpacer(),
             self.add_auth_user_button,
-            pn.Spacer(height=5),
-            name="Add/Update Authenticate Users",
             width=sidebar_width,
         )
         # Create for deleting users
@@ -798,16 +854,12 @@ class BackendInterface:
             self.user_eraser,
             pn.VSpacer(),
             self.delete_user_button,
-            pn.Spacer(height=5),
-            name="Delete User",
             width=sidebar_width,
         )
         # Create for deleting users
         self.list_user_column = pn.Column(
+            pn.pane.HTML("<b>Authorized Users</b>"),
             self.users_tabulator,
-            pn.VSpacer(),
-            pn.Spacer(height=5),
-            name="Users",
             width=sidebar_width,
         )
 
@@ -817,32 +869,35 @@ class BackendInterface:
             sizing_mode="stretch_both",
             min_height=450,
         )
-        # Add controls only for authenticated users
+        # Add controls only for admin users
         if not auth.is_admin(user=pn.state.user, config=config):
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:
             # For basic auth use a password renewer, for oauth a widget for
-            # adding authenticatd users
+            # adding authorized users
             if auth.is_basic_auth_active(config=config):
                 self.backend_controls.append(self.add_update_user_column)
             else:
                 self.backend_controls.append(self.add_auth_user_column)
+            self.backend_controls.append(
+                pn.pane.HTML(
+                    styles=dict(background="lightgray"),
+                    width=2,
+                    sizing_mode="stretch_height",
+                )
+            )
             self.backend_controls.append(self.delete_user_column)
+            self.backend_controls.append(
+                pn.pane.HTML(
+                    styles=dict(background="lightgray"),
+                    width=2,
+                    sizing_mode="stretch_height",
+                )
+            )
             self.backend_controls.append(self.list_user_column)
 
-        # Add exit button
-        self.backend_main = pn.Column(
-            self.backend_controls,
-            pn.Spacer(height=15),
-            self.exit_button,
-            width=sidebar_content_width * 3,
-        )
-
         # CALLBACKS
-        # Exit callback
-        self.exit_button.on_click(lambda e: self.exit_backend())
-
         # Submit password button callback
         def submit_password_button_callback(self, config):
             success = core.backend_submit_password(
@@ -907,7 +962,7 @@ class BackendInterface:
         )
 
     def exit_backend(self) -> None:
-        # Edit pathname to force logout
+        # Edit pathname to force exit
         pn.state.location.pathname = (
             pn.state.location.pathname.split("/")[0] + "/"
         )

@@ -71,8 +71,7 @@ def create_app(config: DictConfig) -> pn.Template:
 
     # DASHBOARD
     # Build dashboard (the header object is used if defined)
-    if config.panel.gui.header_object:
-        app.header.append(gi.header_object)
+    app.header.append(gi.header_row)
     app.sidebar.append(gi.sidebar_tabs)
     app.main.append(gi.no_more_order_text)
     app.main.append(gi.main_header_row)
@@ -141,8 +140,9 @@ def create_backend(config: DictConfig) -> pn.Column:
     backend_gi = gui.BackendInterface(config)
 
     # DASHBOARD
-    # Build dashboard (the header object is used if defined)
-    backend.main.append(backend_gi.backend_main)
+    # Build dashboard
+    backend.header.append(backend_gi.header_row)
+    backend.main.append(backend_gi.backend_controls)
 
     backend.servable()
 
