@@ -60,8 +60,9 @@ The following environment variables are required for running the _web app_, the 
 `IMAGE_VERSION` | _str_ | _stable_ (_Docker_ image version, typically `stable` or `latest`)
 `DATA_LUNCH_COOKIE_SECRET` | _str_ | _Secret_ used for securing the authentication cookie (use `make generate-secrets` to generate a valid secret)
 `DATA_LUNCH_OAUTH_ENC_KEY` | _str_ | _Encription key_ used by the OAuth algorithm for encryption (use `make generate-secrets` to generate a valid secret)
-`DATA_LUNCH_OAUTH_KEY` | _str_ | _OAuth Key_ used for configuring the OAuth provider (_GitHub_)
-`DATA_LUNCH_OAUTH_SECRET` | _str_ | _OAuth Secret_ used for configuring the OAuth provider (_GitHub_)
+`DATA_LUNCH_OAUTH_KEY` | _str_ | _OAuth key_ used for configuring the OAuth provider (_GitHub_)
+`DATA_LUNCH_OAUTH_SECRET` | _str_ | _OAuth secret_ used for configuring the OAuth provider (_GitHub_)
+`DATA_LUNCH_OAUTH_REDIRECT_URI` | _str_ | _OAuth redirect uri_ used for configuring the OAuth provider (_GitHub_), leave empty to panel use default value
 
 ### 2.3. Setup the development environment
 
