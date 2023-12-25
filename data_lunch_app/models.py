@@ -245,8 +245,8 @@ class Flags(Data):
 
 
 # CREDENTIALS MODELS ----------------------------------------------------------
-class AuthorizedUsers(Data):
-    __tablename__ = "authorized_users"
+class PrivilegedUsers(Data):
+    __tablename__ = "privileged_users"
     user = Column(
         String(100),
         primary_key=True,
@@ -346,7 +346,7 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
         # Check if admin exists
         if session.query(Credentials).get("admin") is None:
             # Add authorization and credentials for admin
-            auth.add_authorized_user(
+            auth.add_privileged_user(
                 user="admin",
                 is_admin=True,
                 config=config,
@@ -361,7 +361,7 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
             session.query(Credentials).get("guest") is None
         ) and config.panel.guest_user:
             # Add only credentials for guest (guest users are not included
-            # in authorized_users table)
+            # in privileged_users table)
             auth.add_user_hashed_password(
                 user="guest",
                 password="guest",

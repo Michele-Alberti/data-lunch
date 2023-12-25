@@ -271,7 +271,7 @@ def reload_menu(
         gi.person_widget.widgets["guest"].disabled = False
         gi.person_widget.widgets["guest"].visible = True
     else:
-        # If user is authorized hide guest type selection group
+        # If user is privileged hide guest type selection group
         gi.person_widget.widgets["guest"].disabled = True
         gi.person_widget.widgets["guest"].visible = False
 
@@ -479,8 +479,8 @@ def send_order(
 
         return
 
-    # If auth is active, check if a guests is using a name reserved to an
-    # authorized user
+    # If auth is active, check if a guests is using a name reserved to a
+    # privileged user
     if (
         auth.is_guest(user=pn.state.user, config=config)
         and (person.username in auth.list_users(config=config))
@@ -500,7 +500,7 @@ def send_order(
 
         return
 
-    # Check if an authorized user is ordering for an invalid name
+    # Check if a privileged user is ordering for an invalid name
     if (
         not auth.is_guest(user=pn.state.user, config=config)
         and (
@@ -514,7 +514,7 @@ def send_order(
         and (auth.is_auth_active(config=config))
     ):
         pn.state.notifications.error(
-            f"{person.username} is not a valid name<br>for an authorized user<br>Please choose a different one",
+            f"{person.username} is not a valid name<br>for a privileged user<br>Please choose a different one",
             duration=config.panel.notifications.duration,
         )
 
@@ -544,7 +544,7 @@ def send_order(
             # Place order
             try:
                 # Add User (note is empty by default)
-                # Do not pass guest for authorized users (default to NotAGuest)
+                # Do not pass guest for privileged users (default to NotAGuest)
                 if auth.is_guest(user=pn.state.user, config=config):
                     new_user = models.Users(
                         id=person.username,
@@ -640,15 +640,15 @@ def delete_order(
         return
 
     if person.username:
-        # If auth is active, check if a guests is deleting an order of an
-        # authorized user
+        # If auth is active, check if a guests is deleting an order of a
+        # privileged user
         if (
             auth.is_guest(user=pn.state.user, config=config)
             and (person.username in auth.list_users(config=config))
             and (auth.is_auth_active(config=config))
         ):
             pn.state.notifications.error(
-                f"You are not authorized<br>to delete<br>{person.username}'s order",
+                f"You do not have enough privileges<br>to delete<br>{person.username}'s order",
                 duration=config.panel.notifications.duration,
             )
 
@@ -887,9 +887,9 @@ def backend_submit_password(
                     is_guest = auth.is_guest(user=user, config=config)
                 if is_admin is None:
                     is_admin = auth.is_admin(user=user, config=config)
-                # Add an authorized users only if guest option is not active
+                # Add a privileged users only if guest option is not active
                 if not is_guest:
-                    auth.add_authorized_user(
+                    auth.add_privileged_user(
                         user=username,
                         is_admin=is_admin,
                         config=config,

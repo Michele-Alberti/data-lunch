@@ -51,7 +51,7 @@ class Person(param.Parameterized):
         self.param.guest.objects = config.panel.guest_types
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
-        # Check user (a username is already set for authorized users)
+        # Check user (a username is already set for privileged users)
         username = pn.state.user
         if not auth.is_guest(user=username, config=config) and (
             username is not None
@@ -87,14 +87,14 @@ class BackendPasswordRenewer(param.Parameterized):
     admin = param.Boolean(default=False, doc="add admin privileges")
     guest = param.Boolean(
         default=False,
-        doc="guest account (don't add user to authorized users' table)",
+        doc="guest account (don't add user to privileged users' table)",
     )
 
     def __str__(self):
         return "BackendPasswordRenewer"
 
 
-class BackendAddAuthUser(param.Parameterized):
+class BackendAddPrivilegedUser(param.Parameterized):
     user = param.String(default="", doc="user to add")
     admin = param.Boolean(default=False, doc="add admin privileges")
 
@@ -114,7 +114,7 @@ class BackendUserEraser(param.Parameterized):
 person_text = """
 ### User Data
 
-_Authorized users_ do not need to fill the username.<br>
+_Privileged users_ do not need to fill the username.<br>
 _Guest users_ shall use a valid _unique_ name and select a guest type.
 """
 upload_text = """
@@ -787,8 +787,8 @@ class BackendInterface:
         )
         # Add user (only oauth)
         self.add_auth_user_widget = pn.Param(
-            BackendAddAuthUser().param,
-            name="Add Authorized User",
+            BackendAddPrivilegedUser().param,
+            name="Add Privileged User",
             width=sidebar_content_width,
         )
         # User eraser
@@ -858,7 +858,7 @@ class BackendInterface:
         )
         # Create for deleting users
         self.list_user_column = pn.Column(
-            pn.pane.HTML("<b>Authorized Users</b>"),
+            pn.pane.HTML("<b>Users and Privileges</b>"),
             self.users_tabulator,
             width=sidebar_width,
         )
@@ -875,7 +875,7 @@ class BackendInterface:
             self.backend_controls.append(pn.Spacer(height=15))
         else:
             # For basic auth use a password renewer, for oauth a widget for
-            # adding authorized users
+            # adding privileged users
             if auth.is_basic_auth_active(config=config):
                 self.backend_controls.append(self.add_update_user_column)
             else:
@@ -915,7 +915,7 @@ class BackendInterface:
 
         # Delete user callback
         def add_auth_user_button_callback(self):
-            auth.add_authorized_user(
+            auth.add_privileged_user(
                 self.add_auth_user_widget.object.user,
                 is_admin=self.add_auth_user_widget.object.admin,
                 config=config,

@@ -299,14 +299,14 @@ def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
     return hash
 
 
-def add_authorized_user(user: str, is_admin: bool, config: DictConfig) -> None:
-    """Add user id to 'authorized_users' table.
-    THe table is used by all authentication method to understand which users are
-    authorized and which ones are guests."""
+def add_privileged_user(user: str, is_admin: bool, config: DictConfig) -> None:
+    """Add user id to 'privileged_users' table.
+    The table is used by all authentication method to understand which users are
+    privileged and which ones are guests."""
     # Create session
     session = models.create_session(config)
     # New credentials
-    new_user = models.AuthorizedUsers(user=user, admin=is_admin)
+    new_user = models.PrivilegedUsers(user=user, admin=is_admin)
 
     # Update credentials
     session.add(new_user)
@@ -341,10 +341,10 @@ def remove_user(user: str, config: DictConfig) -> None:
     # Create session
     session = models.create_session(config)
 
-    # Delete user from authorized_users table
+    # Delete user from privileged_users table
     auth_users_deleted = (
-        session.query(models.AuthorizedUsers)
-        .filter(models.AuthorizedUsers.user == user)
+        session.query(models.PrivilegedUsers)
+        .filter(models.PrivilegedUsers.user == user)
         .delete()
     )
     session.commit()
@@ -364,12 +364,12 @@ def remove_user(user: str, config: DictConfig) -> None:
 
 
 def list_users(config: DictConfig) -> list[str]:
-    """List only authorized users.
+    """List only privileged users.
     Returns a list."""
     # Create session
     session = models.create_session(config)
 
-    auth_users = session.query(models.AuthorizedUsers).all()
+    auth_users = session.query(models.PrivilegedUsers).all()
 
     # Return users
     users_list = [u.user for u in auth_users]
@@ -379,7 +379,7 @@ def list_users(config: DictConfig) -> list[str]:
 
 
 def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
-    """Join authorized users' table and credentials tables to list users,
+    """Join privileged users' table and credentials tables to list users,
     admins and guests.
     Returns a dataframe."""
     # Create session
@@ -387,7 +387,7 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
 
     # Query tables required to understand users and guests
     df_auth_users = pd.read_sql_table(
-        "authorized_users", engine, index_col="user"
+        "privileged_users", engine, index_col="user"
     )
     df_credentials = pd.read_sql_table("credentials", engine, index_col="user")
     # Change admin column to privileges (used after join)
@@ -403,7 +403,7 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
 
 
 def is_guest(user: str, config: DictConfig) -> bool:
-    """Check if a user is a guest by checking if it is listed inside the 'authorized_users' table"""
+    """Check if a user is a guest by checking if it is listed inside the 'privileged_users' table"""
     auth_users = list_users(config)
 
     is_guest = user not in auth_users
@@ -412,12 +412,12 @@ def is_guest(user: str, config: DictConfig) -> bool:
 
 
 def is_admin(user: str, config: DictConfig) -> bool:
-    """Check if a user is an dmin by checking the 'authorized_users' table"""
+    """Check if a user is an dmin by checking the 'privileged_users' table"""
     # Create session
     session = models.create_session(config)
 
-    admin_users = session.query(models.AuthorizedUsers).filter(
-        models.AuthorizedUsers.admin == sql_true()
+    admin_users = session.query(models.PrivilegedUsers).filter(
+        models.PrivilegedUsers.admin == sql_true()
     )
     admin_list = [u.user for u in admin_users]
 

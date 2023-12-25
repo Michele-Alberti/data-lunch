@@ -61,7 +61,7 @@ def clean_caches(obj):
 @cli.group()
 @click.pass_obj
 def users(obj):
-    """Manage authorized users and admin privileges."""
+    """Manage privileged users and admin privileges."""
 
 
 @users.command("list")
@@ -81,10 +81,10 @@ def list_users_name(obj):
 @click.option("--admin", "is_admin", is_flag=True, help="add admin privileges")
 @click.pass_obj
 def add_auth_user(obj, user, is_admin):
-    """Add authorized users (with or without admin privileges)."""
+    """Add privileged users (with or without admin privileges)."""
 
-    # Add authorized user to 'authorized_users' table
-    auth.add_authorized_user(
+    # Add privileged user to 'privileged_users' table
+    auth.add_privileged_user(
         user=user,
         is_admin=is_admin,
         config=obj["config"],
@@ -98,7 +98,7 @@ def add_auth_user(obj, user, is_admin):
 @click.argument("user")
 @click.pass_obj
 def remove_auth_user(obj, user):
-    """Remove user from both authorized users and basic login credentials table."""
+    """Remove user from both privileged users and basic login credentials table."""
 
     # Clear action
     deleted_data = auth.remove_user(user, config=obj["config"])
@@ -128,15 +128,15 @@ def credentials(obj):
     "--guest",
     "is_guest",
     is_flag=True,
-    help="add user as guest (not added to authorized users)",
+    help="add user as guest (not added to privileged users)",
 )
 @click.pass_obj
 def add_user_credential(obj, user, password, is_admin, is_guest):
     """Add users credentials (used by basic authentication)."""
 
-    # Add an authorized users only if guest option is not active
+    # Add a privileged users only if guest option is not active
     if not is_guest:
-        auth.add_authorized_user(
+        auth.add_privileged_user(
             user=user,
             is_admin=is_admin,
             config=obj["config"],
@@ -152,7 +152,7 @@ def add_user_credential(obj, user, password, is_admin, is_guest):
 @click.argument("user")
 @click.pass_obj
 def remove_user_credential(obj, user):
-    """Remove user from both authorized users and basic login credentials table."""
+    """Remove user from both privileged users and basic login credentials table."""
 
     # Clear action
     deleted_data = auth.remove_user(user, config=obj["config"])
