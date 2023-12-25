@@ -4,16 +4,15 @@ from omegaconf import DictConfig
 from omegaconf.errors import ConfigAttributeError
 from passlib.context import CryptContext
 from passlib.utils import saslprep
-import pathlib
+import pandas as pd
 import panel as pn
 from panel.auth import OAuthProvider
 from panel.util import base64url_encode
-from panel.io.resources import BASIC_LOGIN_TEMPLATE, _env
 import secrets
 import string
-from sqlalchemy.ext.mutable import Mutable
+from sqlalchemy.sql import true as sql_true
 import tornado
-from tornado.web import RequestHandler, decode_signed_value
+from tornado.web import RequestHandler
 
 # Database
 from . import models
@@ -300,15 +299,31 @@ def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
     return hash
 
 
+def add_authorized_user(user: str, is_admin: bool, config: DictConfig) -> None:
+    """Add user id to 'authorized_users' table.
+    THe table is used by all authentication method to understand which users are
+    authorized and which ones are guests."""
+    # Create session
+    session = models.create_session(config)
+    # New credentials
+    new_user = models.AuthorizedUsers(user=user, admin=is_admin)
+
+    # Update credentials
+    session.add(new_user)
+    session.commit()
+
+
 def add_user_hashed_password(
     user: str, password: str, config: DictConfig
 ) -> None:
+    """Add user credentials to 'credentials' table.
+    Used only by basic authentication"""
     # Create session
     session = models.create_session(config)
     # New credentials
     # For guest user add also the encrypted password so that panle can show
     # the decrypted guest password to logged users
-    if user == "guest":
+    if is_guest(user=user, config=config):
         new_user_credential = models.Credentials(
             user=user, password_hash=password, password_encrypted=password
         )
@@ -326,28 +341,89 @@ def remove_user(user: str, config: DictConfig) -> None:
     # Create session
     session = models.create_session(config)
 
-    # Delete user
-    users_deleted = (
+    # Delete user from authorized_users table
+    auth_users_deleted = (
+        session.query(models.AuthorizedUsers)
+        .filter(models.AuthorizedUsers.user == user)
+        .delete()
+    )
+    session.commit()
+
+    # Delete user from credentials table
+    credentials_deleted = (
         session.query(models.Credentials)
         .filter(models.Credentials.user == user)
         .delete()
     )
     session.commit()
 
-    return users_deleted
+    return {
+        "auth_users_deleted": auth_users_deleted,
+        "credentials_deleted": credentials_deleted,
+    }
 
 
 def list_users(config: DictConfig) -> list[str]:
+    """List only authorized users.
+    Returns a list."""
     # Create session
     session = models.create_session(config)
 
-    credentials = session.query(models.Credentials).all()
+    auth_users = session.query(models.AuthorizedUsers).all()
 
-    # Return keys (users)
-    users_list = [c.user for c in credentials]
+    # Return users
+    users_list = [u.user for u in auth_users]
     users_list.sort()
 
     return users_list
+
+
+def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
+    """Join authorized users' table and credentials tables to list users,
+    admins and guests.
+    Returns a dataframe."""
+    # Create session
+    engine = models.create_engine(config)
+
+    # Query tables required to understand users and guests
+    df_auth_users = pd.read_sql_table(
+        "authorized_users", engine, index_col="user"
+    )
+    df_credentials = pd.read_sql_table("credentials", engine, index_col="user")
+    # Change admin column to privileges (used after join)
+    df_auth_users["group"] = df_auth_users.admin.map(
+        {True: "admin", False: "user"}
+    )
+    df_user_guests_privileges = df_auth_users.join(
+        df_credentials, how="outer"
+    )[["group"]]
+    df_user_guests_privileges = df_user_guests_privileges.fillna("guest")
+
+    return df_user_guests_privileges
+
+
+def is_guest(user: str, config: DictConfig) -> bool:
+    """Check if a user is a guest by checking if it is listed inside the 'authorized_users' table"""
+    auth_users = list_users(config)
+
+    is_guest = user not in auth_users
+
+    return is_guest
+
+
+def is_admin(user: str, config: DictConfig) -> bool:
+    """Check if a user is an dmin by checking the 'authorized_users' table"""
+    # Create session
+    session = models.create_session(config)
+
+    admin_users = session.query(models.AuthorizedUsers).filter(
+        models.AuthorizedUsers.admin == sql_true()
+    )
+    admin_list = [u.user for u in admin_users]
+
+    is_admin = user in admin_list
+
+    return is_admin
 
 
 def force_logout() -> None:

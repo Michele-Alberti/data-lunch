@@ -9,13 +9,11 @@ from omegaconf import DictConfig, OmegaConf
 
 # Database imports
 from . import models
-from .cloud import download_from_gcloud
 
-# Core imports
+# Other Data-Lunch imports
 from . import core
-
-# Graphic interface imports
 from . import gui
+from . import auth
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +28,9 @@ def create_app(config: DictConfig) -> pn.Template:
 
     log.info("initialize database")
     # Create tables
-    models.create_database(config)
+    models.create_database(
+        config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
+    )
 
     # Generate a random password only if requested (check on flag)
     log.info("set user password")
@@ -110,7 +110,9 @@ def create_backend(config: DictConfig) -> pn.Column:
 
     log.info("initialize database")
     # Create tables
-    models.create_database(config)
+    models.create_database(
+        config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
+    )
 
     log.info("instantiate backend")
 

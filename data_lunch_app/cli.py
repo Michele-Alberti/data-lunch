@@ -12,13 +12,7 @@ from .models import Data
 from .core import clean_tables as clean_tables_func
 
 # Auth
-from .auth import (
-    list_users,
-    add_user_hashed_password,
-    remove_user,
-    guest_password_filename,
-    set_app_auth_and_encryption,
-)
+from . import auth
 
 # Version
 __version__ = pkg_resources.require("data_lunch")[0].version
@@ -43,7 +37,7 @@ def cli(ctx):
     ctx.obj = {"config": config}
 
     # Auth encryption
-    set_app_auth_and_encryption(config)
+    auth.set_app_auth_and_encryption(config)
 
 
 @cli.group()
@@ -66,31 +60,89 @@ def clean_caches(obj):
 
 @cli.group()
 @click.pass_obj
-def credentials(obj):
-    """Manage users credentials."""
+def users(obj):
+    """Manage authorized users and admin privileges."""
 
 
-@credentials.command("list")
+@users.command("list")
 @click.pass_obj
 def list_users_name(obj):
     """List users."""
 
     # Clear action
-    usernames = list_users(config=obj["config"])
+    usernames = auth.list_users(config=obj["config"])
     click.secho("USERS:")
     click.secho("\n".join(usernames), fg="yellow")
     click.secho("\nDone", fg="green")
 
 
+@users.command("add")
+@click.argument("user")
+@click.option("--admin", "is_admin", is_flag=True, help="add admin privileges")
+@click.pass_obj
+def add_auth_user(obj, user, is_admin):
+    """Add authorized users (with or without admin privileges)."""
+
+    # Add authorized user to 'authorized_users' table
+    auth.add_authorized_user(
+        user=user,
+        is_admin=is_admin,
+        config=obj["config"],
+    )
+
+    click.secho(f"User '{user}' added (admin: {is_admin})", fg="green")
+
+
+@users.command("remove")
+@click.confirmation_option()
+@click.argument("user")
+@click.pass_obj
+def remove_auth_user(obj, user):
+    """Remove user from both authenticated users and basic login credentials table."""
+
+    # Clear action
+    deleted_data = auth.remove_user(user, config=obj["config"])
+
+    if (deleted_data["auth_users_deleted"] > 0) or (
+        deleted_data["credentials_deleted"] > 0
+    ):
+        click.secho(
+            f"User '{user}' removed (auth: {deleted_data['auth_users_deleted']}, cred: {deleted_data['credentials_deleted']})",
+            fg="green",
+        )
+    else:
+        click.secho(f"User '{user}' does not exist", fg="yellow")
+
+
+@cli.group()
+@click.pass_obj
+def credentials(obj):
+    """Manage users credentials for basic authentication."""
+
+
 @credentials.command("add")
 @click.argument("user")
 @click.argument("password")
+@click.option("--admin", "is_admin", is_flag=True, help="add admin privileges")
+@click.option(
+    "--guest",
+    "is_guest",
+    is_flag=True,
+    help="add user as guest (not added to authorized users)",
+)
 @click.pass_obj
-def add_user_psw(obj, user, password):
-    """Add users credentials."""
+def add_user_credential(obj, user, password, is_admin, is_guest):
+    """Add users credentials (used by basic authentication)."""
 
-    # Add hashed password to credentials file
-    add_user_hashed_password(user, password, config=obj["config"])
+    # Add an authorized users only if guest option is not active
+    if not is_guest:
+        auth.add_authorized_user(
+            user=user,
+            is_admin=is_admin,
+            config=obj["config"],
+        )
+    # Add hashed password to credentials table
+    auth.add_user_hashed_password(user, password, config=obj["config"])
 
     click.secho(f"User '{user}' added", fg="green")
 
@@ -99,13 +151,21 @@ def add_user_psw(obj, user, password):
 @click.confirmation_option()
 @click.argument("user")
 @click.pass_obj
-def remove_user_psw(obj, user):
-    """Remove user."""
+def remove_user_credential(obj, user):
+    """Remove user from both authenticated users and basic login credentials table."""
 
     # Clear action
-    remove_user(user, config=obj["config"])
+    deleted_data = auth.remove_user(user, config=obj["config"])
 
-    click.secho(f"User '{user}' removed", fg="green")
+    if (deleted_data["auth_users_deleted"] > 0) or (
+        deleted_data["credentials_deleted"] > 0
+    ):
+        click.secho(
+            f"User '{user}' removed (auth: {deleted_data['auth_users_deleted']}, cred: {deleted_data['credentials_deleted']})",
+            fg="green",
+        )
+    else:
+        click.secho(f"User '{user}' does not exist", fg="yellow")
 
 
 @cli.group()
@@ -115,14 +175,23 @@ def db(obj):
 
 
 @db.command("init")
+@click.option(
+    "--add-basic-auth-users",
+    "add_basic_auth_users",
+    is_flag=True,
+    help="automatically create basic auth standard users",
+)
 @click.pass_obj
-def init_database(obj):
+def init_database(obj, add_basic_auth_users):
     """Initialize the database."""
 
     # Create database
-    create_database(obj["config"])
+    create_database(obj["config"], add_basic_auth_users=add_basic_auth_users)
 
-    click.secho("Database initialized", fg="green")
+    click.secho(
+        f"Database initialized (basic auth users: {add_basic_auth_users})",
+        fg="green",
+    )
 
 
 @db.command("delete")
@@ -186,7 +255,13 @@ def delete_table(obj, name):
 @table.command("export")
 @click.argument("name")
 @click.argument("csv_file_path")
-@click.option("--index/--no-index", "index", show_default=True, default=False)
+@click.option(
+    "--index/--no-index",
+    "index",
+    show_default=True,
+    default=False,
+    help="select if index is exported to csv",
+)
 @click.pass_obj
 def export_table_to_csv(obj, name, csv_file_path, index):
     """Export a single table to a csv file."""
@@ -221,9 +296,29 @@ def export_table_to_csv(obj, name, csv_file_path, index):
 @click.confirmation_option()
 @click.argument("name")
 @click.argument("csv_file_path")
-@click.option("--index/--no-index", "index", show_default=True, default=True)
-@click.option("-l", "--index-label", "index_label", type=str, default=None)
-@click.option("-c", "--index-col", "index_col", type=str, default=None)
+@click.option(
+    "--index/--no-index",
+    "index",
+    show_default=True,
+    default=True,
+    help="select if index is loaded to table",
+)
+@click.option(
+    "-l",
+    "--index-label",
+    "index_label",
+    type=str,
+    default=None,
+    help="select index label",
+)
+@click.option(
+    "-c",
+    "--index-col",
+    "index_col",
+    type=str,
+    default=None,
+    help="select the column used as index",
+)
 @click.option(
     "-e",
     "--if-exists",
@@ -231,6 +326,7 @@ def export_table_to_csv(obj, name, csv_file_path, index):
     type=click.Choice(["fail", "replace", "append"], case_sensitive=False),
     show_default=True,
     default="append",
+    help="logict used if the table already exists",
 )
 @click.pass_obj
 def load_table(

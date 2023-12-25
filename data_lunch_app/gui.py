@@ -50,7 +50,9 @@ class Person(param.Parameterized):
         self.guest = config.panel.guest_types[0]
         # Check user (a username is already set for authenticated users)
         username = pn.state.user
-        if (username != "guest") and (username is not None):
+        if not auth.is_guest(user=username, config=config) and (
+            username is not None
+        ):
             self.username = username
 
     def __str__(self):
@@ -79,13 +81,26 @@ class BackendPasswordRenewer(param.Parameterized):
     )
     new_password = param.String(default="")
     repeat_new_password = param.String(default="")
+    admin = param.Boolean(default=False, doc="add admin privileges")
+    guest = param.Boolean(
+        default=False,
+        doc="guest account (don't add user to authorized users' table)",
+    )
 
     def __str__(self):
         return "BackendPasswordRenewer"
 
 
+class BackendAddAuthUser(param.Parameterized):
+    user = param.String(default="", doc="user to add")
+    admin = param.Boolean(default=False, doc="add admin privileges")
+
+    def __str__(self):
+        return "BackendAddUser"
+
+
 class BackendUserEraser(param.Parameterized):
-    user = param.String(default="", doc="username to be deleted")
+    user = param.String(default="", doc="user to be deleted")
 
     def __str__(self):
         return "BackendUserEraser"
@@ -510,7 +525,7 @@ class GraphicInterface:
 
         # Append upload, download and stats only for non-guest
         # Append password only for non-guest users if auth is active
-        if pn.state.user != "guest":
+        if not auth.is_guest(user=pn.state.user, config=config):
             self.sidebar_tabs.append(self.sidebar_menu_upload_col)
             self.sidebar_tabs.append(self.sidebar_download_orders_col)
             self.sidebar_tabs.append(self.sidebar_stats_col)
@@ -531,7 +546,7 @@ class GraphicInterface:
         )
         # Submit password button callback
         self.submit_password_button.on_click(
-            lambda e: core.submit_password(self, config)
+            lambda e: core.submit_password(gi=self, config=config)
         )
 
     # UTILITY FUNCTIONS
@@ -687,19 +702,25 @@ class BackendInterface:
         )
 
         # WIDGET
-        # Password renewer
+        # Password renewer (only basic auth)
         self.password_widget = pn.Param(
             BackendPasswordRenewer().param,
             widgets={
-                "password": pnw.PasswordInput(
+                "new_password": pnw.PasswordInput(
                     name="New password", placeholder="New Password"
                 ),
-                "repeat_password": pnw.PasswordInput(
+                "repeat_new_password": pnw.PasswordInput(
                     name="Repeat new password",
                     placeholder="Repeat New Password",
                 ),
             },
             name="Add/Update User Credentials",
+            width=sidebar_content_width,
+        )
+        # Add user (only oauth)
+        self.add_auth_user_widget = pn.Param(
+            BackendAddAuthUser().param,
+            name="Add Authenticated User",
             width=sidebar_content_width,
         )
         # User eraser
@@ -710,7 +731,7 @@ class BackendInterface:
         )
         # User list
         self.users_tabulator = pn.widgets.Tabulator(
-            value=pd.DataFrame({"users": auth.list_users(config=config)}),
+            value=auth.list_users_guests_and_privileges(config),
             name="Users",
         )
 
@@ -734,17 +755,26 @@ class BackendInterface:
             sizing_mode="stretch_width",
         )
         # Delete User button
+        self.add_auth_user_button = pnw.Button(
+            name="Add",
+            button_type="success",
+            height=45,
+            icon="user-plus",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        # Delete User button
         self.delete_user_button = pnw.Button(
             name="Delete",
             button_type="danger",
             height=45,
-            icon="trash-x-filled",
+            icon="user-minus",
             icon_size="2em",
             sizing_mode="stretch_width",
         )
 
         # COLUMN
-        # Create column with user credentials controls
+        # Create column with user credentials controls (basic auth)
         self.add_update_user_column = pn.Column(
             config.panel.gui.psw_text,
             self.password_widget,
@@ -752,6 +782,15 @@ class BackendInterface:
             self.submit_password_button,
             pn.Spacer(height=5),
             name="Add/Update Credentials",
+            width=sidebar_width,
+        )
+        # Create column with user authenthication controls (oauth)
+        self.add_auth_user_column = pn.Column(
+            self.add_auth_user_widget,
+            pn.VSpacer(),
+            self.add_auth_user_button,
+            pn.Spacer(height=5),
+            name="Add/Update Authenticate Users",
             width=sidebar_width,
         )
         # Create for deleting users
@@ -779,11 +818,16 @@ class BackendInterface:
             min_height=450,
         )
         # Add controls only for authenticated users
-        if pn.state.user != "admin":
+        if not auth.is_admin(user=pn.state.user, config=config):
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:
-            self.backend_controls.append(self.add_update_user_column)
+            # For basic auth use a password renewer, for oauth a widget for
+            # adding authenticatd users
+            if auth.is_basic_auth_active(config=config):
+                self.backend_controls.append(self.add_update_user_column)
+            else:
+                self.backend_controls.append(self.add_auth_user_column)
             self.backend_controls.append(self.delete_user_column)
             self.backend_controls.append(self.list_user_column)
 
@@ -801,7 +845,12 @@ class BackendInterface:
 
         # Submit password button callback
         def submit_password_button_callback(self, config):
-            success = core.backend_submit_password(self, config)
+            success = core.backend_submit_password(
+                gi=self,
+                is_admin=self.password_widget.object.admin,
+                is_guest=self.password_widget.object.guest,
+                config=config,
+            )
             if success:
                 self.reload_backend(config)
 
@@ -810,14 +859,34 @@ class BackendInterface:
         )
 
         # Delete user callback
+        def add_auth_user_button_callback(self):
+            auth.add_authorized_user(
+                self.add_auth_user_widget.object.user,
+                is_admin=self.add_auth_user_widget.object.admin,
+                config=config,
+            )
+
+            self.reload_backend(config)
+            pn.state.notifications.success(
+                f"User '{self.add_auth_user_widget.object.user}' added",
+                duration=config.panel.notifications.duration,
+            )
+
+        self.add_auth_user_button.on_click(
+            lambda e: add_auth_user_button_callback(self)
+        )
+
+        # Delete user callback
         def delete_user_button_callback(self):
             deleted_data = auth.remove_user(
-                self.user_eraser.object.user, config=config
+                user=self.user_eraser.object.user, config=config
             )
-            if deleted_data:
+            if (deleted_data["auth_users_deleted"] > 0) or (
+                deleted_data["credentials_deleted"] > 0
+            ):
                 self.reload_backend(config)
                 pn.state.notifications.success(
-                    f"User '{self.user_eraser.object.user}' deleted",
+                    f"User '{self.user_eraser.object.user}' deleted<br>auth: {deleted_data['auth_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
                     duration=config.panel.notifications.duration,
                 )
             else:
@@ -833,8 +902,8 @@ class BackendInterface:
     # UTILITY FUNCTIONS
     # MAIN SECTION
     def reload_backend(self, config) -> None:
-        self.users_tabulator.value = pd.DataFrame(
-            {"users": auth.list_users(config=config)}
+        self.users_tabulator.value = auth.list_users_guests_and_privileges(
+            config
         )
 
     def exit_backend(self) -> None:

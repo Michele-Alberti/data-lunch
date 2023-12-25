@@ -266,7 +266,7 @@ def reload_menu(
         return
 
     # Guest graphic configuration
-    if pn.state.user == "guest":
+    if auth.is_guest(user=pn.state.user, config=config):
         # If guest show guest type selection group
         gi.person_widget.widgets["guest"].disabled = False
         gi.person_widget.widgets["guest"].visible = True
@@ -482,7 +482,7 @@ def send_order(
     # If auth is active, check if a guests is using a name reserved to an
     # authenticated user
     if (
-        pn.state.user == "guest"
+        auth.is_guest(user=pn.state.user, config=config)
         and (person.username in auth.list_users(config=config))
         and (auth.is_auth_active(config=config))
     ):
@@ -501,11 +501,17 @@ def send_order(
         return
 
     # Check if an authenticated user is ordering for an invalid name
-    if pn.state.user != "guest" and (
-        person.username
-        not in (
-            name for name in auth.list_users(config=config) if name != "guest"
+    if (
+        not auth.is_guest(user=pn.state.user, config=config)
+        and (
+            person.username
+            not in (
+                name
+                for name in auth.list_users(config=config)
+                if name != "guest"
+            )
         )
+        and (auth.is_auth_active(config=config))
     ):
         pn.state.notifications.error(
             f"{person.username} is not a valid name<br>for an authenticated user<br>Please choose a different one",
@@ -539,7 +545,7 @@ def send_order(
             try:
                 # Add User (note is empty by default)
                 # Do not pass guest for authenticated users (default to NotAGuest)
-                if pn.state.user == "guest":
+                if auth.is_guest(user=pn.state.user, config=config):
                     new_user = models.Users(
                         id=person.username,
                         guest=person.guest,
@@ -637,7 +643,7 @@ def delete_order(
         # If auth is active, check if a guests is deleting an order of an
         # authenticated user
         if (
-            pn.state.user == "guest"
+            auth.is_guest(user=pn.state.user, config=config)
             and (person.username in auth.list_users(config=config))
             and (auth.is_auth_active(config=config))
         ):
@@ -826,6 +832,8 @@ def download_dataframe(
 
 
 def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
+    """Same as backend_submit_password with an additional check on old
+    password"""
     # Get user's password hash
     password_hash = auth.get_hash_from_user(pn.state.user, config=config)
     # Check if old password is correct
@@ -847,8 +855,16 @@ def backend_submit_password(
     gi: gui.GraphicInterface | gui.BackendInterface,
     config: DictConfig,
     user: str = None,
+    is_guest: bool | None = None,
+    is_admin: bool | None = None,
     logout_on_success: bool = False,
 ) -> bool:
+    """Submit password to database from backend but used also from frontend as
+    part of submit_password function.
+    When used for backend is_guest and is_admin are selected from a widget.
+    When called from frontend they are None and the function read them from
+    database using the user input.
+    """
     # Check if user is passed, otherwise check if backend widget
     # (password_widget.object.user) is available
     if not user:
@@ -865,6 +881,19 @@ def backend_submit_password(
             if re.fullmatch(
                 config.panel.psw_regex, gi.password_widget.object.new_password
             ):
+                # If is_guest and is_admin are None (not passed) use the ones
+                # already set for the user
+                if is_guest is None:
+                    is_guest = auth.is_guest(user=user, config=config)
+                if is_admin is None:
+                    is_admin = auth.is_admin(user=user, config=config)
+                # Add an authorized users only if guest option is not active
+                if not is_guest:
+                    auth.add_authorized_user(
+                        user=username,
+                        is_admin=is_admin,
+                        config=config,
+                    )
                 # Green light: update the password!
                 auth.add_user_hashed_password(
                     user=username,

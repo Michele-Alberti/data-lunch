@@ -198,7 +198,7 @@ class Users(Data):
     )
 
     def __repr__(self):
-        return f"<NOTE:{self.id}>"
+        return f"<USER:{self.id}>"
 
 
 class Stats(Data):
@@ -245,6 +245,21 @@ class Flags(Data):
 
 
 # CREDENTIALS MODELS ----------------------------------------------------------
+class AuthorizedUsers(Data):
+    __tablename__ = "authorized_users"
+    user = Column(
+        String(100),
+        primary_key=True,
+        sqlite_on_conflict_primary_key="REPLACE",
+    )
+    admin = Column(
+        Boolean, nullable=False, default=False, server_default=sql_false()
+    )
+
+    def __repr__(self):
+        return f"<AUTH_USER:{self.id}>"
+
+
 class Credentials(Data):
     __tablename__ = "credentials"
     user = Column(
@@ -262,7 +277,7 @@ class Credentials(Data):
     )
 
     def __repr__(self):
-        return f"<USER:{self.user}>"
+        return f"<CREDENTIAL:{self.user}>"
 
     @validates("password_hash")
     def _validate_password(self, key, password):
@@ -314,7 +329,7 @@ def create_exclusive_session(config: DictConfig) -> Session:
     return session
 
 
-def create_database(config: DictConfig) -> None:
+def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
     """Database factory function"""
     # Create directory if missing
     log.debug("create 'shared_data' folder")
@@ -322,27 +337,36 @@ def create_database(config: DictConfig) -> None:
     # Create tables
     engine = create_engine(config)
     Data.metadata.create_all(engine)
-    # If no user exist create the default admin
-    session = create_session(config)
-    # Check if admin exists
-    if session.query(Credentials).get("admin") is None:
-        new_user = Credentials(
-            user="admin",
-            password_hash="admin",
-        )
-        session.add(new_user)
-        session.commit()
-    # Check if admin exists
-    if (
-        session.query(Credentials).get("guest") is None
-    ) and config.panel.guest_user:
-        new_user = Credentials(
-            user="guest",
-            password_hash="guest",
-            password_encrypted="guest",
-        )
-        session.add(new_user)
-        session.commit()
+
+    # If requested add users for basic auth (admin and guest)
+    if add_basic_auth_users:
+        log.debug("add basic auth standard users")
+        # If no user exist create the default admin
+        session = create_session(config)
+        # Check if admin exists
+        if session.query(Credentials).get("admin") is None:
+            # Add authorization and credentials for admin
+            auth.add_authorized_user(
+                user="admin",
+                is_admin=True,
+                config=config,
+            )
+            auth.add_user_hashed_password(
+                user="admin",
+                password="admin",
+                config=config,
+            )
+        # Check if admin exists
+        if (
+            session.query(Credentials).get("guest") is None
+        ) and config.panel.guest_user:
+            # Add only credentials for guest (guest users are not included
+            # in authorized_users table)
+            auth.add_user_hashed_password(
+                user="guest",
+                password="guest",
+                config=config,
+            )
 
 
 def set_flag(config: DictConfig, id: str, value: bool) -> None:
