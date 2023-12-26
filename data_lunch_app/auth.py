@@ -255,6 +255,29 @@ def is_auth_active(config: DictConfig) -> bool:
     return auth_provider or oauth_provider
 
 
+def authorize(config: DictConfig, user_info: dict, target_path: str) -> bool:
+    """Authorization callback, read config, user info and target path.
+    Return True (authorized) or False (not authorized) by checking current user
+    and target path"""
+    # Set current user and existing users info
+    current_user = user_info["login"]
+    privileged_users = list_users(config=config)
+    log.debug(f"target path: {target_path}")
+    # If user is not authenticated block it
+    if not current_user:
+        return False
+    # All privileged users can reach backend (but the backend will have
+    # controls only for admins)
+    if current_user in privileged_users:
+        return True
+    # If the target is the mainpage always authorized (if authenticated)
+    if target_path == "/":
+        return True
+
+    # In all other cases, don't authorize
+    return False
+
+
 def set_app_auth_and_encryption(config: DictConfig) -> None:
     try:
         if config.auth.oauth_encryption_key:

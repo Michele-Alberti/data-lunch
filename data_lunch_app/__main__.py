@@ -39,6 +39,13 @@ def run_app(config: DictConfig):
     # Configurations
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True
+    authorize_callback_factory = hydra.utils.call(
+        config.auth.authorization_callback, config
+    )
+    pn.config.authorize_callback = lambda ui, tp: authorize_callback_factory(
+        user_info=ui, target_path=tp
+    )
+    pn.config.auth_template = config.auth.auth_error_template
 
     # Call the app factory function
     log.info("calling app factory function")

@@ -1,5 +1,12 @@
+# oauth config (not used by panel.serve)
 oauth_encryption_key: ${oc.env:DATA_LUNCH_OAUTH_ENC_KEY}
 oauth_expiry: 15
+# Template not set by panel.serve
+auth_error_template: data_lunch_app/templates/error.html
+# Autorization callback (_partial_ is required for usage with lambda functions)
+authorization_callback:
+  _target_: data_lunch_app.auth.authorize
+  _partial_: True
 # Set cookie function arguments (set to empty dict to turn off)
 cookie_kwargs:
   httponly: true
