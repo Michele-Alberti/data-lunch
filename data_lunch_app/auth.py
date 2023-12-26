@@ -11,6 +11,7 @@ from panel.util import base64url_encode
 import secrets
 import string
 from sqlalchemy.sql import true as sql_true
+from sqlalchemy import select, delete
 import tornado
 from tornado.web import RequestHandler
 
@@ -317,7 +318,8 @@ def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
     # Create session
     session = models.create_session(config)
     # Load user from database
-    user_credential = session.query(models.Credentials).get(user)
+    with session:
+        user_credential = session.get(models.Credentials, user)
 
     # Get the hashed password
     if user_credential:
@@ -370,25 +372,24 @@ def remove_user(user: str, config: DictConfig) -> None:
     # Create session
     session = models.create_session(config)
 
-    # Delete user from privileged_users table
-    auth_users_deleted = (
-        session.query(models.PrivilegedUsers)
-        .filter(models.PrivilegedUsers.user == user)
-        .delete()
-    )
-    session.commit()
+    with session:
+        # Delete user from privileged_users table
+        auth_users_deleted = session.execute(
+            delete(models.PrivilegedUsers).where(
+                models.PrivilegedUsers.user == user
+            )
+        )
+        session.commit()
 
-    # Delete user from credentials table
-    credentials_deleted = (
-        session.query(models.Credentials)
-        .filter(models.Credentials.user == user)
-        .delete()
-    )
-    session.commit()
+        # Delete user from credentials table
+        credentials_deleted = session.execute(
+            delete(models.Credentials).where(models.Credentials.user == user)
+        )
+        session.commit()
 
     return {
-        "auth_users_deleted": auth_users_deleted,
-        "credentials_deleted": credentials_deleted,
+        "auth_users_deleted": auth_users_deleted.rowcount,
+        "credentials_deleted": credentials_deleted.rowcount,
     }
 
 
@@ -398,7 +399,8 @@ def list_users(config: DictConfig) -> list[str]:
     # Create session
     session = models.create_session(config)
 
-    auth_users = session.query(models.PrivilegedUsers).all()
+    with session:
+        auth_users = session.scalars(select(models.PrivilegedUsers)).all()
 
     # Return users
     users_list = [u.user for u in auth_users]
@@ -445,9 +447,12 @@ def is_admin(user: str, config: DictConfig) -> bool:
     # Create session
     session = models.create_session(config)
 
-    admin_users = session.query(models.PrivilegedUsers).filter(
-        models.PrivilegedUsers.admin == sql_true()
-    )
+    with session:
+        admin_users = session.scalars(
+            select(models.PrivilegedUsers).where(
+                models.PrivilegedUsers.admin == sql_true()
+            )
+        ).all()
     admin_list = [u.user for u in admin_users]
 
     is_admin = user in admin_list

@@ -13,7 +13,7 @@ from PIL import Image
 from pytesseract import pytesseract
 import random
 import re
-from sqlalchemy import func
+from sqlalchemy import func, select, delete
 from sqlalchemy.sql.expression import true as sql_true
 from time import sleep
 
@@ -68,21 +68,22 @@ def delete_files(config: DictConfig):
 def clean_tables(config: DictConfig):
     # Clean tables
     session = models.create_session(config)
-    # Clean orders
-    num_rows_deleted = session.query(models.Orders).delete()
-    session.commit()
-    log.info(f"deleted {num_rows_deleted} from table 'orders'")
-    # Clean menu
-    num_rows_deleted = session.query(models.Menu).delete()
-    session.commit()
-    log.info(f"deleted {num_rows_deleted} from table 'menu'")
-    # Clean users
-    num_rows_deleted = session.query(models.Users).delete()
-    session.commit()
-    log.info(f"deleted {num_rows_deleted} from table 'users'")
-    # Clean flags
-    models.set_flag(config=config, id="no_more_orders", value=False)
-    log.info("reset values in table 'flags'")
+    with session:
+        # Clean orders
+        num_rows_deleted = session.execute(delete(models.Orders))
+        session.commit()
+        log.info(f"deleted {num_rows_deleted.rowcount} from table 'orders'")
+        # Clean menu
+        num_rows_deleted = session.execute(delete(models.Menu))
+        session.commit()
+        log.info(f"deleted {num_rows_deleted.rowcount} from table 'menu'")
+        # Clean users
+        num_rows_deleted = session.execute(delete(models.Users))
+        session.commit()
+        log.info(f"deleted {num_rows_deleted.rowcount} from table 'users'")
+        # Clean flags
+        models.set_flag(config=config, id="no_more_orders", value=False)
+        log.info("reset values in table 'flags'")
 
 
 def set_guest_user_password(config: DictConfig) -> str:
@@ -122,11 +123,10 @@ def set_guest_user_password(config: DictConfig) -> str:
         else:
             # Load from database
             session = models.create_session(config)
-            guest_password = (
-                session.query(models.Credentials)
-                .get("guest")
-                .password_encrypted.decrypt()
-            )
+            with session:
+                guest_password = session.get(
+                    models.Credentials, "guest"
+                ).password_encrypted.decrypt()
     else:
         guest_password = ""
 
@@ -251,202 +251,217 @@ def reload_menu(
     # Create session
     session = models.create_session(config)
 
-    # Check if someone changed the "no_more_order" toggle
-    if gi.toggle_no_more_order_button.value != models.get_flag(
-        config=config, id="no_more_orders"
-    ):
-        # The following statement will trigger the toggle callback
-        # which will call reload_menu once again
-        # This is the reason why this if contains a return (without the return
-        # the content will be reloaded twice)
-        gi.toggle_no_more_order_button.value = models.get_flag(
+    with session:
+        # Check if someone changed the "no_more_order" toggle
+        if gi.toggle_no_more_order_button.value != models.get_flag(
             config=config, id="no_more_orders"
-        )
-
-        return
-
-    # Guest graphic configuration
-    if auth.is_guest(user=pn.state.user, config=config):
-        # If guest show guest type selection group
-        gi.person_widget.widgets["guest"].disabled = False
-        gi.person_widget.widgets["guest"].visible = True
-    else:
-        # If user is privileged hide guest type selection group
-        gi.person_widget.widgets["guest"].disabled = True
-        gi.person_widget.widgets["guest"].visible = False
-
-    # Reload menu
-    engine = models.create_engine(config)
-    df = pd.read_sql_table("menu", engine, index_col="id")
-    df["order"] = False
-    gi.dataframe.value = df
-    gi.dataframe.formatters = {"order": {"type": "tickCross"}}
-    gi.dataframe.editors = {
-        "id": None,
-        "item": None,
-        "order": CheckboxEditor(),
-    }
-
-    if gi.toggle_no_more_order_button.value:
-        gi.dataframe.hidden_columns = ["order"]
-        gi.dataframe.disabled = True
-    else:
-        gi.dataframe.hidden_columns = []
-        gi.dataframe.disabled = False
-
-    log.debug("menu reloaded")
-
-    # Load results
-    df_dict = df_list_by_lunch_time(config)
-    # Clean columns and load text and dataframes
-    gi.res_col.clear()
-    gi.time_col.clear()
-    if df_dict:
-        # Titles
-        gi.res_col.append(config.panel.result_column_text)
-        gi.time_col.append(gi.time_col_title)
-        # Build guests list (one per each guest types)
-        guests_lists = {}
-        for guest_type in config.panel.guest_types:
-            guests_lists[guest_type] = [
-                user.id
-                for user in session.query(models.Users)
-                .filter(models.Users.guest == guest_type)
-                .all()
-            ]
-        # Loop through lunch times
-        for time, df in df_dict.items():
-            # Find the number of grumbling stomachs
-            grumbling_stomachs = len(
-                [
-                    c
-                    for c in df.columns
-                    if c.lower() != config.panel.gui.total_column_name
-                ]
+        ):
+            # The following statement will trigger the toggle callback
+            # which will call reload_menu once again
+            # This is the reason why this if contains a return (without the return
+            # the content will be reloaded twice)
+            gi.toggle_no_more_order_button.value = models.get_flag(
+                config=config, id="no_more_orders"
             )
-            # Set different graphics for takeaway lunches
-            if config.panel.gui.takeaway_id in time:
-                res_col_label_kwargs = {
-                    "time": time.replace(config.panel.gui.takeaway_id, ""),
-                    "diners_n": grumbling_stomachs,
-                    "emoji": config.panel.gui.takeaway_emoji,
-                    "is_takeaway": True,
-                    "takeaway_alert_sign": f"&nbsp{gi.takeaway_alert_sign}&nbsp{gi.takeaway_alert_text}",
-                    "css_classes": OmegaConf.to_container(
-                        config.panel.gui.takeaway_class_res_col, resolve=True
-                    ),
-                    "stylesheets": [config.panel.gui.css_files.labels_path],
-                }
-                time_col_label_kwargs = {
-                    "time": time.replace(config.panel.gui.takeaway_id, ""),
-                    "diners_n": str(grumbling_stomachs) + "&nbsp",
-                    "separator": "<br>",
-                    "emoji": config.panel.gui.takeaway_emoji,
-                    "align": ("center", "center"),
-                    "sizing_mode": "stretch_width",
-                    "is_takeaway": True,
-                    "takeaway_alert_sign": gi.takeaway_alert_sign,
-                    "css_classes": OmegaConf.to_container(
-                        config.panel.gui.takeaway_class_time_col, resolve=True
-                    ),
-                    "stylesheets": [config.panel.gui.css_files.labels_path],
-                }
-            else:
-                res_col_label_kwargs = {
-                    "time": time,
-                    "diners_n": grumbling_stomachs,
-                    "emoji": random.choice(config.panel.gui.food_emoji),
-                    "css_classes": OmegaConf.to_container(
-                        config.panel.gui.time_class_res_col, resolve=True
-                    ),
-                    "stylesheets": [config.panel.gui.css_files.labels_path],
-                }
-                time_col_label_kwargs = {
-                    "time": time,
-                    "diners_n": str(grumbling_stomachs) + "&nbsp",
-                    "separator": "<br>",
-                    "emoji": config.panel.gui.restaurant_emoji,
-                    "per_icon": "&#10006; ",
-                    "align": ("center", "center"),
-                    "sizing_mode": "stretch_width",
-                    "css_classes": OmegaConf.to_container(
-                        config.panel.gui.time_class_time_col, resolve=True
-                    ),
-                    "stylesheets": [config.panel.gui.css_files.labels_path],
-                }
-            # Add text to result column
-            gi.res_col.append(pn.Spacer(height=10))
-            gi.res_col.append(gi.build_time_label(**res_col_label_kwargs))
-            # Add non editable table to result column
-            gi.res_col.append(
-                gi.build_order_table(
-                    config, df=df, time=time, guests_lists=guests_lists
+
+            return
+
+        # Guest graphic configuration
+        if auth.is_guest(user=pn.state.user, config=config):
+            # If guest show guest type selection group
+            gi.person_widget.widgets["guest"].disabled = False
+            gi.person_widget.widgets["guest"].visible = True
+        else:
+            # If user is privileged hide guest type selection group
+            gi.person_widget.widgets["guest"].disabled = True
+            gi.person_widget.widgets["guest"].visible = False
+
+        # Reload menu
+        engine = models.create_engine(config)
+        df = pd.read_sql_table("menu", engine, index_col="id")
+        df["order"] = False
+        gi.dataframe.value = df
+        gi.dataframe.formatters = {"order": {"type": "tickCross"}}
+        gi.dataframe.editors = {
+            "id": None,
+            "item": None,
+            "order": CheckboxEditor(),
+        }
+
+        if gi.toggle_no_more_order_button.value:
+            gi.dataframe.hidden_columns = ["order"]
+            gi.dataframe.disabled = True
+        else:
+            gi.dataframe.hidden_columns = []
+            gi.dataframe.disabled = False
+
+        log.debug("menu reloaded")
+
+        # Load results
+        df_dict = df_list_by_lunch_time(config)
+        # Clean columns and load text and dataframes
+        gi.res_col.clear()
+        gi.time_col.clear()
+        if df_dict:
+            # Titles
+            gi.res_col.append(config.panel.result_column_text)
+            gi.time_col.append(gi.time_col_title)
+            # Build guests list (one per each guest types)
+            guests_lists = {}
+            for guest_type in config.panel.guest_types:
+                guests_lists[guest_type] = [
+                    user.id
+                    for user in session.scalars(
+                        select(models.Users).where(
+                            models.Users.guest == guest_type
+                        )
+                    ).all()
+                ]
+            # Loop through lunch times
+            for time, df in df_dict.items():
+                # Find the number of grumbling stomachs
+                grumbling_stomachs = len(
+                    [
+                        c
+                        for c in df.columns
+                        if c.lower() != config.panel.gui.total_column_name
+                    ]
+                )
+                # Set different graphics for takeaway lunches
+                if config.panel.gui.takeaway_id in time:
+                    res_col_label_kwargs = {
+                        "time": time.replace(config.panel.gui.takeaway_id, ""),
+                        "diners_n": grumbling_stomachs,
+                        "emoji": config.panel.gui.takeaway_emoji,
+                        "is_takeaway": True,
+                        "takeaway_alert_sign": f"&nbsp{gi.takeaway_alert_sign}&nbsp{gi.takeaway_alert_text}",
+                        "css_classes": OmegaConf.to_container(
+                            config.panel.gui.takeaway_class_res_col,
+                            resolve=True,
+                        ),
+                        "stylesheets": [
+                            config.panel.gui.css_files.labels_path
+                        ],
+                    }
+                    time_col_label_kwargs = {
+                        "time": time.replace(config.panel.gui.takeaway_id, ""),
+                        "diners_n": str(grumbling_stomachs) + "&nbsp",
+                        "separator": "<br>",
+                        "emoji": config.panel.gui.takeaway_emoji,
+                        "align": ("center", "center"),
+                        "sizing_mode": "stretch_width",
+                        "is_takeaway": True,
+                        "takeaway_alert_sign": gi.takeaway_alert_sign,
+                        "css_classes": OmegaConf.to_container(
+                            config.panel.gui.takeaway_class_time_col,
+                            resolve=True,
+                        ),
+                        "stylesheets": [
+                            config.panel.gui.css_files.labels_path
+                        ],
+                    }
+                else:
+                    res_col_label_kwargs = {
+                        "time": time,
+                        "diners_n": grumbling_stomachs,
+                        "emoji": random.choice(config.panel.gui.food_emoji),
+                        "css_classes": OmegaConf.to_container(
+                            config.panel.gui.time_class_res_col, resolve=True
+                        ),
+                        "stylesheets": [
+                            config.panel.gui.css_files.labels_path
+                        ],
+                    }
+                    time_col_label_kwargs = {
+                        "time": time,
+                        "diners_n": str(grumbling_stomachs) + "&nbsp",
+                        "separator": "<br>",
+                        "emoji": config.panel.gui.restaurant_emoji,
+                        "per_icon": "&#10006; ",
+                        "align": ("center", "center"),
+                        "sizing_mode": "stretch_width",
+                        "css_classes": OmegaConf.to_container(
+                            config.panel.gui.time_class_time_col, resolve=True
+                        ),
+                        "stylesheets": [
+                            config.panel.gui.css_files.labels_path
+                        ],
+                    }
+                # Add text to result column
+                gi.res_col.append(pn.Spacer(height=10))
+                gi.res_col.append(gi.build_time_label(**res_col_label_kwargs))
+                # Add non editable table to result column
+                gi.res_col.append(
+                    gi.build_order_table(
+                        config, df=df, time=time, guests_lists=guests_lists
+                    )
+                )
+                # Add also a label to lunch time column
+                gi.time_col.append(
+                    gi.build_time_label(**time_col_label_kwargs)
+                )
+
+        log.debug("results reloaded")
+
+        # Clean stats column
+        gi.sidebar_stats_col.clear()
+        # Update stats
+        # Find how many people eat today (total number) and add value to database
+        # stats table (when adding a stats if guest is not specified None is used
+        # as default)
+        today_locals_count = session.scalar(
+            select(func.count(models.Users.id)).where(
+                models.Users.guest == "NotAGuest"
+            )
+        )
+        new_stat = models.Stats(hungry_people=today_locals_count)
+        session.add(new_stat)
+        # For each guest type find how many guests eat today
+        for guest_type in config.panel.guest_types:
+            today_guests_count = session.scalar(
+                select(func.count(models.Users.id)).where(
+                    models.Users.guest == guest_type
                 )
             )
-            # Add also a label to lunch time column
-            gi.time_col.append(gi.build_time_label(**time_col_label_kwargs))
+            new_stat = models.Stats(
+                guest=guest_type, hungry_people=today_guests_count
+            )
+            session.add(new_stat)
+        # Commit stats
+        session.commit()
 
-    log.debug("results reloaded")
-
-    # Clean stats column
-    gi.sidebar_stats_col.clear()
-    # Update stats
-    # Find how many people eat today (total number) and add value to database
-    # stats table (when adding a stats if guest is not specified None is used
-    # as default)
-    today_locals_count = (
-        session.query(func.count(models.Users.id))
-        .filter(models.Users.guest == "NotAGuest")
-        .scalar()
-    )
-    new_stat = models.Stats(hungry_people=today_locals_count)
-    session.add(new_stat)
-    # For each guest type find how many guests eat today
-    for guest_type in config.panel.guest_types:
-        today_guests_count = (
-            session.query(func.count(models.Users.id))
-            .filter(models.Users.guest == guest_type)
-            .scalar()
+        # Group stats by month and return how many people had lunch
+        df_stats = pd.read_sql_query(
+            config.panel.stats_query,
+            engine,
         )
-        new_stat = models.Stats(
-            guest=guest_type, hungry_people=today_guests_count
+        # Stats top text
+        stats_text = gi.build_stats_text(
+            df_stats=df_stats,
+            version=__version__,
+            host_name=get_host_name(config),
+            stylesheets=[config.panel.gui.css_files.stats_info_path],
         )
-        session.add(new_stat)
-    # Commit stats
-    session.commit()
-
-    # Group stats by month and return how many people had lunch
-    df_stats = pd.read_sql_query(
-        config.panel.stats_query,
-        engine,
-    )
-    # Stats top text
-    stats_text = gi.build_stats_text(
-        df_stats=df_stats,
-        version=__version__,
-        host_name=get_host_name(config),
-        stylesheets=[config.panel.gui.css_files.stats_info_path],
-    )
-    # Remove NotAGuest (non-guest users)
-    df_stats.Guest = df_stats.Guest.replace(
-        "NotAGuest", config.panel.stats_locals_column_name
-    )
-    # Pivot table on guest type
-    df_stats = df_stats.pivot(
-        columns="Guest",
-        index=config.panel.stats_id_cols,
-        values="Hungry People",
-    ).reset_index()
-    df_stats[config.panel.gui.total_column_name.title()] = df_stats.sum(
-        axis="columns", numeric_only=True
-    )
-    # Add value and non-editable option to stats table
-    gi.stats_widget.editors = {c: None for c in df_stats.columns}
-    gi.stats_widget.value = df_stats
-    gi.sidebar_stats_col.append(stats_text["stats"])
-    gi.sidebar_stats_col.append(gi.stats_widget)
-    gi.sidebar_stats_col.append(stats_text["info"])
-    log.debug("stats updated")
+        # Remove NotAGuest (non-guest users)
+        df_stats.Guest = df_stats.Guest.replace(
+            "NotAGuest", config.panel.stats_locals_column_name
+        )
+        # Pivot table on guest type
+        df_stats = df_stats.pivot(
+            columns="Guest",
+            index=config.panel.stats_id_cols,
+            values="Hungry People",
+        ).reset_index()
+        df_stats[config.panel.gui.total_column_name.title()] = df_stats.sum(
+            axis="columns", numeric_only=True
+        )
+        # Add value and non-editable option to stats table
+        gi.stats_widget.editors = {c: None for c in df_stats.columns}
+        gi.stats_widget.value = df_stats
+        gi.sidebar_stats_col.append(stats_text["stats"])
+        gi.sidebar_stats_col.append(gi.stats_widget)
+        gi.sidebar_stats_col.append(stats_text["info"])
+        log.debug("stats updated")
 
 
 def send_order(
@@ -463,150 +478,152 @@ def send_order(
     # Create session
     session = models.create_session(config)
 
-    # Check if the "no more order" toggle button is pressed
-    if models.get_flag(config=config, id="no_more_orders"):
-        pn.state.notifications.error(
-            "It is not possible to place new orders",
-            duration=config.panel.notifications.duration,
-        )
-
-        # Reload the menu
-        reload_menu(
-            None,
-            config,
-            gi,
-        )
-
-        return
-
-    # If auth is active, check if a guests is using a name reserved to a
-    # privileged user
-    if (
-        auth.is_guest(user=pn.state.user, config=config)
-        and (person.username in auth.list_users(config=config))
-        and (auth.is_auth_active(config=config))
-    ):
-        pn.state.notifications.error(
-            f"{person.username} is a reserved name<br>Please choose a different one",
-            duration=config.panel.notifications.duration,
-        )
-
-        # Reload the menu
-        reload_menu(
-            None,
-            config,
-            gi,
-        )
-
-        return
-
-    # Check if a privileged user is ordering for an invalid name
-    if (
-        not auth.is_guest(user=pn.state.user, config=config)
-        and (
-            person.username
-            not in (
-                name
-                for name in auth.list_users(config=config)
-                if name != "guest"
-            )
-        )
-        and (auth.is_auth_active(config=config))
-    ):
-        pn.state.notifications.error(
-            f"{person.username} is not a valid name<br>for a privileged user<br>Please choose a different one",
-            duration=config.panel.notifications.duration,
-        )
-
-        # Reload the menu
-        reload_menu(
-            None,
-            config,
-            gi,
-        )
-
-        return
-
-    # Write order into database table
-    df = gi.dataframe.value.copy()
-    df_order = df[df.order]
-
-    # If username is missing or the order is empty return an error message
-    if person.username and not df_order.empty:
-        # Check if the user already placed an order
-        if session.query(models.Users).get(person.username):
-            pn.state.notifications.warning(
-                f"Cannot overwrite an order<br>Delete {person.username}'s order first and retry",
+    with session:
+        # Check if the "no more order" toggle button is pressed
+        if models.get_flag(config=config, id="no_more_orders"):
+            pn.state.notifications.error(
+                "It is not possible to place new orders",
                 duration=config.panel.notifications.duration,
             )
-            log.warning(f"an order already exist for {person.username}")
-        else:
-            # Place order
-            try:
-                # Add User (note is empty by default)
-                # Do not pass guest for privileged users (default to NotAGuest)
-                if auth.is_guest(user=pn.state.user, config=config):
-                    new_user = models.Users(
-                        id=person.username,
-                        guest=person.guest,
-                        takeaway=person.takeaway,
-                        note=person.note,
-                    )
-                else:
-                    new_user = models.Users(
-                        id=person.username,
-                        takeaway=person.takeaway,
-                        note=person.note,
-                    )
-                session.add(new_user)
-                # Add orders as long table (one row for each item selected by a user)
-                for index, row in df_order.iterrows():
-                    # Order
-                    new_order = models.Orders(
-                        user=person.username,
-                        lunch_time=person.lunch_time,
-                        menu_item_id=index,
-                    )
-                    session.add(new_order)
-                    session.commit()
 
-                # Update dataframe widget
-                reload_menu(
-                    None,
-                    config,
-                    gi,
-                )
+            # Reload the menu
+            reload_menu(
+                None,
+                config,
+                gi,
+            )
 
-                pn.state.notifications.success(
-                    "Order sent", duration=config.panel.notifications.duration
+            return
+
+        # If auth is active, check if a guests is using a name reserved to a
+        # privileged user
+        if (
+            auth.is_guest(user=pn.state.user, config=config)
+            and (person.username in auth.list_users(config=config))
+            and (auth.is_auth_active(config=config))
+        ):
+            pn.state.notifications.error(
+                f"{person.username} is a reserved name<br>Please choose a different one",
+                duration=config.panel.notifications.duration,
+            )
+
+            # Reload the menu
+            reload_menu(
+                None,
+                config,
+                gi,
+            )
+
+            return
+
+        # Check if a privileged user is ordering for an invalid name
+        if (
+            not auth.is_guest(user=pn.state.user, config=config)
+            and (
+                person.username
+                not in (
+                    name
+                    for name in auth.list_users(config=config)
+                    if name != "guest"
                 )
-                log.info(f"{person.username}'s order saved")
-            except Exception as e:
-                # Any exception here is a database fault
-                pn.state.notifications.error(
-                    "Database error",
+            )
+            and (auth.is_auth_active(config=config))
+        ):
+            pn.state.notifications.error(
+                f"{person.username} is not a valid name<br>for a privileged user<br>Please choose a different one",
+                duration=config.panel.notifications.duration,
+            )
+
+            # Reload the menu
+            reload_menu(
+                None,
+                config,
+                gi,
+            )
+
+            return
+
+        # Write order into database table
+        df = gi.dataframe.value.copy()
+        df_order = df[df.order]
+
+        # If username is missing or the order is empty return an error message
+        if person.username and not df_order.empty:
+            # Check if the user already placed an order
+            if session.get(models.Users, person.username):
+                pn.state.notifications.warning(
+                    f"Cannot overwrite an order<br>Delete {person.username}'s order first and retry",
                     duration=config.panel.notifications.duration,
                 )
-                gi.error_message.object = (
-                    f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
-                )
-                gi.error_message.visible = True
-                log.warning("database error")
-                # Open modal window
-                app.open_modal()
-    else:
-        if not person.username:
-            pn.state.notifications.warning(
-                "Please insert user name",
-                duration=config.panel.notifications.duration,
-            )
-            log.warning("missing username")
+                log.warning(f"an order already exist for {person.username}")
+            else:
+                # Place order
+                try:
+                    # Add User (note is empty by default)
+                    # Do not pass guest for privileged users (default to NotAGuest)
+                    if auth.is_guest(user=pn.state.user, config=config):
+                        new_user = models.Users(
+                            id=person.username,
+                            guest=person.guest,
+                            takeaway=person.takeaway,
+                            note=person.note,
+                        )
+                    else:
+                        new_user = models.Users(
+                            id=person.username,
+                            takeaway=person.takeaway,
+                            note=person.note,
+                        )
+                    session.add(new_user)
+                    # Add orders as long table (one row for each item selected by a user)
+                    for index, row in df_order.iterrows():
+                        # Order
+                        new_order = models.Orders(
+                            user=person.username,
+                            lunch_time=person.lunch_time,
+                            menu_item_id=index,
+                        )
+                        session.add(new_order)
+                        session.commit()
+
+                    # Update dataframe widget
+                    reload_menu(
+                        None,
+                        config,
+                        gi,
+                    )
+
+                    pn.state.notifications.success(
+                        "Order sent",
+                        duration=config.panel.notifications.duration,
+                    )
+                    log.info(f"{person.username}'s order saved")
+                except Exception as e:
+                    # Any exception here is a database fault
+                    pn.state.notifications.error(
+                        "Database error",
+                        duration=config.panel.notifications.duration,
+                    )
+                    gi.error_message.object = (
+                        f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
+                    )
+                    gi.error_message.visible = True
+                    log.warning("database error")
+                    # Open modal window
+                    app.open_modal()
         else:
-            pn.state.notifications.warning(
-                "Please make a selection",
-                duration=config.panel.notifications.duration,
-            )
-            log.warning("no selection made")
+            if not person.username:
+                pn.state.notifications.warning(
+                    "Please insert user name",
+                    duration=config.panel.notifications.duration,
+                )
+                log.warning("missing username")
+            else:
+                pn.state.notifications.warning(
+                    "Please make a selection",
+                    duration=config.panel.notifications.duration,
+                )
+                log.warning("no selection made")
 
 
 def delete_order(
@@ -623,32 +640,11 @@ def delete_order(
     # Create session
     session = models.create_session(config)
 
-    # Check if the "no more order" toggle button is pressed
-    if models.get_flag(config=config, id="no_more_orders"):
-        pn.state.notifications.error(
-            "It is not possible to delete orders",
-            duration=config.panel.notifications.duration,
-        )
-
-        # Reload the menu
-        reload_menu(
-            None,
-            config,
-            gi,
-        )
-
-        return
-
-    if person.username:
-        # If auth is active, check if a guests is deleting an order of a
-        # privileged user
-        if (
-            auth.is_guest(user=pn.state.user, config=config)
-            and (person.username in auth.list_users(config=config))
-            and (auth.is_auth_active(config=config))
-        ):
+    with session:
+        # Check if the "no more order" toggle button is pressed
+        if models.get_flag(config=config, id="no_more_orders"):
             pn.state.notifications.error(
-                f"You do not have enough privileges<br>to delete<br>{person.username}'s order",
+                "It is not possible to delete orders",
                 duration=config.panel.notifications.duration,
             )
 
@@ -661,43 +657,66 @@ def delete_order(
 
             return
 
-        # Delete user
-        num_rows_deleted_users = (
-            session.query(models.Users)
-            .filter(models.Users.id == person.username)
-            .delete()
-        )
-        # Delete also orders (hotfix for Debian)
-        num_rows_deleted_orders = (
-            session.query(models.Orders)
-            .filter(models.Orders.user == person.username)
-            .delete()
-        )
-        session.commit()
-        if (num_rows_deleted_users > 0) or (num_rows_deleted_orders > 0):
-            # Update dataframe widget
-            reload_menu(
-                None,
-                config,
-                gi,
-            )
+        if person.username:
+            # If auth is active, check if a guests is deleting an order of a
+            # privileged user
+            if (
+                auth.is_guest(user=pn.state.user, config=config)
+                and (person.username in auth.list_users(config=config))
+                and (auth.is_auth_active(config=config))
+            ):
+                pn.state.notifications.error(
+                    f"You do not have enough privileges<br>to delete<br>{person.username}'s order",
+                    duration=config.panel.notifications.duration,
+                )
 
-            pn.state.notifications.success(
-                "Order canceled", duration=config.panel.notifications.duration
+                # Reload the menu
+                reload_menu(
+                    None,
+                    config,
+                    gi,
+                )
+
+                return
+
+            # Delete user
+            num_rows_deleted_users = session.execute(
+                delete(models.Users).where(models.Users.id == person.username)
             )
-            log.info(f"{person.username}'s order canceled")
+            # Delete also orders (hotfix for Debian)
+            num_rows_deleted_orders = session.execute(
+                delete(models.Orders).where(
+                    models.Orders.user == person.username
+                )
+            )
+            session.commit()
+            if (num_rows_deleted_users.rowcount > 0) or (
+                num_rows_deleted_orders.rowcount > 0
+            ):
+                # Update dataframe widget
+                reload_menu(
+                    None,
+                    config,
+                    gi,
+                )
+
+                pn.state.notifications.success(
+                    "Order canceled",
+                    duration=config.panel.notifications.duration,
+                )
+                log.info(f"{person.username}'s order canceled")
+            else:
+                pn.state.notifications.warning(
+                    f'No order for user named<br>"{person.username}"',
+                    duration=config.panel.notifications.duration,
+                )
+                log.info(f"no order for user named {person.username}")
         else:
             pn.state.notifications.warning(
-                f'No order for user named<br>"{person.username}"',
+                "Please insert user name",
                 duration=config.panel.notifications.duration,
             )
-            log.info(f"no order for user named {person.username}")
-    else:
-        pn.state.notifications.warning(
-            "Please insert user name",
-            duration=config.panel.notifications.duration,
-        )
-        log.warning("missing username")
+            log.warning("missing username")
 
 
 def df_list_by_lunch_time(
@@ -709,13 +728,15 @@ def df_list_by_lunch_time(
     original_order = pd.read_sql_table("menu", engine, index_col="id").item
     # Create session
     session = models.create_session(config)
-    # Build takeaway list
-    takeaway_list = [
-        user.id
-        for user in session.query(models.Users)
-        .filter(models.Users.takeaway == sql_true())
-        .all()
-    ]
+
+    with session:
+        # Build takeaway list
+        takeaway_list = [
+            user.id
+            for user in session.scalars(
+                select(models.Users).where(models.Users.takeaway == sql_true())
+            ).all()
+        ]
     # Read dataframe
     df = pd.read_sql_query(config.panel.orders_query, engine)
     # Build a dict of dataframes, one for each lunch time
@@ -751,11 +772,11 @@ def df_list_by_lunch_time(
             users = df.columns
             # Find relevant notes
             session = models.create_session(config)
-            user_data = (
-                session.query(models.Users)
-                .filter(models.Users.id.in_(users))
-                .all()
-            )
+
+            with session:
+                user_data = session.scalars(
+                    select(models.Users).where(models.Users.id.in_(users))
+                ).all()
             # Add notes
             for user in user_data:
                 df.loc["NOTE", user.id] = user.note

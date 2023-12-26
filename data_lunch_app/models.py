@@ -343,30 +343,32 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
         log.debug("add basic auth standard users")
         # If no user exist create the default admin
         session = create_session(config)
-        # Check if admin exists
-        if session.query(Credentials).get("admin") is None:
-            # Add authorization and credentials for admin
-            auth.add_privileged_user(
-                user="admin",
-                is_admin=True,
-                config=config,
-            )
-            auth.add_user_hashed_password(
-                user="admin",
-                password="admin",
-                config=config,
-            )
-        # Check if admin exists
-        if (
-            session.query(Credentials).get("guest") is None
-        ) and config.panel.guest_user:
-            # Add only credentials for guest (guest users are not included
-            # in privileged_users table)
-            auth.add_user_hashed_password(
-                user="guest",
-                password="guest",
-                config=config,
-            )
+
+        with session:
+            # Check if admin exists
+            if session.get(Credentials, "admin") is None:
+                # Add authorization and credentials for admin
+                auth.add_privileged_user(
+                    user="admin",
+                    is_admin=True,
+                    config=config,
+                )
+                auth.add_user_hashed_password(
+                    user="admin",
+                    password="admin",
+                    config=config,
+                )
+            # Check if guest exists
+            if (
+                session.get(Credentials, "guest") is None
+            ) and config.panel.guest_user:
+                # Add only credentials for guest (guest users are not included
+                # in privileged_users table)
+                auth.add_user_hashed_password(
+                    user="guest",
+                    password="guest",
+                    config=config,
+                )
 
 
 def set_flag(config: DictConfig, id: str, value: bool) -> None:
@@ -383,9 +385,9 @@ def get_flag(config: DictConfig, id: str) -> bool | None:
     """Get the value of a flag"""
 
     session = create_session(config)
-    flag = session.query(Flags).get(id)
+    flag = session.get(Flags, id)
     if flag is None:
         value = None
     else:
-        value = session.query(Flags).get(id).value
+        value = flag.value
     return value
