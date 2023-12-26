@@ -1,0 +1,7 @@
+defaults:
+  - /${oc.env:PANEL_ENV}
+
+dialect: sqlite
+name: lunch
+db_path: ${db.shared_data_folder}/${db.name}.db
+url: ${db.dialect}:///${db.db_path}
