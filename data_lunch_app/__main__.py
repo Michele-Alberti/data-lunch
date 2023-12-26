@@ -7,6 +7,7 @@ from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import ConfigAttributeError
 from . import auth
 from . import create_app, create_backend
+from . import models
 
 log = logging.getLogger(__name__)
 
@@ -46,6 +47,15 @@ def run_app(config: DictConfig):
         user_info=ui, target_path=tp
     )
     pn.config.auth_template = config.auth.auth_error_template
+
+    # If basic auth is used the database and users credentials shall be created here
+    if auth.is_basic_auth_active:
+        log.info("initialize database and users credentials for basic auth")
+        # Create tables
+        models.create_database(
+            config,
+            add_basic_auth_users=auth.is_basic_auth_active(config=config),
+        )
 
     # Call the app factory function
     log.info("calling app factory function")
