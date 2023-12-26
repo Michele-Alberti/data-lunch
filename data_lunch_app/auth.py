@@ -260,7 +260,13 @@ def authorize(config: DictConfig, user_info: dict, target_path: str) -> bool:
     Return True (authorized) or False (not authorized) by checking current user
     and target path"""
     # Set current user and existing users info
-    current_user = user_info["login"]
+    if is_basic_auth_active(config=config):
+        # For basic authentication username is under the 'user' key
+        current_user_key = "user"
+    else:
+        # For github is under the 'login' key
+        current_user_key = "login"
+    current_user = user_info[current_user_key]
     privileged_users = list_users(config=config)
     log.debug(f"target path: {target_path}")
     # If user is not authenticated block it
