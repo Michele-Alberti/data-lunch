@@ -115,12 +115,6 @@ def create_backend(config: DictConfig) -> pn.Column:
 
     log.info("instantiate backend")
 
-    # Panel configurations
-    log.debug("set panel config and flags")
-    # Configurations
-    pn.config.nthreads = config.panel.nthreads
-    pn.config.notifications = True
-
     # DASHBOARD
     log.debug("instantiate base template")
     # Create web app template
