@@ -168,6 +168,16 @@ class GraphicInterface:
             icon="adjustments-filled",
             icon_size="2em",
         )
+        # Guest override toggle button (if pressed the user act as a guest)
+        self.toggle_guest_override_button = pnw.Toggle(
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="user-bolt",
+            icon_size="2em",
+            stylesheets=[config.panel.gui.css_files.guest_override_path],
+        )
         # Logout button
         self.logout_button = pnw.Button(
             name="",
@@ -191,8 +201,14 @@ class GraphicInterface:
         # Append a controls to the right side of header
         if auth.is_auth_active(config=config):
             self.header_row.append(pn.HSpacer())
+            # Backend only for admin
             if auth.is_admin(user=pn.state.user, config=config):
                 self.header_row.append(self.backend_button)
+            # Guest override only for non guests
+            if not auth.is_guest(
+                user=pn.state.user, config=config, allow_override=False
+            ):
+                self.header_row.append(self.toggle_guest_override_button)
             self.header_row.append(self.logout_button)
             self.header_row.append(
                 pn.pane.HTML(
@@ -203,6 +219,26 @@ class GraphicInterface:
         # CALLBACKS
         # Backend callback
         self.backend_button.on_click(lambda e: auth.open_backend())
+
+        # Guest override callback
+        @pn.depends(self.toggle_guest_override_button, watch=True)
+        def reload_on_guest_override_callback(
+            toggle: pnw.ToggleIcon, reload: bool = True
+        ):
+            # Update global variable
+            pn.state.cache[f"{pn.state.user}_guest_override"] = toggle
+            self.guest_override_alert.visible = toggle
+            # Simply reload the menu when the toggle button value changes
+            if reload:
+                core.reload_menu(
+                    None,
+                    config,
+                    self,
+                )
+
+        # Add callback to attribute
+        self.reload_on_guest_override = reload_on_guest_override_callback
+
         # Logout callback
         self.logout_button.on_click(lambda e: auth.force_logout())
 
@@ -249,6 +285,27 @@ class GraphicInterface:
         self.takeaway_alert_text = f"<span {config.panel.gui.takeaway_alert_text_options}>{config.panel.gui.takeaway_id}</span> "
 
         # WIDGETS
+        # Alert for guest override
+        self.guest_override_alert = pn.pane.HTML(
+            """
+            <div class="guest-override-flag">
+                <div class="icon-container">
+                    <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-radioactive-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M21 11a1 1 0 0 1 1 1a10 10 0 0 1 -5 8.656a1 1 0 0 1 -1.302 -.268l-.064 -.098l-3 -5.19a.995 .995 0 0 1 -.133 -.542l.01 -.11l.023 -.106l.034 -.106l.046 -.1l.056 -.094l.067 -.089a.994 .994 0 0 1 .165 -.155l.098 -.064a2 2 0 0 0 .993 -1.57l.007 -.163a1 1 0 0 1 .883 -.994l.117 -.007h6z" stroke-width="0" fill="currentColor" />
+                        <path d="M7 3.344a10 10 0 0 1 10 0a1 1 0 0 1 .418 1.262l-.052 .104l-3 5.19l-.064 .098a.994 .994 0 0 1 -.155 .165l-.089 .067a1 1 0 0 1 -.195 .102l-.105 .034l-.107 .022a1.003 1.003 0 0 1 -.547 -.07l-.104 -.052a2 2 0 0 0 -1.842 -.082l-.158 .082a1 1 0 0 1 -1.302 -.268l-.064 -.098l-3 -5.19a1 1 0 0 1 .366 -1.366z" stroke-width="0" fill="currentColor" />
+                        <path d="M9 11a1 1 0 0 1 .993 .884l.007 .117a2 2 0 0 0 .861 1.645l.237 .152a.994 .994 0 0 1 .165 .155l.067 .089l.056 .095l.045 .099c.014 .036 .026 .07 .035 .106l.022 .107l.011 .11a.994 .994 0 0 1 -.08 .437l-.053 .104l-3 5.19a1 1 0 0 1 -1.366 .366a10 10 0 0 1 -5 -8.656a1 1 0 0 1 .883 -.993l.117 -.007h6z" stroke-width="0" fill="currentColor" />
+                    </svg>
+                    <span><strong>Watch out! You are a guest now...</strong></span>
+                </div>
+                <div>
+                    Guest override is active.
+                </div>
+            </div>
+            """,
+            margin=5,
+            sizing_mode="stretch_width",
+            stylesheets=[config.panel.gui.css_files.guest_override_path],
+        )
         # Create dataframe instance
         self.dataframe = pnw.Tabulator(
             name="Order",
@@ -331,25 +388,26 @@ class GraphicInterface:
         # CALLBACKS
         # Callback on every "toggle" action
         @pn.depends(self.toggle_no_more_order_button, watch=True)
-        def reload_on_no_more_order_callback(toggle_button: pnw.Toggle):
+        def reload_on_no_more_order_callback(
+            toggle: pnw.Toggle, reload: bool = True
+        ):
             # Update global variable
-            models.set_flag(
-                config=config, id="no_more_orders", value=toggle_button
-            )
+            models.set_flag(config=config, id="no_more_orders", value=toggle)
 
             # Show "no more order" text
-            self.no_more_order_text.visible = toggle_button
+            self.no_more_order_text.visible = toggle
 
             # Deactivate send order and delete order buttons
-            self.send_order_button.disabled = toggle_button
-            self.delete_order_button.disabled = toggle_button
+            self.send_order_button.disabled = toggle
+            self.delete_order_button.disabled = toggle
 
             # Simply reload the menu when the toggle button value changes
-            core.reload_menu(
-                None,
-                config,
-                self,
-            )
+            if reload:
+                core.reload_menu(
+                    None,
+                    config,
+                    self,
+                )
 
         # Add callback to attribute
         self.reload_on_no_more_order = reload_on_no_more_order_callback
@@ -801,6 +859,13 @@ class BackendInterface:
         self.users_tabulator = pn.widgets.Tabulator(
             value=auth.list_users_guests_and_privileges(config),
         )
+        # Cache content
+        self.cache_content = pn.widgets.JSONEditor(
+            value=pn.state.cache,
+            name="Cache Content",
+            mode="view",
+            sizing_mode="stretch_both",
+        )
 
         # BUTTONS
         # Exit button
@@ -831,6 +896,15 @@ class BackendInterface:
             icon_size="2em",
             sizing_mode="stretch_width",
         )
+        # Clear cache button
+        self.clear_cache_button = pnw.Button(
+            name="Clear Server Cache",
+            button_type="danger",
+            height=generic_button_height,
+            icon="file-shredder",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
 
         # COLUMN
         # Create column with user credentials controls (basic auth)
@@ -854,6 +928,13 @@ class BackendInterface:
             self.user_eraser,
             pn.VSpacer(),
             self.delete_user_button,
+            width=sidebar_width,
+        )
+        self.clear_cache_column = pn.Column(
+            pn.pane.HTML("<b>Cache Content</b>"),
+            self.cache_content,
+            pn.VSpacer(),
+            self.clear_cache_button,
             width=sidebar_width,
         )
         # Create for deleting users
@@ -895,6 +976,14 @@ class BackendInterface:
                     sizing_mode="stretch_height",
                 )
             )
+            self.backend_controls.append(self.clear_cache_column)
+            self.backend_controls.append(
+                pn.pane.HTML(
+                    styles=dict(background="lightgray"),
+                    width=2,
+                    sizing_mode="stretch_height",
+                )
+            )
             self.backend_controls.append(self.list_user_column)
 
         # CALLBACKS
@@ -913,8 +1002,8 @@ class BackendInterface:
             lambda e: submit_password_button_callback(self, config)
         )
 
-        # Delete user callback
-        def add_auth_user_button_callback(self):
+        # Add privileged user callback
+        def add_privileged_user_button_callback(self):
             auth.add_privileged_user(
                 self.add_auth_user_widget.object.user,
                 is_admin=self.add_auth_user_widget.object.admin,
@@ -928,7 +1017,7 @@ class BackendInterface:
             )
 
         self.add_auth_user_button.on_click(
-            lambda e: add_auth_user_button_callback(self)
+            lambda e: add_privileged_user_button_callback(self)
         )
 
         # Delete user callback
@@ -954,12 +1043,27 @@ class BackendInterface:
             lambda e: delete_user_button_callback(self)
         )
 
+        # Clear cache callback
+        def clear_cache_button_callback(self):
+            pn.state.clear_caches()
+            pn.state.cache = {}
+            self.reload_backend(config)
+            pn.state.notifications.success(
+                "Cache cleared",
+                duration=config.panel.notifications.duration,
+            )
+
+        self.clear_cache_button.on_click(
+            lambda e: clear_cache_button_callback(self)
+        )
+
     # UTILITY FUNCTIONS
     # MAIN SECTION
     def reload_backend(self, config) -> None:
         self.users_tabulator.value = auth.list_users_guests_and_privileges(
             config
         )
+        self.cache_content.value = pn.state.cache
 
     def exit_backend(self) -> None:
         # Edit pathname to force exit

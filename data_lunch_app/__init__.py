@@ -23,7 +23,6 @@ log = logging.getLogger(__name__)
 
 def create_app(config: DictConfig) -> pn.Template:
     """Panel app factory function"""
-
     log.info("starting initialization process")
 
     log.info("initialize database")
@@ -39,10 +38,14 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("instantiate Panel app")
 
     # Panel configurations
-    log.debug("set flags")
+    log.debug("set toggle initial state")
     # Set the no_more_orders flag if it is None (not found in flags table)
     if models.get_flag(config=config, id="no_more_orders") is None:
         models.set_flag(config=config, id="no_more_orders", value=False)
+    # Set guest override if it is empty
+    guest_override = pn.state.cache.get(
+        f"{pn.state.user}_guest_override", False
+    )
 
     # DASHBOARD BASE TEMPLATE
     log.debug("instantiate base template")
@@ -73,6 +76,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # Build dashboard (the header object is used if defined)
     app.header.append(gi.header_row)
     app.sidebar.append(gi.sidebar_tabs)
+    app.main.append(gi.guest_override_alert)
     app.main.append(gi.no_more_order_text)
     app.main.append(gi.main_header_row)
     app.main.append(gi.quote)
@@ -86,13 +90,18 @@ def create_app(config: DictConfig) -> pn.Template:
 
     # Set components visibility based on no_more_order_button state
     # and reload menu
+    gi.reload_on_no_more_order(
+        toggle=models.get_flag(config=config, id="no_more_orders"),
+        reload=False,
+    )
+    gi.reload_on_guest_override(
+        toggle=guest_override,
+        reload=False,
+    )
     core.reload_menu(
         None,
         config,
         gi,
-    )
-    gi.reload_on_no_more_order(
-        models.get_flag(config=config, id="no_more_orders")
     )
 
     app.servable()

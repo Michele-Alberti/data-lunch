@@ -84,6 +84,9 @@ def clean_tables(config: DictConfig):
         # Clean flags
         models.set_flag(config=config, id="no_more_orders", value=False)
         log.info("reset values in table 'flags'")
+        # Clean cache
+        pn.state.clear_caches()
+        log.info("cache cleaned")
 
 
 def set_guest_user_password(config: DictConfig) -> str:
@@ -265,6 +268,11 @@ def reload_menu(
             )
 
             return
+
+        # Check guest override button status
+        gi.toggle_guest_override_button.value = pn.state.cache.get(
+            f"{pn.state.user}_guest_override", False
+        )
 
         # Guest graphic configuration
         if auth.is_guest(user=pn.state.user, config=config):

@@ -433,8 +433,24 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
     return df_user_guests_privileges
 
 
-def is_guest(user: str, config: DictConfig) -> bool:
-    """Check if a user is a guest by checking if it is listed inside the 'privileged_users' table"""
+def is_guest(
+    user: str, config: DictConfig, allow_override: bool = True
+) -> bool:
+    """Check if a user is a guest by checking if it is listed inside the 'privileged_users' table
+    The guest override chached value (per-user) can force the function to always return True.
+    If allow_override is set to False the guest override value is ignored."""
+
+    # Load guest override from state cache (if the button is pressed its value
+    # is True). If not available use False.
+    guest_override = pn.state.cache.get(
+        f"{pn.state.user}_guest_override", False
+    )
+
+    # If guest override is active always return true (user act like guest)
+    if guest_override and allow_override:
+        return True
+
+    # Otherwise check if user is not included in privileged users
     auth_users = list_users(config)
 
     is_guest = user not in auth_users
