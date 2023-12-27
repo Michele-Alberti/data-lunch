@@ -42,24 +42,6 @@ def cli(ctx):
 
 @cli.group()
 @click.pass_obj
-def cache(obj):
-    """Manage cache."""
-
-
-@cache.command("clean")
-@click.confirmation_option()
-@click.pass_obj
-def clean_caches(obj):
-    """Clean caches."""
-
-    # Clear action
-    pn.state.clear_caches()
-
-    click.secho("Caches cleared", fg="green")
-
-
-@cli.group()
-@click.pass_obj
 def users(obj):
     """Manage privileged users and admin privileges."""
 
