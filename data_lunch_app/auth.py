@@ -418,9 +418,11 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
 
     # Query tables required to understand users and guests
     df_auth_users = pd.read_sql_table(
-        "privileged_users", engine, index_col="user"
+        models.PrivilegedUsers.__tablename__, engine, index_col="user"
     )
-    df_credentials = pd.read_sql_table("credentials", engine, index_col="user")
+    df_credentials = pd.read_sql_table(
+        models.Credentials.__tablename__, engine, index_col="user"
+    )
     # Change admin column to privileges (used after join)
     df_auth_users["group"] = df_auth_users.admin.map(
         {True: "admin", False: "user"}

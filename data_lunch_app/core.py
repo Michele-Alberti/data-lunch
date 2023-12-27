@@ -213,7 +213,10 @@ def build_menu(
         engine = models.create_engine(config)
         try:
             df.drop_duplicates(subset="item").to_sql(
-                config.db.menu_table, engine, index=False, if_exists="append"
+                models.Menu.__tablename__,
+                engine,
+                index=False,
+                if_exists="append",
             )
             # Update dataframe widget
             reload_menu(
@@ -286,7 +289,9 @@ def reload_menu(
 
         # Reload menu
         engine = models.create_engine(config)
-        df = pd.read_sql_table("menu", engine, index_col="id")
+        df = pd.read_sql_table(
+            models.Menu.__tablename__, engine, index_col="id"
+        )
         df["order"] = False
         gi.dataframe.value = df
         gi.dataframe.formatters = {"order": {"type": "tickCross"}}
@@ -733,7 +738,9 @@ def df_list_by_lunch_time(
     # Create database engine and session
     engine = models.create_engine(config)
     # Read menu and save how menu items are sorted (first courses, second courses, etc.)
-    original_order = pd.read_sql_table("menu", engine, index_col="id").item
+    original_order = pd.read_sql_table(
+        models.Menu.__tablename__, engine, index_col="id"
+    ).item
     # Create session
     session = models.create_session(config)
 
