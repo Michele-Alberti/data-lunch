@@ -165,7 +165,7 @@ class GraphicInterface:
             button_style="solid",
             width=header_button_width,
             height=generic_button_height,
-            icon="adjustments-filled",
+            icon="adjustments",
             icon_size="2em",
         )
         # Guest override toggle button (if pressed the user act as a guest)
@@ -185,7 +185,7 @@ class GraphicInterface:
             button_style="solid",
             width=header_button_width,
             height=generic_button_height,
-            icon="logout",
+            icon="door-exit",
             icon_size="2em",
         )
 
@@ -225,8 +225,14 @@ class GraphicInterface:
         def reload_on_guest_override_callback(
             toggle: pnw.ToggleIcon, reload: bool = True
         ):
-            # Update global variable
-            pn.state.cache[f"{pn.state.user}_guest_override"] = toggle
+            # Update global variable that control guest override
+            # Only non guest can store this value in cache (guest users are
+            # always guests)
+            if not auth.is_guest(
+                user=pn.state.user, config=config, allow_override=False
+            ):
+                pn.state.cache[f"{pn.state.user}_guest_override"] = toggle
+            # Show banner if override is active
             self.guest_override_alert.visible = toggle
             # Simply reload the menu when the toggle button value changes
             if reload:
@@ -784,7 +790,7 @@ class BackendInterface:
             button_style="solid",
             width=header_button_width,
             height=generic_button_height,
-            icon="door-exit",
+            icon="home-move",
             icon_size="2em",
         )
 
