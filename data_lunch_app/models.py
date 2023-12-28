@@ -18,10 +18,12 @@ from sqlalchemy import (
     MetaData,
 )
 from sqlalchemy.engine import Engine
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import declarative_base, relationship, validates, Session
 from sqlalchemy.sql import func, elements
 from sqlalchemy.sql import false as sql_false
 from sqlalchemy.dialects.postgresql import insert as postgresql_upsert
+import tenacity
 import os
 
 # Authentication
@@ -410,9 +412,29 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
     # Create directory if missing
     log.debug("create 'shared_data' folder")
     pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
+
+    # In case the database is not ready use a retry mechanism
+    @tenacity.retry(
+        retry=tenacity.retry_if_exception_type(OperationalError),
+        wait=tenacity.wait_fixed(config.db.create_retries.wait),
+        stop=(
+            tenacity.stop_after_delay(config.db.create_retries.stop.delay)
+            | tenacity.stop_after_attempt(
+                config.db.create_retries.stop.attempts
+            )
+        ),
+    )
+    def create_database_with_retries(config: DictConfig) -> None:
+        engine = create_engine(config)
+        Data.metadata.create_all(engine)
+
     # Create tables
-    engine = create_engine(config)
-    Data.metadata.create_all(engine)
+    create_database_with_retries(config)
+
+    # Retries stats
+    log.debug(
+        f"create database attempts: {create_database_with_retries.retry.statistics}"
+    )
 
     # If requested add users for basic auth (admin and guest)
     if add_basic_auth_users:

@@ -7,6 +7,8 @@ services:
 #      dockerfile: ./docker/web/Dockerfile.web
     volumes:
       - ./shared_data:/app/shared_data
+    depends_on:
+      - db
     expose:
       - ${PORT} # Expose port from env variable to an ephemeral port (used by load balancer)
     environment:
