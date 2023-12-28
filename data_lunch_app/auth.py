@@ -337,10 +337,15 @@ def add_privileged_user(user: str, is_admin: bool, config: DictConfig) -> None:
     # Create session
     session = models.create_session(config)
     # New credentials
-    new_user = models.PrivilegedUsers(user=user, admin=is_admin)
+    new_privileged_user = models.PrivilegedUsers(user=user, admin=is_admin)
 
     # Update credentials
-    session.add(new_user)
+    # Use an upsert for postgresql, a simple session add otherwise
+    models.session_add_with_upsert(
+        session=session,
+        constraint="privileged_users_pkey",
+        new_record=new_privileged_user,
+    )
     session.commit()
 
 
@@ -364,7 +369,12 @@ def add_user_hashed_password(
         )
 
     # Update credentials
-    session.add(new_user_credential)
+    # Use an upsert for postgresql, a simple session add otherwise
+    models.session_add_with_upsert(
+        session=session,
+        constraint="credentials_pkey",
+        new_record=new_user_credential,
+    )
     session.commit()
 
 
@@ -418,10 +428,16 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
 
     # Query tables required to understand users and guests
     df_auth_users = pd.read_sql_table(
-        models.PrivilegedUsers.__tablename__, engine, index_col="user"
+        models.PrivilegedUsers.__tablename__,
+        engine,
+        schema=config.db.get("schema", None),
+        index_col="user",
     )
     df_credentials = pd.read_sql_table(
-        models.Credentials.__tablename__, engine, index_col="user"
+        models.Credentials.__tablename__,
+        engine,
+        schema=config.db.get("schema", None),
+        index_col="user",
     )
     # Change admin column to privileges (used after join)
     df_auth_users["group"] = df_auth_users.admin.map(

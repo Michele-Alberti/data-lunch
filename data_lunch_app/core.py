@@ -290,7 +290,10 @@ def reload_menu(
         # Reload menu
         engine = models.create_engine(config)
         df = pd.read_sql_table(
-            models.Menu.__tablename__, engine, index_col="id"
+            models.Menu.__tablename__,
+            engine,
+            schema=config.db.get("schema", models.SCHEMA),
+            index_col="id",
         )
         df["order"] = False
         gi.dataframe.value = df
@@ -428,7 +431,10 @@ def reload_menu(
             )
         )
         new_stat = models.Stats(hungry_people=today_locals_count)
-        session.add(new_stat)
+        # Use an upsert for postgresql, a simple session add otherwise
+        models.session_add_with_upsert(
+            session=session, constraint="stats_pkey", new_record=new_stat
+        )
         # For each guest type find how many guests eat today
         for guest_type in config.panel.guest_types:
             today_guests_count = session.scalar(
@@ -439,13 +445,19 @@ def reload_menu(
             new_stat = models.Stats(
                 guest=guest_type, hungry_people=today_guests_count
             )
-            session.add(new_stat)
+            # Use an upsert for postgresql, a simple session add otherwise
+            models.session_add_with_upsert(
+                session=session, constraint="stats_pkey", new_record=new_stat
+            )
+
         # Commit stats
         session.commit()
 
         # Group stats by month and return how many people had lunch
         df_stats = pd.read_sql_query(
-            config.panel.stats_query,
+            config.db.stats_query.format(
+                schema=config.db.get("schema", models.SCHEMA)
+            ),
             engine,
         )
         # Stats top text
@@ -739,7 +751,10 @@ def df_list_by_lunch_time(
     engine = models.create_engine(config)
     # Read menu and save how menu items are sorted (first courses, second courses, etc.)
     original_order = pd.read_sql_table(
-        models.Menu.__tablename__, engine, index_col="id"
+        models.Menu.__tablename__,
+        engine,
+        schema=config.db.get("schema", models.SCHEMA),
+        index_col="id",
     ).item
     # Create session
     session = models.create_session(config)
@@ -753,7 +768,12 @@ def df_list_by_lunch_time(
             ).all()
         ]
     # Read dataframe
-    df = pd.read_sql_query(config.panel.orders_query, engine)
+    df = pd.read_sql_query(
+        config.db.orders_query.format(
+            schema=config.db.get("schema", models.SCHEMA)
+        ),
+        engine,
+    )
     # Build a dict of dataframes, one for each lunch time
     df_dict = {}
     for time in df.lunch_time.sort_values().unique():

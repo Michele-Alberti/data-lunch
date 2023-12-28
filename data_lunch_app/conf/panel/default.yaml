@@ -46,22 +46,7 @@ notifications:
 # Drop unused menus entries in orders tables (drop unused if true)
 drop_unused_menu_items: true
 
-# QUERIES
-# Orders
-orders_query: |-
-  SELECT o.user, o.lunch_time, m.item
-  FROM orders o
-  LEFT JOIN menu m
-  ON m.id = o.menu_item_id;
-# Stats
-stats_query: |-
-  SELECT STRFTIME('%Y', date) AS "Year", 
-    STRFTIME('%m', date) AS "Month",
-    guest AS "Guest",
-    SUM(hungry_people) AS "Hungry People"
-  FROM stats
-  GROUP BY "Year", "Month", "Guest"
-  ORDER BY "Year", "Month", "Guest";
+# STATISTICS DATAFRAMES
 stats_id_cols:
   - Year
   - Month

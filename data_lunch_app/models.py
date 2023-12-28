@@ -1,6 +1,10 @@
+from datetime import datetime
 import hydra
 import logging
+from omegaconf import DictConfig
 import pathlib
+from psycopg import Connection as ConnectionPostgresql
+from sqlite3 import Connection as ConnectionSqlite
 from sqlalchemy import (
     Column,
     PrimaryKeyConstraint,
@@ -11,21 +15,35 @@ from sqlalchemy import (
     Date,
     Boolean,
     event,
+    MetaData,
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import declarative_base, relationship, validates, Session
 from sqlalchemy.sql import func, elements
 from sqlalchemy.sql import false as sql_false
-from omegaconf import DictConfig
-from datetime import datetime
+from sqlalchemy.dialects.postgresql import insert as postgresql_upsert
+import os
 
 # Authentication
 from . import auth
 
 log = logging.getLogger(__name__)
 
+_MODULE_TO_DIALECT_MAP = {
+    "psycopg2": "postgresql",
+    "psycopg": "postgresql",
+    "sqlite3": "sqlite",
+    "sqlite": "sqlite",
+}
+
+# Add schema to default metadata (only if requested)
+# Read directly from environment variable because config is not available here
+# If config.db.schema is available SCHEMA value is overridden by the value
+# set in config
+SCHEMA = os.environ.get("DATA_LUNCH_DB_SCHEMA", None)
+metadata_obj = MetaData(schema=SCHEMA)
 # Create database instance (with lazy loading)
-Data = declarative_base()
+Data = declarative_base(metadata=metadata_obj)
 
 
 # EVENTS ----------------------------------------------------------------------
@@ -33,9 +51,11 @@ Data = declarative_base()
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON;")
-    cursor.close()
+    """Force foreign key constraints for sqlite connections."""
+    if get_db_dialect(dbapi_connection) == "sqlite":
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON;")
+        cursor.close()
 
 
 # CUSTOM COLUMNS --------------------------------------------------------------
@@ -207,7 +227,7 @@ class Stats(Data):
     __tablename__ = "stats"
     __table_args__ = (
         PrimaryKeyConstraint(
-            "date", "guest", name="stats_pk", sqlite_on_conflict="REPLACE"
+            "date", "guest", name="stats_pkey", sqlite_on_conflict="REPLACE"
         ),
     )
     date = Column(
@@ -291,9 +311,65 @@ class Credentials(Data):
 # FUNCTIONS -------------------------------------------------------------------
 
 
+def get_db_dialect(
+    db_obj: Session | ConnectionSqlite | ConnectionPostgresql,
+) -> str:
+    """Return database type (postgresql, sqlite, etc.) based on the database
+    object passed as input.
+    If a session is passed
+    The database type is set based on an internal map (see models._DBTYPE_MAP).
+    """
+    if isinstance(db_obj, Session):
+        dialect = db_obj.bind.dialect.name
+    elif isinstance(db_obj, ConnectionSqlite) or isinstance(
+        db_obj, ConnectionPostgresql
+    ):
+        module = db_obj.__class__.__module__.split(".", 1)[0]
+        dialect = _MODULE_TO_DIALECT_MAP[module]
+    else:
+        raise TypeError("db_obj should be a session or connection object")
+
+    return dialect
+
+
+def session_add_with_upsert(
+    session: Session, constraint: str, new_record: Stats | Flags
+) -> None:
+    """Use an upsert statement for postgresql t a dd a new record to a table,
+    a simple session add otherwise"""
+    # Use an upsert for postgresql (for sqlite an 'on conflict replace' is set
+    # on table, so session.add is fine)
+    if get_db_dialect(session) == "postgresql":
+        insert_statement = postgresql_upsert(new_record.__table__).values(
+            {
+                column.name: getattr(new_record, column.name)
+                for column in new_record.__table__.c
+                if getattr(new_record, column.name, None) is not None
+            }
+        )
+        upsert_statement = insert_statement.on_conflict_do_update(
+            constraint=constraint,
+            set_={
+                column.name: getattr(insert_statement.excluded, column.name)
+                for column in insert_statement.excluded
+            },
+        )
+        session.execute(upsert_statement)
+    else:
+        session.add(new_record)
+
+
 def create_engine(config: DictConfig) -> Engine:
     """SQLAlchemy engine factory function"""
     engine = hydra.utils.instantiate(config.db.engine)
+
+    # Change schema with change_execution_options
+    # If schema exist in config.db it will override the schema selected through
+    # the environment variable
+    if "schema" in config.db:
+        engine.update_execution_options(
+            schema_translate_map={SCHEMA: config.db.schema}
+        )
 
     return engine
 
@@ -374,11 +450,18 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
 def set_flag(config: DictConfig, id: str, value: bool) -> None:
     """Set value inside flag table"""
 
-    # Write the selected flag (it will be overwritten if exists)
     session = create_session(config)
-    new_flag = Flags(id=id, value=value)
-    session.add(new_flag)
-    session.commit()
+
+    with session:
+        # Write the selected flag (it will be overwritten if exists)
+        new_flag = Flags(id=id, value=value)
+
+        # Use an upsert for postgresql, a simple session add otherwise
+        session_add_with_upsert(
+            session=session, constraint="flags_pkey", new_record=new_flag
+        )
+
+        session.commit()
 
 
 def get_flag(config: DictConfig, id: str) -> bool | None:

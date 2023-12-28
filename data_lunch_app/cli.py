@@ -3,7 +3,7 @@ import pkg_resources
 from hydra import compose, initialize
 import pandas as pd
 import panel as pn
-from .models import create_database, create_engine
+from .models import create_database, create_engine, SCHEMA
 
 # Import database object
 from .models import Data
@@ -253,7 +253,9 @@ def export_table_to_csv(obj, name, csv_file_path, index):
     # Create dataframe
     try:
         engine = create_engine(obj["config"])
-        df = pd.read_sql_table(name, engine)
+        df = pd.read_sql_table(
+            name, engine, schema=obj["config"].db.get("schema", SCHEMA)
+        )
     except Exception as e:
         # Generic error
         click.secho("Cannot read table", fg="red")

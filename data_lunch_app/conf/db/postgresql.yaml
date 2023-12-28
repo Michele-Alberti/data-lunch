@@ -1,0 +1,35 @@
+defaults:
+  - /${oc.env:PANEL_ENV}
+
+dialect: postgresql
+driver: psycopg # Use psycopg3
+username: ${oc.env:DATA_LUNCH_DB_USER, data_lunch_rw}
+password: ${oc.env:DATA_LUNCH_DB_PASSWORD}
+host: ${oc.env:DATA_LUNCH_DB_HOST, db}
+port: ${oc.env:DATA_LUNCH_DB_PORT, 5432}
+database: ${oc.env:DATA_LUNCH_DB_DATABASE, data_lunch_database}
+schema: ${oc.env:DATA_LUNCH_DB_SCHEMA, webapp}
+url: ${db.dialect}+${db.driver}://${db.username}:${db.password}@${db.host}:${db.port}/${db.database}
+
+# QUERIES
+# Orders
+orders_query: |-
+  SELECT o.user, o.lunch_time, m.item
+  FROM {schema}.orders o
+  LEFT JOIN {schema}.menu m
+  ON m.id = o.menu_item_id;
+# Stats
+stats_query: |-
+  SELECT EXTRACT(YEAR FROM date) AS "Year", 
+    EXTRACT(MONTH FROM date) AS "Month",
+    guest AS "Guest",
+    SUM(hungry_people) AS "Hungry People"
+  FROM {schema}.stats
+  GROUP BY "Year", "Month", "Guest"
+  ORDER BY "Year", "Month", "Guest";
+
+# SAVE DATABASE TO CLOUD STORAGE
+ext_storage_upload:
+    enabled: false # Set to false to turn off database upload completely
+    source_file_name: null # No file to upload for postgresql
+    destination_blob_name: null # No file to upload for postgresql
