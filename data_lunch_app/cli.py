@@ -2,11 +2,9 @@ import click
 import pkg_resources
 from hydra import compose, initialize
 import pandas as pd
-import panel as pn
-from .models import create_database, create_engine, SCHEMA
 
 # Import database object
-from .models import Data
+from .models import create_database, create_engine, SCHEMA, Data
 
 # Import functions from core
 from .core import clean_tables as clean_tables_func
@@ -23,17 +21,24 @@ __version__ = pkg_resources.require("data_lunch")[0].version
 
 @click.group()
 @click.version_option(__version__)
+@click.option(
+    "-o",
+    "--hydra-overrides",
+    "hydra_overrides",
+    default=None,
+    multiple=True,
+    help="pass hydra override, use multiple time to add more than one override",
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, hydra_overrides: tuple | None):
     """Command line interface for creating a local sqlite database.
     To be used only for development purposes.
     """
-
     # global initialization
     initialize(
         config_path="conf", job_name="data_lunch_cli", version_base="1.3"
     )
-    config = compose(config_name="config")
+    config = compose(config_name="config", overrides=hydra_overrides)
     ctx.obj = {"config": config}
 
     # Auth encryption
@@ -333,6 +338,7 @@ def load_table(
         df.to_sql(
             name,
             engine,
+            schema=obj["config"].db.get("schema", SCHEMA),
             index=index,
             index_label=index_label,
             if_exists=if_exists,

@@ -215,6 +215,7 @@ def build_menu(
             df.drop_duplicates(subset="item").to_sql(
                 models.Menu.__tablename__,
                 engine,
+                schema=config.db.get("schema", models.SCHEMA),
                 index=False,
                 if_exists="append",
             )
