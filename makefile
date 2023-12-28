@@ -1,10 +1,18 @@
-#vars
+# Data-Lunch variables
 APP=${PANEL_APP}
 IMAGENAME=${DOCKER_USERNAME}/${APP}
 RUNNAME=${DOCKER_USERNAME}_${APP}
 VERSION=${IMAGE_VERSION}
 IMAGEFULLNAME=${IMAGENAME}:${VERSION}
 PROJECTNAME=${DOCKER_USERNAME}_${APP}
+# Database variables (used if not sqlite)
+DBNAME:=postgres
+DBSERVICE:=db
+DBCONTAINERNAME:=${DBNAME}_${DBSERVICE}
+DBIMAGEFULLNAME:=${DBNAME}:${VERSION}
+DBPORT:=5432
+# Docker compose up
+UP_SERVICES:=web nginx
 
 .PHONY: help build push all clean
 
@@ -14,7 +22,12 @@ help:
 	@echo "push"
 	@echo "all"
 
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL := help
+
+check-dialect:
+ifndef DB_DIALECT
+	$(error DB_DIALECT is not set, add DB_DIALECT=postgresql or DB_DIALECT=sqlite after the make command)
+endif
 
 build:
 	docker build -t ${IMAGEFULLNAME} -f docker/web/Dockerfile.web .
@@ -60,6 +73,22 @@ run-development:
 	-e DATA_LUNCH_OAUTH_SECRET=${DATA_LUNCH_OAUTH_REDIRECT_URI} \
 	${IMAGEFULLNAME} ${PANEL_ARGS}
 
+
+stop: 
+	docker stop ${RUNNAME}
+
+run-db: 
+	docker run -d --name ${DBCONTAINERNAME} \
+	-v ${PWD}/shared_data/db_pg:/var/lib/postgresql/data \
+	-p 127.0.0.1:${DBPORT}:${DBPORT} \
+	-e POSTGRES_USER=data_lunch_rw \
+	-e POSTGRES_PASSWORD=${DATA_LUNCH_DB_PASSWORD} \
+	-e POSTGRES_DB=data_lunch_database \
+	${DBIMAGEFULLNAME}
+
+stop-db: 
+	docker stop ${DBCONTAINERNAME}
+
 send-ip-email:
 	docker run --rm --name send_email \
 	--entrypoint "" \
@@ -85,21 +114,26 @@ create-users-credentials:
 	-e DOMAIN=${DOMAIN} \
 	${IMAGEFULLNAME} /bin/sh -c "python /app/scripts/create_users_from_list.py ${PANEL_ARGS}"
 
-stop: 
-	docker stop ${RUNNAME}
-
-up:
+up: check-dialect
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
 		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --scale web=3; \
 	else \
-		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d web nginx --scale web=3; \
+		if [[ ${DB_DIALECT} == "postgresql" ]] ; then \
+			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d ${UP_SERVICES} ${DBSERVICE} --scale web=3; \
+		else \
+			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d ${UP_SERVICES} --scale web=3; \
+		fi; \
 	fi;
 
-up-build: build
+up-build: check-dialect build
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
 		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3; \
 	else \
-		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build web nginx --scale web=3; \
+		if [[ ${DB_DIALECT} == "postgresql" ]] ; then \
+			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build ${UP_SERVICES} ${DBSERVICE} --scale web=3; \
+		else \
+			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build ${UP_SERVICES} --scale web=3; \
+		fi; \
 	fi;
 
 down:
