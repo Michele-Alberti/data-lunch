@@ -256,7 +256,12 @@ def is_auth_active(config: DictConfig) -> bool:
     return auth_provider or oauth_provider
 
 
-def authorize(config: DictConfig, user_info: dict, target_path: str) -> bool:
+def authorize(
+    config: DictConfig,
+    user_info: dict,
+    target_path: str,
+    authorize_guest_users=False,
+) -> bool:
     """Authorization callback, read config, user info and target path.
     Return True (authorized) or False (not authorized) by checking current user
     and target path"""
@@ -278,10 +283,11 @@ def authorize(config: DictConfig, user_info: dict, target_path: str) -> bool:
     if current_user in privileged_users:
         return True
     # If the target is the mainpage always authorized (if authenticated)
-    if target_path == "/":
+    if authorize_guest_users and (target_path == "/"):
         return True
 
-    # In all other cases, don't authorize
+    # In all other cases, don't authorize and logout
+    pn.state.location.pathname.split("/")[0] + "/logout"
     return False
 
 

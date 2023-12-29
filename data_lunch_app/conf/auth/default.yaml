@@ -7,6 +7,9 @@ auth_error_template: data_lunch_app/templates/error.html
 authorization_callback:
   _target_: data_lunch_app.auth.authorize
   _partial_: True
+  # Flag to authorize access of guest users to the home page
+  # They can only place orders for guests 
+  authorize_guest_users: true
 # Set cookie function arguments (set to empty dict to turn off)
 cookie_kwargs:
   httponly: true
@@ -23,7 +26,8 @@ basic_auth:
   # Set generated password length (call to generate_password)
   generated_psw_length: 12
   # GUEST USER (used only if basic auth is active)
-  # If true create default guest user credentials
+  # If true create default guest user credentials (i.e. a user named "guest")
+  # It is an unprivileged user (is_guest = true) named guest
   guest_user: true
   # Guest user password flag default value
   # If true a new password for guest user is set everytime the main function is called
