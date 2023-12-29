@@ -850,7 +850,7 @@ class BackendInterface:
             width=sidebar_content_width,
         )
         # Add user (only oauth)
-        self.add_auth_user_widget = pn.Param(
+        self.add_privileged_user_widget = pn.Param(
             BackendAddPrivilegedUser().param,
             name="Add Privileged User",
             width=sidebar_content_width,
@@ -885,7 +885,7 @@ class BackendInterface:
             sizing_mode="stretch_width",
         )
         # Delete User button
-        self.add_auth_user_button = pnw.Button(
+        self.add_privileged_user_button = pnw.Button(
             name="Add",
             button_type="success",
             height=generic_button_height,
@@ -923,10 +923,10 @@ class BackendInterface:
             width=sidebar_width,
         )
         # Create column with user authenthication controls (oauth)
-        self.add_auth_user_column = pn.Column(
-            self.add_auth_user_widget,
+        self.add_privileged_user_column = pn.Column(
+            self.add_privileged_user_widget,
             pn.VSpacer(),
-            self.add_auth_user_button,
+            self.add_privileged_user_button,
             width=sidebar_width,
         )
         # Create for deleting users
@@ -966,7 +966,7 @@ class BackendInterface:
             if auth.is_basic_auth_active(config=config):
                 self.backend_controls.append(self.add_update_user_column)
             else:
-                self.backend_controls.append(self.add_auth_user_column)
+                self.backend_controls.append(self.add_privileged_user_column)
             self.backend_controls.append(
                 pn.pane.HTML(
                     styles=dict(background="lightgray"),
@@ -1011,18 +1011,18 @@ class BackendInterface:
         # Add privileged user callback
         def add_privileged_user_button_callback(self):
             auth.add_privileged_user(
-                self.add_auth_user_widget.object.user,
-                is_admin=self.add_auth_user_widget.object.admin,
+                self.add_privileged_user_widget.object.user,
+                is_admin=self.add_privileged_user_widget.object.admin,
                 config=config,
             )
 
             self.reload_backend(config)
             pn.state.notifications.success(
-                f"User '{self.add_auth_user_widget.object.user}' added",
+                f"User '{self.add_privileged_user_widget.object.user}' added",
                 duration=config.panel.notifications.duration,
             )
 
-        self.add_auth_user_button.on_click(
+        self.add_privileged_user_button.on_click(
             lambda e: add_privileged_user_button_callback(self)
         )
 

@@ -67,7 +67,7 @@ def list_users_name(obj):
 @click.argument("user")
 @click.option("--admin", "is_admin", is_flag=True, help="add admin privileges")
 @click.pass_obj
-def add_auth_user(obj, user, is_admin):
+def add_privileged_user(obj, user, is_admin):
     """Add privileged users (with or without admin privileges)."""
 
     # Add privileged user to 'privileged_users' table
