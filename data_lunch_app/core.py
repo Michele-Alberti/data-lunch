@@ -465,8 +465,10 @@ def reload_menu(
             engine,
         )
         # Stats top text
-        stats_text = gi.build_stats_text(
+        stats_and_info_text = gi.build_stats_and_info_text(
+            config=config,
             df_stats=df_stats,
+            user=pn.state.user,
             version=__version__,
             host_name=get_host_name(config),
             stylesheets=[config.panel.gui.css_files.stats_info_path],
@@ -487,10 +489,12 @@ def reload_menu(
         # Add value and non-editable option to stats table
         gi.stats_widget.editors = {c: None for c in df_stats.columns}
         gi.stats_widget.value = df_stats
-        gi.sidebar_stats_col.append(stats_text["stats"])
+        gi.sidebar_stats_col.append(stats_and_info_text["stats"])
         gi.sidebar_stats_col.append(gi.stats_widget)
-        gi.sidebar_stats_col.append(stats_text["info"])
-        log.debug("stats updated")
+        # Add info below person widget (an empty placeholder was left as last
+        # element)
+        gi.sidebar_person_column.objects[-1] = stats_and_info_text["info"]
+        log.debug("stats and info updated")
 
 
 def send_order(

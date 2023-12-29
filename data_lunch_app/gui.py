@@ -573,16 +573,20 @@ class GraphicInterface:
 
         # COLUMNS
         # Create column for person data
-        self.person_column = pn.Column(
+        self.sidebar_person_column = pn.Column(
             person_text,
             self.person_widget,
             pn.Spacer(height=5),
             name="User",
             width=sidebar_content_width,
         )
-        # Finally add salads
-        self.person_column.append(
+        # Add salads
+        self.sidebar_person_column.append(
             self.salad_menu,
+        )
+        # Leave an empty widget for the 'other info' section
+        self.sidebar_person_column.append(
+            pn.pane.HTML(),
         )
 
         # Create column for uploading image/Excel with the menu
@@ -622,7 +626,7 @@ class GraphicInterface:
         # The person column is defined in the app factory function because lunch
         # times are configurable
         self.sidebar_tabs = pn.Tabs(
-            self.person_column,
+            self.sidebar_person_column,
             width=sidebar_content_width,
         )
 
@@ -709,9 +713,11 @@ class GraphicInterface:
         return time_label
 
     # SIDEBAR SECTION
-    def build_stats_text(
+    def build_stats_and_info_text(
         self,
+        config: DictConfig,
         df_stats: pd.DataFrame,
+        user: str,
         version: str,
         host_name: str,
         stylesheets: list = [],
@@ -734,38 +740,71 @@ class GraphicInterface:
             """,
             stylesheets=stylesheets,
         )
+        # Define user group
+        if auth.is_guest(user=user, config=config, allow_override=False):
+            user_group = "guest"
+        elif auth.is_admin(user=user, config=config):
+            user_group = "guest"
+        else:
+            user_group = "user"
         # Other info
         other_info = pn.pane.HTML(
             f"""
-            <h4>Other Info</h3>
-            <div class="icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-tag" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <circle cx="8.5" cy="8.5" r="1" fill="currentColor"></circle>
-                    <path d="M4 7v3.859c0 .537 .213 1.052 .593 1.432l8.116 8.116a2.025 2.025 0 0 0 2.864 0l4.834 -4.834a2.025 2.025 0 0 0 0 -2.864l-8.117 -8.116a2.025 2.025 0 0 0 -1.431 -.593h-3.859a3 3 0 0 0 -3 3z"></path>
-                </svg>
-                <span>
-                    <strong>Version:</strong> <i>{version}</i>
-                </span>
-            </div>
-            <div class="icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cpu" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z"></path>
-                    <path d="M9 9h6v6h-6z"></path>
-                    <path d="M3 10h2"></path>
-                    <path d="M3 14h2"></path>
-                    <path d="M10 3v2"></path>
-                    <path d="M14 3v2"></path>
-                    <path d="M21 10h-2"></path>
-                    <path d="M21 14h-2"></path>
-                    <path d="M14 21v-2"></path>
-                    <path d="M10 21v-2"></path>
-                </svg>
-                <span>
-                    <strong>Host:</strong> <i>{host_name}</i>
-                </span>
-            </div>
+            <details>
+                <summary><strong>Other Info</strong></summary>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-square" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M9 10a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                        <path d="M6 21v-1a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v1" />
+                        <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
+                    </svg>
+                    <span>
+                        <strong>User:</strong> <i>{user}</i>
+                    </span>
+                </div>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users-group" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1" />
+                        <path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M17 10h2a2 2 0 0 1 2 2v1" />
+                        <path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M3 13v-1a2 2 0 0 1 2 -2h2" />
+                    </svg>
+                    <span>
+                        <strong>Group:</strong> <i>{user_group}</i>
+                    </span>
+                </div>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pizza" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 21.5c-3.04 0 -5.952 -.714 -8.5 -1.983l8.5 -16.517l8.5 16.517a19.09 19.09 0 0 1 -8.5 1.983z" />
+                        <path d="M5.38 15.866a14.94 14.94 0 0 0 6.815 1.634a14.944 14.944 0 0 0 6.502 -1.479" />
+                        <path d="M13 11.01v-.01" />
+                        <path d="M11 14v-.01" />
+                    </svg>
+                    <span>
+                        <strong>Data-Lunch:</strong> <i>v{version}</i>
+                    </span>
+                </div>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cpu" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z"></path>
+                        <path d="M9 9h6v6h-6z"></path>
+                        <path d="M3 10h2"></path>
+                        <path d="M3 14h2"></path>
+                        <path d="M10 3v2"></path>
+                        <path d="M14 3v2"></path>
+                        <path d="M21 10h-2"></path>
+                        <path d="M21 14h-2"></path>
+                        <path d="M14 21v-2"></path>
+                        <path d="M10 21v-2"></path>
+                    </svg>
+                    <span>
+                        <strong>Host:</strong> <i>{host_name}</i>
+                    </span>
+                </div>
+            </details>
             """,
             sizing_mode="stretch_width",
             stylesheets=stylesheets,

@@ -2,7 +2,7 @@
 button.bk-active {
     background-color: white !important;
     box-shadow: none !important;
-    color: var(--primary-color);
+    color: var(--panel-primary-color);
 }
 
 .guest-override-flag {
