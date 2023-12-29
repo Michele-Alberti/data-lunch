@@ -93,7 +93,9 @@ def set_guest_user_password(config: DictConfig) -> str:
     """If guest user is requested return a password, otherwise return ""
     This function always returns "" if basic auth is not used
     """
-    if config.panel.guest_user and auth.is_basic_auth_active(config=config):
+    if config.auth.basic_auth.guest_user and auth.is_basic_auth_active(
+        config=config
+    ):
         # If flag does not exist use the default value
         if (
             models.get_flag(config=config, id="reset_guest_user_password")
@@ -102,7 +104,7 @@ def set_guest_user_password(config: DictConfig) -> str:
             models.set_flag(
                 config=config,
                 id="reset_guest_user_password",
-                value=config.panel.default_reset_guest_user_password_flag,
+                value=config.auth.basic_auth.default_reset_guest_user_password_flag,
             )
         # Generate a random password only if requested (check on flag)
         # otherwise load from pickle
@@ -117,7 +119,8 @@ def set_guest_user_password(config: DictConfig) -> str:
             )
             # Create password
             guest_password = auth.generate_password(
-                special_chars=config.panel.psw_special_chars
+                special_chars=config.auth.basic_auth.psw_special_chars,
+                length=config.auth.basic_auth.generated_psw_length,
             )
             # Add hashed password to database
             auth.add_user_hashed_password(
@@ -936,7 +939,8 @@ def backend_submit_password(
         ):
             # Check if new password is valid with regex
             if re.fullmatch(
-                config.panel.psw_regex, gi.password_widget.object.new_password
+                config.auth.basic_auth.psw_regex,
+                gi.password_widget.object.new_password,
             ):
                 # If is_guest and is_admin are None (not passed) use the ones
                 # already set for the user

@@ -12,3 +12,19 @@ cookie_kwargs:
   httponly: true
   secure: true
   samesite: strict
+
+# BASIC AUTHENTICATION DATA
+basic_auth:
+  # Those values are  used by basic authentication specific features
+  # PASSWORD (used only if basic auth is active)
+  # Special charachters and reg expression used to check (or create) a password
+  psw_special_chars: ';:,.+-=_#!$%&?^*@'
+  psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${panel.psw_special_chars}]).{8,}$
+  # Set generated password length (call to generate_password)
+  generated_psw_length: 12
+  # GUEST USER (used only if basic auth is active)
+  # If true create default guest user credentials
+  guest_user: true
+  # Guest user password flag default value
+  # If true a new password for guest user is set everytime the main function is called
+  default_reset_guest_user_password_flag: false
