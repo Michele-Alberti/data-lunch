@@ -19,7 +19,7 @@ basic_auth:
   # PASSWORD (used only if basic auth is active)
   # Special charachters and reg expression used to check (or create) a password
   psw_special_chars: ';:,.+-=_#!$%&?^*@'
-  psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${panel.psw_special_chars}]).{8,}$
+  psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${auth.basic_auth.psw_special_chars}]).{8,}$
   # Set generated password length (call to generate_password)
   generated_psw_length: 12
   # GUEST USER (used only if basic auth is active)
