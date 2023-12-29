@@ -279,7 +279,7 @@ class PrivilegedUsers(Data):
     )
 
     def __repr__(self):
-        return f"<AUTH_USER:{self.id}>"
+        return f"<PRIVILEGED_USER:{self.id}>"
 
 
 class Credentials(Data):

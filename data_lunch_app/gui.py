@@ -1070,12 +1070,12 @@ class BackendInterface:
             deleted_data = auth.remove_user(
                 user=self.user_eraser.object.user, config=config
             )
-            if (deleted_data["auth_users_deleted"] > 0) or (
+            if (deleted_data["privileged_users_deleted"] > 0) or (
                 deleted_data["credentials_deleted"] > 0
             ):
                 self.reload_backend(config)
                 pn.state.notifications.success(
-                    f"User '{self.user_eraser.object.user}' deleted<br>auth: {deleted_data['auth_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
+                    f"User '{self.user_eraser.object.user}' deleted<br>auth: {deleted_data['privileged_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
                     duration=config.panel.notifications.duration,
                 )
             else:

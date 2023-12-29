@@ -390,7 +390,7 @@ def remove_user(user: str, config: DictConfig) -> None:
 
     with session:
         # Delete user from privileged_users table
-        auth_users_deleted = session.execute(
+        privileged_users_deleted = session.execute(
             delete(models.PrivilegedUsers).where(
                 models.PrivilegedUsers.user == user
             )
@@ -404,7 +404,7 @@ def remove_user(user: str, config: DictConfig) -> None:
         session.commit()
 
     return {
-        "auth_users_deleted": auth_users_deleted.rowcount,
+        "privileged_users_deleted": privileged_users_deleted.rowcount,
         "credentials_deleted": credentials_deleted.rowcount,
     }
 
@@ -416,10 +416,12 @@ def list_users(config: DictConfig) -> list[str]:
     session = models.create_session(config)
 
     with session:
-        auth_users = session.scalars(select(models.PrivilegedUsers)).all()
+        privileged_users = session.scalars(
+            select(models.PrivilegedUsers)
+        ).all()
 
     # Return users
-    users_list = [u.user for u in auth_users]
+    users_list = [u.user for u in privileged_users]
     users_list.sort()
 
     return users_list
@@ -433,7 +435,7 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
     engine = models.create_engine(config)
 
     # Query tables required to understand users and guests
-    df_auth_users = pd.read_sql_table(
+    df_privileged_users = pd.read_sql_table(
         models.PrivilegedUsers.__tablename__,
         engine,
         schema=config.db.get("schema", None),
@@ -446,10 +448,10 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
         index_col="user",
     )
     # Change admin column to privileges (used after join)
-    df_auth_users["group"] = df_auth_users.admin.map(
+    df_privileged_users["group"] = df_privileged_users.admin.map(
         {True: "admin", False: "user"}
     )
-    df_user_guests_privileges = df_auth_users.join(
+    df_user_guests_privileges = df_privileged_users.join(
         df_credentials, how="outer"
     )[["group"]]
     df_user_guests_privileges = df_user_guests_privileges.fillna("guest")
@@ -475,9 +477,9 @@ def is_guest(
         return True
 
     # Otherwise check if user is not included in privileged users
-    auth_users = list_users(config)
+    privileged_users = list_users(config)
 
-    is_guest = user not in auth_users
+    is_guest = user not in privileged_users
 
     return is_guest
 
