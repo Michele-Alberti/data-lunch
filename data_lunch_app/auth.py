@@ -363,9 +363,11 @@ def add_user_hashed_password(
     # Create session
     session = models.create_session(config)
     # New credentials
-    # For guest user add also the encrypted password so that panle can show
-    # the decrypted guest password to logged users
-    if is_guest(user=user, config=config):
+    # For the user named "guest" add also the encrypted password so that panel
+    # can show the decrypted guest password to logged users
+    # Can't use is_guest to determine the user that need encription, because
+    # only the user named guest is shown in the guest user password widget
+    if user == "guest":
         new_user_credential = models.Credentials(
             user=user, password_hash=password, password_encrypted=password
         )
