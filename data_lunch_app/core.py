@@ -185,7 +185,14 @@ def build_menu(
             df = pd.concat(
                 [
                     df,
-                    pd.DataFrame({"item": config.panel.menu_items_to_concat}),
+                    pd.DataFrame(
+                        {
+                            "item": [
+                                item["name"]
+                                for item in config.panel.additional_items_to_concat
+                            ]
+                        }
+                    ),
                 ],
                 axis="index",
             )
@@ -199,7 +206,14 @@ def build_menu(
             df = pd.concat(
                 [
                     df,
-                    pd.DataFrame({"item": config.panel.menu_items_to_concat}),
+                    pd.DataFrame(
+                        {
+                            "item": [
+                                item["name"]
+                                for item in config.panel.additional_items_to_concat
+                            ]
+                        }
+                    ),
                 ],
                 axis="index",
                 ignore_index=True,

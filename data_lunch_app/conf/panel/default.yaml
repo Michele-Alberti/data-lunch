@@ -19,28 +19,49 @@ lunch_times_options:
   - "13:30"
   - "14:00"
   - "14:30"
-menu_items_to_concat:
-  - Insalatona Primavera
-  - Insalatona Valtellina
-  - Insalatona Sorrento
-  - Insalatona Chicken Salad
-  - Insalatona Esplosiva
-  - Insalatona Follie
-  - Dolce
-  - Caffé
-  - Altro
-salad_list: |
-  🌱 <strong>Primavera:</strong> 🥬 + <i>pomodorini, mozzarella, carciofi, funghi, olive.</i> <br>
-  ⛰️ <strong>Valtellina:</strong> 🥬 + <i>rucola, pomodorini, bresaola, grana.</i> <br>
-  🍋 <strong>Sorrento:</strong> 🥬 + <i>pomodorini, bufala, olive, noci, carciofi.</i> <br>
-  🍗 <strong>Chicken Salad:</strong> 🥬 + <i>pomodorini, mozzarella, mais, pollo.</i> <br>
-  🧨 <strong>Esplosiva:</strong> 🥬 + <i>pomodorini, tonno, fagioli, cipolle.</i> <br>
-  🤪 <strong>Follie:</strong> 🥬 + <i>pomodori secchi, melanzane, tonno, acciughe.</i> <br>
+additional_items_to_concat:
+  # Set description to null to exclude from additional items details in gui
+  - name: Insalatona Primavera
+    short_name: Primavera
+    icon: 🌱
+    description: 🥬 + pomodorini, mozzarella, carciofi, funghi, olive.
+  - name: Insalatona Valtellina
+    short_name: Valtellina
+    icon: ⛰️
+    description: 🥬 + rucola, pomodorini, bresaola, grana.
+  - name: Insalatona Sorrento
+    short_name: Sorrento
+    icon: 🍋
+    description: 🥬 + pomodorini, bufala, olive, noci, carciofi.
+  - name: Insalatona Chicken Salad
+    short_name: Chicken Salad
+    icon: 🍗
+    description: 🥬 + pomodorini, mozzarella, mais, pollo.
+  - name: Insalatona Esplosiva
+    short_name: Esplosiva
+    icon: 🧨
+    description: 🥬 + pomodorini, tonno, fagioli, cipolle.
+  - name: Insalatona Follie
+    short_name: Follie
+    icon: 🤪
+    description: 🥬 + pomodori secchi, melanzane, tonno, acciughe.
+  - name: Dolce
+    short_name: null
+    icon: null
+    description: null
+  - name: Caffé
+    short_name: null
+    icon: 
+    description: null
+  - name: Altro
+    short_name: Altro
+    icon: 🃏
+    description: richieste speciali (da specificare nelle note).
 guest_types: # Check also guests icons in panel/gui
   - Edison Guest
   - External Guest
 
-# Notifications
+# NOTIFICATIONS
 notifications:
   duration: 0
 # Drop unused menus entries in orders tables (drop unused if true)

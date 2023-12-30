@@ -1,5 +1,6 @@
 import datetime
 from hydra.utils import instantiate
+import jinja2
 import logging
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
@@ -463,14 +464,14 @@ class GraphicInterface:
 
         # SIDEBAR -------------------------------------------------------------
         # TEXTS
-        # Foldable salad menu
-        self.salad_menu = pn.pane.HTML(
-            f"""
-            <details>
-                <summary><strong>Salad menu</strong></summary>
-                {config.panel.salad_list}
-            </details>
-            """,
+        # Foldable additional item details dropdown menu
+        jinja_template = jinja2.Environment(
+            loader=jinja2.BaseLoader
+        ).from_string(config.panel.gui.additional_item_details_template)
+        self.additional_items_details = pn.pane.HTML(
+            jinja_template.render(
+                items=config.panel.additional_items_to_concat
+            ),
             width=sidebar_content_width,
         )
 
@@ -582,7 +583,7 @@ class GraphicInterface:
         )
         # Add salads
         self.sidebar_person_column.append(
-            self.salad_menu,
+            self.additional_items_details,
         )
         # Leave an empty widget for the 'other info' section
         self.sidebar_person_column.append(

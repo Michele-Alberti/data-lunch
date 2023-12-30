@@ -104,5 +104,16 @@ total_column_name: totale
 # e.g: _target_: panel.pane.HTML with _args_: - <img src="${panel.favicon_path}"> 
 header_object: null
 
+# ADDITIONAL ITEMS DETAILS
+additional_item_details_template: |
+  <details>
+      <summary><strong>Menu Details</strong></summary>
+      {% for item in items %}
+        {% if item.description is not none %}
+          {{ item.icon }} <strong>{{ item.short_name }}:</strong> <i>{{ item.description }}</i> <br>
+        {% endif %}
+      {% endfor %}
+  </details>
+
 # PASSWORD
 psw_text: "### Password rules\n- Minimum eight characters\n- At least one lower case letter\n- At least one upper case letter\n- At least one number\n- At least one special character."
