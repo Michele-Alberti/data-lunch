@@ -302,9 +302,6 @@ def reload_menu(
             id=f"{pn.state.user}_guest_override",
             value_if_missing=False,
         )
-        # Reload tabs according to auth.is_guest results and guest_override
-        # flag
-        gi.reload_sidebar_tabs(config=config)
 
         # Guest graphic configuration
         if auth.is_guest(user=pn.state.user, config=config):
@@ -902,7 +899,7 @@ def download_dataframe(
         gi.dataframe.value.drop(columns=["order"]).to_excel(
             writer, sheet_name="MENU", index=False
         )
-        writer.save()  # Important!
+        writer.close()  # Important!
         bytes_io.seek(0)  # Important!
         # Message prompt
         pn.state.notifications.warning(
