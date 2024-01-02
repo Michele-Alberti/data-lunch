@@ -22,6 +22,7 @@ from . import gui
 
 # Authentication
 from . import auth
+import cryptography.fernet
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
@@ -67,26 +68,20 @@ def delete_files(config: DictConfig):
 
 def clean_tables(config: DictConfig):
     # Clean tables
-    session = models.create_session(config)
-    with session:
-        # Clean orders
-        num_rows_deleted = session.execute(delete(models.Orders))
-        session.commit()
-        log.info(f"deleted {num_rows_deleted.rowcount} from table 'orders'")
-        # Clean menu
-        num_rows_deleted = session.execute(delete(models.Menu))
-        session.commit()
-        log.info(f"deleted {num_rows_deleted.rowcount} from table 'menu'")
-        # Clean users
-        num_rows_deleted = session.execute(delete(models.Users))
-        session.commit()
-        log.info(f"deleted {num_rows_deleted.rowcount} from table 'users'")
-        # Clean flags
-        models.set_flag(config=config, id="no_more_orders", value=False)
-        log.info("reset values in table 'flags'")
-        # Clean cache
-        pn.state.clear_caches()
-        log.info("cache cleaned")
+    # Clean orders
+    models.Orders.clear(config=config)
+    # Clean menu
+    models.Menu.clear(config=config)
+    # Clean users
+    models.Users.clear(config=config)
+    # Clean flags
+    models.Flags.clear_guest_override(config=config)
+    # Reset flags
+    models.set_flag(config=config, id="no_more_orders", value=False)
+    log.info("reset values in table 'flags'")
+    # Clean cache
+    pn.state.clear_caches()
+    log.info("cache cleaned")
 
 
 def set_guest_user_password(config: DictConfig) -> str:
@@ -130,9 +125,20 @@ def set_guest_user_password(config: DictConfig) -> str:
             # Load from database
             session = models.create_session(config)
             with session:
-                guest_password = session.get(
-                    models.Credentials, "guest"
-                ).password_encrypted.decrypt()
+                try:
+                    guest_password = session.get(
+                        models.Credentials, "guest"
+                    ).password_encrypted.decrypt()
+                except cryptography.fernet.InvalidToken:
+                    # Notify exception and suggest to reset guest user password
+                    guest_password = ""
+                    log.warning(
+                        "Unable to decrypt 'guest' user password because an invalid token has been detected: reset password from backend"
+                    )
+                    pn.state.notifications.warning(
+                        "Unable to decrypt 'guest' user password<br>Invalid token detected: reset password from backend",
+                        duration=config.panel.notifications.duration,
+                    )
     else:
         guest_password = ""
 
@@ -290,9 +296,11 @@ def reload_menu(
 
             return
 
-        # Check guest override button status
-        gi.toggle_guest_override_button.value = pn.state.cache.get(
-            f"{pn.state.user}_guest_override", False
+        # Check guest override button status (if not in table use False)
+        gi.toggle_guest_override_button.value = models.get_flag(
+            config=config,
+            id=f"{pn.state.user}_guest_override",
+            value_if_missing=False,
         )
 
         # Guest graphic configuration
@@ -307,10 +315,8 @@ def reload_menu(
 
         # Reload menu
         engine = models.create_engine(config)
-        df = pd.read_sql_table(
-            models.Menu.__tablename__,
-            engine,
-            schema=config.db.get("schema", models.SCHEMA),
+        df = models.Menu.read_as_df(
+            config=config,
             index_col="id",
         )
         df["order"] = False
@@ -772,10 +778,8 @@ def df_list_by_lunch_time(
     # Create database engine and session
     engine = models.create_engine(config)
     # Read menu and save how menu items are sorted (first courses, second courses, etc.)
-    original_order = pd.read_sql_table(
-        models.Menu.__tablename__,
-        engine,
-        schema=config.db.get("schema", models.SCHEMA),
+    original_order = models.Menu.read_as_df(
+        config=config,
         index_col="id",
     ).item
     # Create session

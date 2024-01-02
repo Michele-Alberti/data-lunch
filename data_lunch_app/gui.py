@@ -227,12 +227,16 @@ class GraphicInterface:
             toggle: pnw.ToggleIcon, reload: bool = True
         ):
             # Update global variable that control guest override
-            # Only non guest can store this value in cache (guest users are
-            # always guests)
+            # Only non guest can store this value in 'flags' table (guest users
+            # are always guests, there is no use in sotring a flag for them)
             if not auth.is_guest(
                 user=pn.state.user, config=config, allow_override=False
             ):
-                pn.state.cache[f"{pn.state.user}_guest_override"] = toggle
+                models.set_flag(
+                    config=config,
+                    id=f"{pn.state.user}_guest_override",
+                    value=toggle,
+                )
             # Show banner if override is active
             self.guest_override_alert.visible = toggle
             # Simply reload the menu when the toggle button value changes
@@ -905,13 +909,12 @@ class BackendInterface:
         self.users_tabulator = pn.widgets.Tabulator(
             value=auth.list_users_guests_and_privileges(config),
         )
-        # Cache content
-        self.cache_content = pn.widgets.JSONEditor(
-            value=pn.state.cache,
-            name="Cache Content",
-            mode="view",
-            sizing_mode="stretch_both",
+        # Flags content (use empty dataframe to instantiate)
+        df_flags = models.Flags.read_as_df(
+            config=config,
+            index_col="id",
         )
+        self.flags_content = pn.widgets.Tabulator(value=df_flags)
 
         # BUTTONS
         # Exit button
@@ -942,9 +945,9 @@ class BackendInterface:
             icon_size="2em",
             sizing_mode="stretch_width",
         )
-        # Clear cache button
-        self.clear_cache_button = pnw.Button(
-            name="Clear Server Cache",
+        # Clear flags table button
+        self.clear_flags_button = pnw.Button(
+            name="Clear Guest Override Flags",
             button_type="danger",
             height=generic_button_height,
             icon="file-shredder",
@@ -976,11 +979,11 @@ class BackendInterface:
             self.delete_user_button,
             width=sidebar_width,
         )
-        self.clear_cache_column = pn.Column(
-            pn.pane.HTML("<b>Cache Content</b>"),
-            self.cache_content,
+        self.clear_flags_column = pn.Column(
+            pn.pane.HTML("<b>Flags Table Content</b>"),
+            self.flags_content,
             pn.VSpacer(),
-            self.clear_cache_button,
+            self.clear_flags_button,
             width=sidebar_width,
         )
         # Create for deleting users
@@ -1022,7 +1025,7 @@ class BackendInterface:
                     sizing_mode="stretch_height",
                 )
             )
-            self.backend_controls.append(self.clear_cache_column)
+            self.backend_controls.append(self.clear_flags_column)
             self.backend_controls.append(
                 pn.pane.HTML(
                     styles=dict(background="lightgray"),
@@ -1089,27 +1092,34 @@ class BackendInterface:
             lambda e: delete_user_button_callback(self)
         )
 
-        # Clear cache callback
-        def clear_cache_button_callback(self):
-            pn.state.clear_caches()
-            pn.state.cache = {}
+        # Clear flags callback
+        def clear_flags_button_callback(self):
+            # Clear flags
+            num_rows_deleted = models.Flags.clear_guest_override(config=config)
+            # Reload and notify user
             self.reload_backend(config)
             pn.state.notifications.success(
-                "Cache cleared",
+                f"Guest override flags cleared<br>{num_rows_deleted} rows deleted",
                 duration=config.panel.notifications.duration,
             )
 
-        self.clear_cache_button.on_click(
-            lambda e: clear_cache_button_callback(self)
+        self.clear_flags_button.on_click(
+            lambda e: clear_flags_button_callback(self)
         )
 
     # UTILITY FUNCTIONS
     # MAIN SECTION
     def reload_backend(self, config) -> None:
+        # Users and guests lists
         self.users_tabulator.value = auth.list_users_guests_and_privileges(
             config
         )
-        self.cache_content.value = pn.state.cache
+        # Flags table content
+        df_flags = models.Flags.read_as_df(
+            config=config,
+            index_col="id",
+        )
+        self.flags_content.value = df_flags
 
     def exit_backend(self) -> None:
         # Edit pathname to force exit

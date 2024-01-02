@@ -3,6 +3,7 @@ import hydra
 import logging
 from omegaconf import DictConfig
 import pathlib
+import pandas as pd
 from psycopg import Connection as ConnectionPostgresql
 from sqlite3 import Connection as ConnectionSqlite
 from sqlalchemy import (
@@ -16,6 +17,7 @@ from sqlalchemy import (
     Boolean,
     event,
     MetaData,
+    delete,
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
@@ -169,6 +171,33 @@ class Menu(Data):
         passive_deletes=True,
     )
 
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
+
     def __repr__(self):
         return f"<MENU_ITEM:{self.id} - {self.item}>"
 
@@ -190,6 +219,33 @@ class Orders(Data):
     )
     menu_item = relationship("Menu", back_populates="orders")
     note = relationship("Users", back_populates="orders", uselist=False)
+
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
 
     def __repr__(self):
         return f"<ORDER:{self.user}, {self.menu_item.item}>"
@@ -218,6 +274,33 @@ class Users(Data):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
 
     def __repr__(self):
         return f"<USER:{self.id}>"
@@ -248,6 +331,33 @@ class Stats(Data):
         Integer, nullable=False, default=0, server_default="0"
     )
 
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
+
     def __repr__(self):
         return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
 
@@ -261,6 +371,50 @@ class Flags(Data):
         sqlite_on_conflict_primary_key="REPLACE",
     )
     value = Column(Boolean, nullable=False)
+
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def clear_guest_override(self, config: DictConfig) -> int:
+        """Clear 'guest_override' flags and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(
+                delete(self).where(self.id.like("%_guest_override"))
+            )
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows (guest override) from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
 
     def __repr__(self):
         return f"<FLAG:{self.id} - value:{self.value}>"
@@ -277,6 +431,33 @@ class PrivilegedUsers(Data):
     admin = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
+
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
 
     def __repr__(self):
         return f"<PRIVILEGED_USER:{self.id}>"
@@ -297,6 +478,33 @@ class Credentials(Data):
         default=None,
         server_default=None,
     )
+
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows"""
+
+        session = create_session(config)
+        with session:
+            # Clean menu
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame"""
+        df = pd.read_sql_table(
+            self.__tablename__,
+            create_engine(config=config),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+
+        return df
 
     def __repr__(self):
         return f"<CREDENTIAL:{self.user}>"
@@ -486,13 +694,17 @@ def set_flag(config: DictConfig, id: str, value: bool) -> None:
         session.commit()
 
 
-def get_flag(config: DictConfig, id: str) -> bool | None:
-    """Get the value of a flag"""
+def get_flag(
+    config: DictConfig, id: str, value_if_missing: bool | None = None
+) -> bool | None:
+    """Get the value of a flag.
+    Optionally select the values to return if the flag is missing (default to None).
+    """
 
     session = create_session(config)
     flag = session.get(Flags, id)
     if flag is None:
-        value = None
+        value = value_if_missing
     else:
         value = flag.value
     return value

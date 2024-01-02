@@ -42,10 +42,17 @@ def create_app(config: DictConfig) -> pn.Template:
     # Set the no_more_orders flag if it is None (not found in flags table)
     if models.get_flag(config=config, id="no_more_orders") is None:
         models.set_flag(config=config, id="no_more_orders", value=False)
-    # Set guest override if it is empty
-    guest_override = pn.state.cache.get(
-        f"{pn.state.user}_guest_override", False
-    )
+    # Set guest override flag if it is None (not found in flags table)
+    # Guest override flag is per-user and is not set for guests
+    if (
+        models.get_flag(config=config, id=f"{pn.state.user}_guest_override")
+        is None
+    ) and not auth.is_guest(
+        user=pn.state.user, config=config, allow_override=False
+    ):
+        models.set_flag(
+            config=config, id=f"{pn.state.user}_guest_override", value=False
+        )
 
     # DASHBOARD BASE TEMPLATE
     log.debug("instantiate base template")
@@ -95,7 +102,11 @@ def create_app(config: DictConfig) -> pn.Template:
         reload=False,
     )
     gi.reload_on_guest_override(
-        toggle=guest_override,
+        toggle=models.get_flag(
+            config=config,
+            id=f"{pn.state.user}_guest_override",
+            value_if_missing=False,
+        ),
         reload=False,
     )
     core.reload_menu(

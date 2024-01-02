@@ -433,20 +433,14 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
     """Join privileged users' table and credentials tables to list users,
     admins and guests.
     Returns a dataframe."""
-    # Create session
-    engine = models.create_engine(config)
 
     # Query tables required to understand users and guests
-    df_privileged_users = pd.read_sql_table(
-        models.PrivilegedUsers.__tablename__,
-        engine,
-        schema=config.db.get("schema", None),
+    df_privileged_users = models.PrivilegedUsers.read_as_df(
+        config=config,
         index_col="user",
     )
-    df_credentials = pd.read_sql_table(
-        models.Credentials.__tablename__,
-        engine,
-        schema=config.db.get("schema", None),
+    df_credentials = models.Credentials.read_as_df(
+        config=config,
         index_col="user",
     )
     # Change admin column to privileges (used after join)
@@ -468,10 +462,12 @@ def is_guest(
     The guest override chached value (per-user) can force the function to always return True.
     If allow_override is set to False the guest override value is ignored."""
 
-    # Load guest override from state cache (if the button is pressed its value
+    # Load guest override from flag table (if the button is pressed its value
     # is True). If not available use False.
-    guest_override = pn.state.cache.get(
-        f"{pn.state.user}_guest_override", False
+    guest_override = models.get_flag(
+        config=config,
+        id=f"{pn.state.user}_guest_override",
+        value_if_missing=False,
     )
 
     # If guest override is active always return true (user act like guest)
