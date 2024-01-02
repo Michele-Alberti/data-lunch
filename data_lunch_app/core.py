@@ -302,6 +302,9 @@ def reload_menu(
             id=f"{pn.state.user}_guest_override",
             value_if_missing=False,
         )
+        # Reload tabs according to auth.is_guest results and guest_override
+        # flag
+        gi.reload_sidebar_tabs(config=config)
 
         # Guest graphic configuration
         if auth.is_guest(user=pn.state.user, config=config):

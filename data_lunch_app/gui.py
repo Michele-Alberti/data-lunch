@@ -582,12 +582,9 @@ class GraphicInterface:
             person_text,
             self.person_widget,
             pn.Spacer(height=5),
+            self.additional_items_details,
             name="User",
             width=sidebar_content_width,
-        )
-        # Add salads
-        self.sidebar_person_column.append(
-            self.additional_items_details,
         )
         # Leave an empty widget for the 'other info' section
         self.sidebar_person_column.append(
@@ -628,21 +625,15 @@ class GraphicInterface:
         )
 
         # TABS
-        # The person column is defined in the app factory function because lunch
-        # times are configurable
+        # The person widget is defined in the app factory function because
+        # lunch times are configurable
         self.sidebar_tabs = pn.Tabs(
-            self.sidebar_person_column,
             width=sidebar_content_width,
+            dynamic=True,
         )
-
-        # Append upload, download and stats only for non-guest
-        # Append password only for non-guest users if auth is active
-        if not auth.is_guest(user=pn.state.user, config=config):
-            self.sidebar_tabs.append(self.sidebar_menu_upload_col)
-            self.sidebar_tabs.append(self.sidebar_download_orders_col)
-            self.sidebar_tabs.append(self.sidebar_stats_col)
-            if auth.is_basic_auth_active(config=config):
-                self.sidebar_tabs.append(self.sidebar_password)
+        # Reload tabs according to auth.is_guest results and guest_override
+        # flag
+        self.reload_sidebar_tabs(config=config)
 
         # CALLBACKS
         # Build menu button callback
@@ -718,6 +709,22 @@ class GraphicInterface:
         return time_label
 
     # SIDEBAR SECTION
+    def reload_sidebar_tabs(self, config: DictConfig):
+        # Clean tabs
+        self.sidebar_tabs.clear()
+        # Append User tab
+        self.sidebar_tabs.append(self.sidebar_person_column)
+        # Append upload, download and stats only for non-guest
+        # Append password only for non-guest users if auth is active
+        if not auth.is_guest(user=pn.state.user, config=config):
+            self.sidebar_tabs.append(self.sidebar_menu_upload_col)
+            self.sidebar_tabs.append(self.sidebar_download_orders_col)
+            self.sidebar_tabs.append(self.sidebar_stats_col)
+            if auth.is_basic_auth_active(config=config):
+                self.sidebar_tabs.append(self.sidebar_password)
+        # Focus to first tab
+        self.sidebar_tabs.active = 0
+
     def build_stats_and_info_text(
         self,
         config: DictConfig,
@@ -749,7 +756,7 @@ class GraphicInterface:
         if auth.is_guest(user=user, config=config, allow_override=False):
             user_group = "guest"
         elif auth.is_admin(user=user, config=config):
-            user_group = "guest"
+            user_group = "admin"
         else:
             user_group = "user"
         # Other info
