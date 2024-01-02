@@ -1,3 +1,54 @@
+## v2.7.0 (2024-01-02)
+
+### Feat
+
+- **core.py**: change no_more_orders toggle button visibility and enabklement for guest users
+- add flag that disable guest users' (i.e. unprivileged users) authorization
+- move other info to user tab and add additional info (username and user group)
+- **gui.py**: avoid guest users to store guest override flag in cache
+- add retries when creating a database
+- add support for postgresql as database manager
+- add guest override toggle (frontend) and clear cache button (backend)
+- add authorization callback
+- add buttons to app header for logout/backend redirect in 'main' and exit redirect in 'backend' page
+- implement authorized users and guests management through database tables
+- improve web app behavior based on auth provider and improve code readability
+- **server-config-files**: add a non authenticated config as default for server
+- **html-templates**: add auth error template and improve login and logout templates
+- add support for github oauth provider
+
+### Fix
+
+- fix error in sidbar tabs refresh when using guest override and fix an error in other info text
+- **guest_override-cache**: move guest override from cache to db and collect some sql related calls inside models.py's classes
+- **basic-auth**: fix error that  caused encrypted password to be saved for every guest user
+- **auth/default.yaml**: fix error due to relocation of psw_special_chars
+- fix missing schema in pandas.DataFrame.to_sql commands and add hydra args to command line
+- **__main__.py**: add database initialization in main function for basic auth
+- **auth.py**: fix error in current user retrieval for  authorize callback function
+- **__init__.py**: remove set panel config from backend (already in __main__.py)
+- **github_oauth.yaml**: fix github auth provider to work with docker compose on localhost
+- **cloud.py**: change get_bucket_list to get_gcloud_bucket_list
+
+### Refactor
+
+- refactor salad menu to use jinja
+- change variables named 'auth_user(s)' to 'privileged_user(s)'
+- move basic auth password and guest user config from panel to auth config file
+- change all 'add_auth_user' in variables and function names to 'add_privileged_user'
+- replaced hardcoded table names with reference to tables declared in models.py
+- replace SQLAlchemy v1.x expressions with v2.x equivalent
+- **db-config-files**: refactor config file to have a distinct config for sqlite driver
+- change all reference to 'authorized user' in 'privileged user'
+- move oauth redirect uri to DATA_LUNCH_OAUTH_REDIRECT_URI env variable
+- **server-config-files**: rename default.yaml and basic_oauth.yaml
+
+### Perf
+
+- **guest_override**: sidebar is not reloaded every time because sidebar tabs does not change with guest_override
+- update sqlalchemy to v2.0.23
+- **cli.py**: remove cache command group from command line
+
 ## v2.6.0 (2023-09-29)
 
 ### Feat
