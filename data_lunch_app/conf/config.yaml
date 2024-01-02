@@ -1,8 +1,8 @@
 defaults:
   - _self_ #configs from the Defaults List are overriding config.yaml
   - panel: default
-  - db: ${oc.env:PANEL_ENV}
-  - server: ${oc.env:PANEL_ENV}
+  - db: sqlite
+  - server: no_oauth
   - auth: ${oc.env:PANEL_ENV}
   - override hydra/job_logging: custom
 #  - _self_ #config.yaml is overriding configs from the Defaults List

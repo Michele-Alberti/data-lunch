@@ -1,0 +1,20 @@
+shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, /app/shared_data}
+engine:
+  _target_: sqlalchemy.create_engine
+  url: ${db.url}
+# CREATE DATABASE RETRIES
+# Stop after delay in seconds or max attempts
+# Wait time in seconds before retrying
+create_retries:
+  stop:
+    delay: 60
+    attempts: 10
+  wait: 2
+
+# SAVE DATABASE TO CLOUD STORAGE
+ext_storage_upload:
+  enabled: true # Set to false to turn off database upload completely
+  source_file_name: ${db.db_path}
+  destination_blob_name: ${db.name}.db
+  bucket_name: ${oc.env:GCLOUD_BUCKET, not_defined}
+  project: ${oc.env:GCLOUD_PROJECT, not_defined}

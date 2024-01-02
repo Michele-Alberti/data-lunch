@@ -2,12 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
 
 .app-logo {
-    padding: 0 !important;
-    height: 50px !important;
-  }
+  padding: 0 !important;
+  height: 50px !important;
+}
 
 .app-header .title {
-font-family: "Silkscreen", cursive;
-font-size: 2rem;
-line-height: 2rem;
+  font-family: "Silkscreen", cursive;
+  font-size: 2rem;
+  line-height: 2rem;
 }

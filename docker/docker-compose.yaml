@@ -7,6 +7,8 @@ services:
 #      dockerfile: ./docker/web/Dockerfile.web
     volumes:
       - ./shared_data:/app/shared_data
+#    depends_on:
+#      - db
     expose:
       - ${PORT} # Expose port from env variable to an ephemeral port (used by load balancer)
     environment:
@@ -18,7 +20,20 @@ services:
       PORT: ${PORT}
       DATA_LUNCH_COOKIE_SECRET: ${DATA_LUNCH_COOKIE_SECRET}
       DATA_LUNCH_OAUTH_ENC_KEY: ${DATA_LUNCH_OAUTH_ENC_KEY}
+      DATA_LUNCH_OAUTH_KEY: ${DATA_LUNCH_OAUTH_KEY}
+      DATA_LUNCH_OAUTH_SECRET: ${DATA_LUNCH_OAUTH_SECRET}
+      DATA_LUNCH_OAUTH_REDIRECT_URI: ${DATA_LUNCH_OAUTH_REDIRECT_URI}
+      DATA_LUNCH_DB_PASSWORD: ${DATA_LUNCH_DB_PASSWORD}
     command: ${PANEL_ARGS}
+  db:
+    image: "postgres:latest"
+    restart: always
+    environment:
+      - POSTGRES_USER=data_lunch_rw
+      - POSTGRES_PASSWORD=${DATA_LUNCH_DB_PASSWORD}
+      - POSTGRES_DB=data_lunch_database
+    volumes:
+      - ./shared_data/db_pg:/var/lib/postgresql/data
   nginx:
     image: nginx:latest
     volumes:

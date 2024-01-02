@@ -9,13 +9,11 @@ from omegaconf import DictConfig, OmegaConf
 
 # Database imports
 from . import models
-from .cloud import download_from_gcloud
 
-# Core imports
+# Other Data-Lunch imports
 from . import core
-
-# Graphic interface imports
 from . import gui
+from . import auth
 
 log = logging.getLogger(__name__)
 
@@ -25,12 +23,13 @@ log = logging.getLogger(__name__)
 
 def create_app(config: DictConfig) -> pn.Template:
     """Panel app factory function"""
-
     log.info("starting initialization process")
 
     log.info("initialize database")
     # Create tables
-    models.create_database(config)
+    models.create_database(
+        config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
+    )
 
     # Generate a random password only if requested (check on flag)
     log.info("set user password")
@@ -39,10 +38,21 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("instantiate Panel app")
 
     # Panel configurations
-    log.debug("set flags")
+    log.debug("set toggle initial state")
     # Set the no_more_orders flag if it is None (not found in flags table)
     if models.get_flag(config=config, id="no_more_orders") is None:
         models.set_flag(config=config, id="no_more_orders", value=False)
+    # Set guest override flag if it is None (not found in flags table)
+    # Guest override flag is per-user and is not set for guests
+    if (
+        models.get_flag(config=config, id=f"{pn.state.user}_guest_override")
+        is None
+    ) and not auth.is_guest(
+        user=pn.state.user, config=config, allow_override=False
+    ):
+        models.set_flag(
+            config=config, id=f"{pn.state.user}_guest_override", value=False
+        )
 
     # DASHBOARD BASE TEMPLATE
     log.debug("instantiate base template")
@@ -71,9 +81,9 @@ def create_app(config: DictConfig) -> pn.Template:
 
     # DASHBOARD
     # Build dashboard (the header object is used if defined)
-    if config.panel.gui.header_object:
-        app.header.append(gi.header_object)
+    app.header.append(gi.header_row)
     app.sidebar.append(gi.sidebar_tabs)
+    app.main.append(gi.guest_override_alert)
     app.main.append(gi.no_more_order_text)
     app.main.append(gi.main_header_row)
     app.main.append(gi.quote)
@@ -87,13 +97,22 @@ def create_app(config: DictConfig) -> pn.Template:
 
     # Set components visibility based on no_more_order_button state
     # and reload menu
+    gi.reload_on_no_more_order(
+        toggle=models.get_flag(config=config, id="no_more_orders"),
+        reload=False,
+    )
+    gi.reload_on_guest_override(
+        toggle=models.get_flag(
+            config=config,
+            id=f"{pn.state.user}_guest_override",
+            value_if_missing=False,
+        ),
+        reload=False,
+    )
     core.reload_menu(
         None,
         config,
         gi,
-    )
-    gi.reload_on_no_more_order(
-        models.get_flag(config=config, id="no_more_orders")
     )
 
     app.servable()
@@ -110,15 +129,11 @@ def create_backend(config: DictConfig) -> pn.Column:
 
     log.info("initialize database")
     # Create tables
-    models.create_database(config)
+    models.create_database(
+        config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
+    )
 
     log.info("instantiate backend")
-
-    # Panel configurations
-    log.debug("set panel config and flags")
-    # Configurations
-    pn.config.nthreads = config.panel.nthreads
-    pn.config.notifications = True
 
     # DASHBOARD
     log.debug("instantiate base template")
@@ -139,8 +154,9 @@ def create_backend(config: DictConfig) -> pn.Column:
     backend_gi = gui.BackendInterface(config)
 
     # DASHBOARD
-    # Build dashboard (the header object is used if defined)
-    backend.main.append(backend_gi.backend_main)
+    # Build dashboard
+    backend.header.append(backend_gi.header_row)
+    backend.main.append(backend_gi.backend_controls)
 
     backend.servable()
 

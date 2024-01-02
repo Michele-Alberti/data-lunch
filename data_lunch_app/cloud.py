@@ -4,7 +4,7 @@ from google.cloud import storage
 log = logging.getLogger(__name__)
 
 
-def get_bucket_list(project: str):
+def get_gcloud_bucket_list(project: str):
     # Create storage client
     storage_client = storage.Client(project=project)
 

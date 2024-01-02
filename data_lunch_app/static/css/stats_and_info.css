@@ -6,9 +6,13 @@
     color: darkorange;
 }
 
-.icon-container{
+.icon-container {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 0.5rem;
+}
+
+svg {
+    color: var(--panel-primary-color);
 }

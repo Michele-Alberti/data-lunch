@@ -1,5 +1,5 @@
 defaults:
-  - default
+  - common
 
 shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, shared_data}
 # SAVE DATABASE TO CLOUD STORAGE

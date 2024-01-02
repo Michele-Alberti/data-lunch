@@ -2,23 +2,15 @@ import click
 import pkg_resources
 from hydra import compose, initialize
 import pandas as pd
-import panel as pn
-from .models import create_database, create_engine
 
 # Import database object
-from .models import Data
+from .models import create_database, create_engine, SCHEMA, Data
 
 # Import functions from core
 from .core import clean_tables as clean_tables_func
 
 # Auth
-from .auth import (
-    list_users,
-    add_user_hashed_password,
-    remove_user,
-    guest_password_filename,
-    set_app_auth_and_encryption,
-)
+from . import auth
 
 # Version
 __version__ = pkg_resources.require("data_lunch")[0].version
@@ -29,68 +21,115 @@ __version__ = pkg_resources.require("data_lunch")[0].version
 
 @click.group()
 @click.version_option(__version__)
+@click.option(
+    "-o",
+    "--hydra-overrides",
+    "hydra_overrides",
+    default=None,
+    multiple=True,
+    help="pass hydra override, use multiple time to add more than one override",
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, hydra_overrides: tuple | None):
     """Command line interface for creating a local sqlite database.
     To be used only for development purposes.
     """
-
     # global initialization
     initialize(
         config_path="conf", job_name="data_lunch_cli", version_base="1.3"
     )
-    config = compose(config_name="config")
+    config = compose(config_name="config", overrides=hydra_overrides)
     ctx.obj = {"config": config}
 
     # Auth encryption
-    set_app_auth_and_encryption(config)
+    auth.set_app_auth_and_encryption(config)
 
 
 @cli.group()
 @click.pass_obj
-def cache(obj):
-    """Manage cache."""
+def users(obj):
+    """Manage privileged users and admin privileges."""
 
 
-@cache.command("clean")
-@click.confirmation_option()
-@click.pass_obj
-def clean_caches(obj):
-    """Clean caches."""
-
-    # Clear action
-    pn.state.clear_caches()
-
-    click.secho("Caches cleared", fg="green")
-
-
-@cli.group()
-@click.pass_obj
-def credentials(obj):
-    """Manage users credentials."""
-
-
-@credentials.command("list")
+@users.command("list")
 @click.pass_obj
 def list_users_name(obj):
     """List users."""
 
     # Clear action
-    usernames = list_users(config=obj["config"])
+    usernames = auth.list_users(config=obj["config"])
     click.secho("USERS:")
     click.secho("\n".join(usernames), fg="yellow")
     click.secho("\nDone", fg="green")
 
 
+@users.command("add")
+@click.argument("user")
+@click.option("--admin", "is_admin", is_flag=True, help="add admin privileges")
+@click.pass_obj
+def add_privileged_user(obj, user, is_admin):
+    """Add privileged users (with or without admin privileges)."""
+
+    # Add privileged user to 'privileged_users' table
+    auth.add_privileged_user(
+        user=user,
+        is_admin=is_admin,
+        config=obj["config"],
+    )
+
+    click.secho(f"User '{user}' added (admin: {is_admin})", fg="green")
+
+
+@users.command("remove")
+@click.confirmation_option()
+@click.argument("user")
+@click.pass_obj
+def remove_privileged_user(obj, user):
+    """Remove user from both privileged users and basic login credentials table."""
+
+    # Clear action
+    deleted_data = auth.remove_user(user, config=obj["config"])
+
+    if (deleted_data["privileged_users_deleted"] > 0) or (
+        deleted_data["credentials_deleted"] > 0
+    ):
+        click.secho(
+            f"User '{user}' removed (auth: {deleted_data['privileged_users_deleted']}, cred: {deleted_data['credentials_deleted']})",
+            fg="green",
+        )
+    else:
+        click.secho(f"User '{user}' does not exist", fg="yellow")
+
+
+@cli.group()
+@click.pass_obj
+def credentials(obj):
+    """Manage users credentials for basic authentication."""
+
+
 @credentials.command("add")
 @click.argument("user")
 @click.argument("password")
+@click.option("--admin", "is_admin", is_flag=True, help="add admin privileges")
+@click.option(
+    "--guest",
+    "is_guest",
+    is_flag=True,
+    help="add user as guest (not added to privileged users)",
+)
 @click.pass_obj
-def add_user_psw(obj, user, password):
-    """Add users credentials."""
+def add_user_credential(obj, user, password, is_admin, is_guest):
+    """Add users credentials (used by basic authentication)."""
 
-    # Add hashed password to credentials file
-    add_user_hashed_password(user, password, config=obj["config"])
+    # Add a privileged users only if guest option is not active
+    if not is_guest:
+        auth.add_privileged_user(
+            user=user,
+            is_admin=is_admin,
+            config=obj["config"],
+        )
+    # Add hashed password to credentials table
+    auth.add_user_hashed_password(user, password, config=obj["config"])
 
     click.secho(f"User '{user}' added", fg="green")
 
@@ -99,13 +138,21 @@ def add_user_psw(obj, user, password):
 @click.confirmation_option()
 @click.argument("user")
 @click.pass_obj
-def remove_user_psw(obj, user):
-    """Remove user."""
+def remove_user_credential(obj, user):
+    """Remove user from both privileged users and basic login credentials table."""
 
     # Clear action
-    remove_user(user, config=obj["config"])
+    deleted_data = auth.remove_user(user, config=obj["config"])
 
-    click.secho(f"User '{user}' removed", fg="green")
+    if (deleted_data["privileged_users_deleted"] > 0) or (
+        deleted_data["credentials_deleted"] > 0
+    ):
+        click.secho(
+            f"User '{user}' removed (auth: {deleted_data['privileged_users_deleted']}, cred: {deleted_data['credentials_deleted']})",
+            fg="green",
+        )
+    else:
+        click.secho(f"User '{user}' does not exist", fg="yellow")
 
 
 @cli.group()
@@ -115,14 +162,23 @@ def db(obj):
 
 
 @db.command("init")
+@click.option(
+    "--add-basic-auth-users",
+    "add_basic_auth_users",
+    is_flag=True,
+    help="automatically create basic auth standard users",
+)
 @click.pass_obj
-def init_database(obj):
+def init_database(obj, add_basic_auth_users):
     """Initialize the database."""
 
     # Create database
-    create_database(obj["config"])
+    create_database(obj["config"], add_basic_auth_users=add_basic_auth_users)
 
-    click.secho("Database initialized", fg="green")
+    click.secho(
+        f"Database initialized (basic auth users: {add_basic_auth_users})",
+        fg="green",
+    )
 
 
 @db.command("delete")
@@ -186,7 +242,13 @@ def delete_table(obj, name):
 @table.command("export")
 @click.argument("name")
 @click.argument("csv_file_path")
-@click.option("--index/--no-index", "index", show_default=True, default=False)
+@click.option(
+    "--index/--no-index",
+    "index",
+    show_default=True,
+    default=False,
+    help="select if index is exported to csv",
+)
 @click.pass_obj
 def export_table_to_csv(obj, name, csv_file_path, index):
     """Export a single table to a csv file."""
@@ -196,7 +258,9 @@ def export_table_to_csv(obj, name, csv_file_path, index):
     # Create dataframe
     try:
         engine = create_engine(obj["config"])
-        df = pd.read_sql_table(name, engine)
+        df = pd.read_sql_table(
+            name, engine, schema=obj["config"].db.get("schema", SCHEMA)
+        )
     except Exception as e:
         # Generic error
         click.secho("Cannot read table", fg="red")
@@ -221,9 +285,29 @@ def export_table_to_csv(obj, name, csv_file_path, index):
 @click.confirmation_option()
 @click.argument("name")
 @click.argument("csv_file_path")
-@click.option("--index/--no-index", "index", show_default=True, default=True)
-@click.option("-l", "--index-label", "index_label", type=str, default=None)
-@click.option("-c", "--index-col", "index_col", type=str, default=None)
+@click.option(
+    "--index/--no-index",
+    "index",
+    show_default=True,
+    default=True,
+    help="select if index is loaded to table",
+)
+@click.option(
+    "-l",
+    "--index-label",
+    "index_label",
+    type=str,
+    default=None,
+    help="select index label",
+)
+@click.option(
+    "-c",
+    "--index-col",
+    "index_col",
+    type=str,
+    default=None,
+    help="select the column used as index",
+)
 @click.option(
     "-e",
     "--if-exists",
@@ -231,6 +315,7 @@ def export_table_to_csv(obj, name, csv_file_path, index):
     type=click.Choice(["fail", "replace", "append"], case_sensitive=False),
     show_default=True,
     default="append",
+    help="logict used if the table already exists",
 )
 @click.pass_obj
 def load_table(
@@ -253,6 +338,7 @@ def load_table(
         df.to_sql(
             name,
             engine,
+            schema=obj["config"].db.get("schema", SCHEMA),
             index=index,
             index_label=index_label,
             if_exists=if_exists,

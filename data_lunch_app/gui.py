@@ -1,5 +1,6 @@
 import datetime
 from hydra.utils import instantiate
+import jinja2
 import logging
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
@@ -22,6 +23,9 @@ log = logging.getLogger(__name__)
 
 # OPTIONS AND DEFAULTS --------------------------------------------------------
 # App
+header_row_height = 55
+header_button_width = 50
+generic_button_height = 45
 sidebar_width = 400
 sidebar_content_width = sidebar_width - 10
 
@@ -48,11 +52,11 @@ class Person(param.Parameterized):
         self.param.guest.objects = config.panel.guest_types
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
-        # Check user (a username is already set for authenticated users)
-        username = auth.get_username_from_cookie(
-            cookie_secret=config.server.cookie_secret
-        )
-        if username != "guest":
+        # Check user (a username is already set for privileged users)
+        username = pn.state.user
+        if not auth.is_guest(user=username, config=config) and (
+            username is not None
+        ):
             self.username = username
 
     def __str__(self):
@@ -79,15 +83,28 @@ class BackendPasswordRenewer(param.Parameterized):
         default="",
         doc="username for password update (use 'guest' for guest user)",
     )
-    password = param.String(default="")
-    repeat_password = param.String(default="")
+    new_password = param.String(default="")
+    repeat_new_password = param.String(default="")
+    admin = param.Boolean(default=False, doc="add admin privileges")
+    guest = param.Boolean(
+        default=False,
+        doc="guest account (don't add user to privileged users' table)",
+    )
 
     def __str__(self):
         return "BackendPasswordRenewer"
 
 
+class BackendAddPrivilegedUser(param.Parameterized):
+    user = param.String(default="", doc="user to add")
+    admin = param.Boolean(default=False, doc="add admin privileges")
+
+    def __str__(self):
+        return "BackendAddUser"
+
+
 class BackendUserEraser(param.Parameterized):
-    user = param.String(default="", doc="username to be deleted")
+    user = param.String(default="", doc="user to be deleted")
 
     def __str__(self):
         return "BackendUserEraser"
@@ -98,7 +115,7 @@ class BackendUserEraser(param.Parameterized):
 person_text = """
 ### User Data
 
-_Authenticated users_ do not need to fill the username.<br>
+_Privileged users_ do not need to fill the username.<br>
 _Guest users_ shall use a valid _unique_ name and select a guest type.
 """
 upload_text = """
@@ -140,6 +157,101 @@ class GraphicInterface:
         # WIDGET
         # Create PNG pane with app icon
         self.header_object = instantiate(config.panel.gui.header_object)
+
+        # BUTTONS
+        # Backend button
+        self.backend_button = pnw.Button(
+            name="",
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="adjustments",
+            icon_size="2em",
+        )
+        # Guest override toggle button (if pressed the user act as a guest)
+        self.toggle_guest_override_button = pnw.Toggle(
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="user-bolt",
+            icon_size="2em",
+            stylesheets=[config.panel.gui.css_files.guest_override_path],
+        )
+        # Logout button
+        self.logout_button = pnw.Button(
+            name="",
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="door-exit",
+            icon_size="2em",
+        )
+
+        # ROW
+        # Create column for person data (add logout button only if auth is active)
+        self.header_row = pn.Row(
+            height=header_row_height,
+            sizing_mode="stretch_width",
+        )
+        # Append a graphic element to the left side of header
+        if config.panel.gui.header_object:
+            self.header_row.append(self.header_object)
+        # Append a controls to the right side of header
+        if auth.is_auth_active(config=config):
+            self.header_row.append(pn.HSpacer())
+            # Backend only for admin
+            if auth.is_admin(user=pn.state.user, config=config):
+                self.header_row.append(self.backend_button)
+            # Guest override only for non guests
+            if not auth.is_guest(
+                user=pn.state.user, config=config, allow_override=False
+            ):
+                self.header_row.append(self.toggle_guest_override_button)
+            self.header_row.append(self.logout_button)
+            self.header_row.append(
+                pn.pane.HTML(
+                    styles=dict(background="white"), width=2, height=45
+                )
+            )
+
+        # CALLBACKS
+        # Backend callback
+        self.backend_button.on_click(lambda e: auth.open_backend())
+
+        # Guest override callback
+        @pn.depends(self.toggle_guest_override_button, watch=True)
+        def reload_on_guest_override_callback(
+            toggle: pnw.ToggleIcon, reload: bool = True
+        ):
+            # Update global variable that control guest override
+            # Only non guest can store this value in 'flags' table (guest users
+            # are always guests, there is no use in sotring a flag for them)
+            if not auth.is_guest(
+                user=pn.state.user, config=config, allow_override=False
+            ):
+                models.set_flag(
+                    config=config,
+                    id=f"{pn.state.user}_guest_override",
+                    value=toggle,
+                )
+            # Show banner if override is active
+            self.guest_override_alert.visible = toggle
+            # Simply reload the menu when the toggle button value changes
+            if reload:
+                core.reload_menu(
+                    None,
+                    config,
+                    self,
+                )
+
+        # Add callback to attribute
+        self.reload_on_guest_override = reload_on_guest_override_callback
+
+        # Logout callback
+        self.logout_button.on_click(lambda e: auth.force_logout())
 
         # MAIN SECTION --------------------------------------------------------
         # Elements required for build the main section of the web app
@@ -184,6 +296,27 @@ class GraphicInterface:
         self.takeaway_alert_text = f"<span {config.panel.gui.takeaway_alert_text_options}>{config.panel.gui.takeaway_id}</span> "
 
         # WIDGETS
+        # Alert for guest override
+        self.guest_override_alert = pn.pane.HTML(
+            """
+            <div class="guest-override-flag">
+                <div class="icon-container">
+                    <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-radioactive-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M21 11a1 1 0 0 1 1 1a10 10 0 0 1 -5 8.656a1 1 0 0 1 -1.302 -.268l-.064 -.098l-3 -5.19a.995 .995 0 0 1 -.133 -.542l.01 -.11l.023 -.106l.034 -.106l.046 -.1l.056 -.094l.067 -.089a.994 .994 0 0 1 .165 -.155l.098 -.064a2 2 0 0 0 .993 -1.57l.007 -.163a1 1 0 0 1 .883 -.994l.117 -.007h6z" stroke-width="0" fill="currentColor" />
+                        <path d="M7 3.344a10 10 0 0 1 10 0a1 1 0 0 1 .418 1.262l-.052 .104l-3 5.19l-.064 .098a.994 .994 0 0 1 -.155 .165l-.089 .067a1 1 0 0 1 -.195 .102l-.105 .034l-.107 .022a1.003 1.003 0 0 1 -.547 -.07l-.104 -.052a2 2 0 0 0 -1.842 -.082l-.158 .082a1 1 0 0 1 -1.302 -.268l-.064 -.098l-3 -5.19a1 1 0 0 1 .366 -1.366z" stroke-width="0" fill="currentColor" />
+                        <path d="M9 11a1 1 0 0 1 .993 .884l.007 .117a2 2 0 0 0 .861 1.645l.237 .152a.994 .994 0 0 1 .165 .155l.067 .089l.056 .095l.045 .099c.014 .036 .026 .07 .035 .106l.022 .107l.011 .11a.994 .994 0 0 1 -.08 .437l-.053 .104l-3 5.19a1 1 0 0 1 -1.366 .366a10 10 0 0 1 -5 -8.656a1 1 0 0 1 .883 -.993l.117 -.007h6z" stroke-width="0" fill="currentColor" />
+                    </svg>
+                    <span><strong>Watch out! You are a guest now...</strong></span>
+                </div>
+                <div>
+                    Guest override is active.
+                </div>
+            </div>
+            """,
+            margin=5,
+            sizing_mode="stretch_width",
+            stylesheets=[config.panel.gui.css_files.guest_override_path],
+        )
         # Create dataframe instance
         self.dataframe = pnw.Tabulator(
             name="Order",
@@ -197,7 +330,7 @@ class GraphicInterface:
             button_style="outline",
             button_type="light",
             width=45,
-            height=45,
+            height=generic_button_height,
             icon="reload",
             icon_size="2em",
         )
@@ -205,7 +338,7 @@ class GraphicInterface:
         self.send_order_button = pnw.Button(
             name="Send Order",
             button_type="success",
-            height=45,
+            height=generic_button_height,
             icon="circle-check-filled",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -216,7 +349,7 @@ class GraphicInterface:
             name="Stop Orders",
             button_style="outline",
             button_type="warning",
-            height=45,
+            height=generic_button_height,
             icon="alarm",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -225,7 +358,7 @@ class GraphicInterface:
         self.delete_order_button = pnw.Button(
             name="Delete Order",
             button_type="danger",
-            height=45,
+            height=generic_button_height,
             icon="trash-filled",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -266,25 +399,26 @@ class GraphicInterface:
         # CALLBACKS
         # Callback on every "toggle" action
         @pn.depends(self.toggle_no_more_order_button, watch=True)
-        def reload_on_no_more_order_callback(toggle_button: pnw.Toggle):
+        def reload_on_no_more_order_callback(
+            toggle: pnw.Toggle, reload: bool = True
+        ):
             # Update global variable
-            models.set_flag(
-                config=config, id="no_more_orders", value=toggle_button
-            )
+            models.set_flag(config=config, id="no_more_orders", value=toggle)
 
             # Show "no more order" text
-            self.no_more_order_text.visible = toggle_button
+            self.no_more_order_text.visible = toggle
 
             # Deactivate send order and delete order buttons
-            self.send_order_button.disabled = toggle_button
-            self.delete_order_button.disabled = toggle_button
+            self.send_order_button.disabled = toggle
+            self.delete_order_button.disabled = toggle
 
             # Simply reload the menu when the toggle button value changes
-            core.reload_menu(
-                None,
-                config,
-                self,
-            )
+            if reload:
+                core.reload_menu(
+                    None,
+                    config,
+                    self,
+                )
 
         # Add callback to attribute
         self.reload_on_no_more_order = reload_on_no_more_order_callback
@@ -334,14 +468,14 @@ class GraphicInterface:
 
         # SIDEBAR -------------------------------------------------------------
         # TEXTS
-        # Foldable salad menu
-        self.salad_menu = pn.pane.HTML(
-            f"""
-            <details>
-                <summary><strong>Salad menu</strong></summary>
-                {config.panel.salad_list}
-            </details>
-            """,
+        # Foldable additional item details dropdown menu
+        jinja_template = jinja2.Environment(
+            loader=jinja2.BaseLoader
+        ).from_string(config.panel.gui.additional_item_details_template)
+        self.additional_items_details = pn.pane.HTML(
+            jinja_template.render(
+                items=config.panel.additional_items_to_concat
+            ),
             width=sidebar_content_width,
         )
 
@@ -415,16 +549,6 @@ class GraphicInterface:
             self.guest_password_widget.placeholder = "NOT ACTIVE"
 
         # BUTTONS
-        # Logout button
-        self.logout_button = pnw.Button(
-            name="Logout",
-            button_type="danger",
-            button_style="outline",
-            height=45,
-            icon="logout",
-            icon_size="2em",
-            sizing_mode="stretch_width",
-        )
         # Create menu button
         self.build_menu_button = pnw.Button(
             name="Build Menu",
@@ -446,7 +570,7 @@ class GraphicInterface:
             name="Submit",
             button_type="success",
             button_style="outline",
-            height=45,
+            height=generic_button_height,
             icon="key",
             icon_size="2em",
             sizing_mode="stretch_width",
@@ -454,16 +578,19 @@ class GraphicInterface:
 
         # COLUMNS
         # Create column for person data
-        self.person_column = pn.Column(
+        self.sidebar_person_column = pn.Column(
             person_text,
             self.person_widget,
             pn.Spacer(height=5),
-            self.logout_button,
-            pn.Spacer(height=5),
-            self.salad_menu,
+            self.additional_items_details,
             name="User",
             width=sidebar_content_width,
         )
+        # Leave an empty widget for the 'other info' section
+        self.sidebar_person_column.append(
+            pn.pane.HTML(),
+        )
+
         # Create column for uploading image/Excel with the menu
         self.sidebar_menu_upload_col = pn.Column(
             upload_text,
@@ -498,26 +625,16 @@ class GraphicInterface:
         )
 
         # TABS
-        # The person column is defined in the app factory function because lunch
-        # times are configurable
+        # The person widget is defined in the app factory function because
+        # lunch times are configurable
         self.sidebar_tabs = pn.Tabs(
-            self.person_column,
             width=sidebar_content_width,
         )
-
-        # Append password only for non-guest users
-        if (
-            auth.get_username_from_cookie(config.server.cookie_secret)
-            != "guest"
-        ):
-            self.sidebar_tabs.append(self.sidebar_menu_upload_col)
-            self.sidebar_tabs.append(self.sidebar_download_orders_col)
-            self.sidebar_tabs.append(self.sidebar_stats_col)
-            self.sidebar_tabs.append(self.sidebar_password)
+        # Reload tabs according to auth.is_guest results and guest_override
+        # flag (no need to oad, tabs are already empty)
+        self.load_sidebar_tabs(config=config, clear_before_loading=False)
 
         # CALLBACKS
-        # Logout callback
-        self.logout_button.on_click(lambda e: auth.force_logout())
         # Build menu button callback
         self.build_menu_button.on_click(
             lambda e: core.build_menu(
@@ -529,7 +646,7 @@ class GraphicInterface:
         )
         # Submit password button callback
         self.submit_password_button.on_click(
-            lambda e: core.submit_password(self, config)
+            lambda e: core.submit_password(gi=self, config=config)
         )
 
     # UTILITY FUNCTIONS
@@ -591,9 +708,30 @@ class GraphicInterface:
         return time_label
 
     # SIDEBAR SECTION
-    def build_stats_text(
+    def load_sidebar_tabs(
+        self, config: DictConfig, clear_before_loading: bool = True
+    ):
+        # Clean tabs
+        if clear_before_loading:
+            self.sidebar_tabs.clear()
+        # Append User tab
+        self.sidebar_tabs.append(self.sidebar_person_column)
+        # Append upload, download and stats only for non-guest
+        # Append password only for non-guest users if auth is active
+        if not auth.is_guest(
+            user=pn.state.user, config=config, allow_override=False
+        ):
+            self.sidebar_tabs.append(self.sidebar_menu_upload_col)
+            self.sidebar_tabs.append(self.sidebar_download_orders_col)
+            self.sidebar_tabs.append(self.sidebar_stats_col)
+            if auth.is_basic_auth_active(config=config):
+                self.sidebar_tabs.append(self.sidebar_password)
+
+    def build_stats_and_info_text(
         self,
+        config: DictConfig,
         df_stats: pd.DataFrame,
+        user: str,
         version: str,
         host_name: str,
         stylesheets: list = [],
@@ -616,38 +754,71 @@ class GraphicInterface:
             """,
             stylesheets=stylesheets,
         )
+        # Define user group
+        if auth.is_guest(user=user, config=config, allow_override=False):
+            user_group = "guest"
+        elif auth.is_admin(user=user, config=config):
+            user_group = "admin"
+        else:
+            user_group = "user"
         # Other info
         other_info = pn.pane.HTML(
             f"""
-            <h4>Other Info</h3>
-            <div class="icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-tag" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <circle cx="8.5" cy="8.5" r="1" fill="currentColor"></circle>
-                    <path d="M4 7v3.859c0 .537 .213 1.052 .593 1.432l8.116 8.116a2.025 2.025 0 0 0 2.864 0l4.834 -4.834a2.025 2.025 0 0 0 0 -2.864l-8.117 -8.116a2.025 2.025 0 0 0 -1.431 -.593h-3.859a3 3 0 0 0 -3 3z"></path>
-                </svg>
-                <span>
-                    <strong>Version:</strong> <i>{version}</i>
-                </span>
-            </div>
-            <div class="icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cpu" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z"></path>
-                    <path d="M9 9h6v6h-6z"></path>
-                    <path d="M3 10h2"></path>
-                    <path d="M3 14h2"></path>
-                    <path d="M10 3v2"></path>
-                    <path d="M14 3v2"></path>
-                    <path d="M21 10h-2"></path>
-                    <path d="M21 14h-2"></path>
-                    <path d="M14 21v-2"></path>
-                    <path d="M10 21v-2"></path>
-                </svg>
-                <span>
-                    <strong>Host:</strong> <i>{host_name}</i>
-                </span>
-            </div>
+            <details>
+                <summary><strong>Other Info</strong></summary>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-square" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M9 10a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                        <path d="M6 21v-1a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v1" />
+                        <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
+                    </svg>
+                    <span>
+                        <strong>User:</strong> <i>{user}</i>
+                    </span>
+                </div>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users-group" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1" />
+                        <path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M17 10h2a2 2 0 0 1 2 2v1" />
+                        <path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M3 13v-1a2 2 0 0 1 2 -2h2" />
+                    </svg>
+                    <span>
+                        <strong>Group:</strong> <i>{user_group}</i>
+                    </span>
+                </div>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pizza" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 21.5c-3.04 0 -5.952 -.714 -8.5 -1.983l8.5 -16.517l8.5 16.517a19.09 19.09 0 0 1 -8.5 1.983z" />
+                        <path d="M5.38 15.866a14.94 14.94 0 0 0 6.815 1.634a14.944 14.944 0 0 0 6.502 -1.479" />
+                        <path d="M13 11.01v-.01" />
+                        <path d="M11 14v-.01" />
+                    </svg>
+                    <span>
+                        <strong>Data-Lunch:</strong> <i>v{version}</i>
+                    </span>
+                </div>
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cpu" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M5 5m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z"></path>
+                        <path d="M9 9h6v6h-6z"></path>
+                        <path d="M3 10h2"></path>
+                        <path d="M3 14h2"></path>
+                        <path d="M10 3v2"></path>
+                        <path d="M14 3v2"></path>
+                        <path d="M21 10h-2"></path>
+                        <path d="M21 14h-2"></path>
+                        <path d="M14 21v-2"></path>
+                        <path d="M10 21v-2"></path>
+                    </svg>
+                    <span>
+                        <strong>Host:</strong> <i>{host_name}</i>
+                    </span>
+                </div>
+            </details>
             """,
             sizing_mode="stretch_width",
             stylesheets=stylesheets,
@@ -662,6 +833,37 @@ class BackendInterface:
         self,
         config: DictConfig,
     ):
+        # HEADER SECTION ------------------------------------------------------
+        # WIDGET
+
+        # BUTTONS
+        self.exit_button = pnw.Button(
+            name="",
+            button_type="primary",
+            button_style="solid",
+            width=header_button_width,
+            height=generic_button_height,
+            icon="home-move",
+            icon_size="2em",
+        )
+
+        # ROW
+        # Create column for person data (add logout button only if auth is active)
+        self.header_row = pn.Row(
+            height=header_row_height,
+            sizing_mode="stretch_width",
+        )
+        # Append a controls to the right side of header
+        self.header_row.append(pn.HSpacer())
+        self.header_row.append(self.exit_button)
+        self.header_row.append(
+            pn.pane.HTML(styles=dict(background="white"), width=2, height=45)
+        )
+
+        # CALLBACKS
+        # Exit callback
+        self.exit_button.on_click(lambda e: self.exit_backend())
+
         # MAIN SECTION --------------------------------------------------------
         # Backend main section
 
@@ -675,7 +877,7 @@ class BackendInterface:
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                         <path d="M11.998 2l.118 .007l.059 .008l.061 .013l.111 .034a.993 .993 0 0 1 .217 .112l.104 .082l.255 .218a11 11 0 0 0 7.189 2.537l.342 -.01a1 1 0 0 1 1.005 .717a13 13 0 0 1 -9.208 16.25a1 1 0 0 1 -.502 0a13 13 0 0 1 -9.209 -16.25a1 1 0 0 1 1.005 -.717a11 11 0 0 0 7.531 -2.527l.263 -.225l.096 -.075a.993 .993 0 0 1 .217 -.112l.112 -.034a.97 .97 0 0 1 .119 -.021l.115 -.007zm.002 7a2 2 0 0 0 -1.995 1.85l-.005 .15l.005 .15a2 2 0 0 0 .995 1.581v1.769l.007 .117a1 1 0 0 0 1.993 -.117l.001 -1.768a2 2 0 0 0 -1.001 -3.732z" stroke-width="0" fill="currentColor"></path>
                     </svg>
-                    <span><strong>Access denied!</strong></span>
+                    <span><strong>Insufficient privileges!</strong></span>
                 </div>
             </div>
             """,
@@ -685,19 +887,25 @@ class BackendInterface:
         )
 
         # WIDGET
-        # Password renewer
+        # Password renewer (only basic auth)
         self.password_widget = pn.Param(
             BackendPasswordRenewer().param,
             widgets={
-                "password": pnw.PasswordInput(
+                "new_password": pnw.PasswordInput(
                     name="New password", placeholder="New Password"
                 ),
-                "repeat_password": pnw.PasswordInput(
+                "repeat_new_password": pnw.PasswordInput(
                     name="Repeat new password",
                     placeholder="Repeat New Password",
                 ),
             },
             name="Add/Update User Credentials",
+            width=sidebar_content_width,
+        )
+        # Add user (only oauth)
+        self.add_privileged_user_widget = pn.Param(
+            BackendAddPrivilegedUser().param,
+            name="Add Privileged User",
             width=sidebar_content_width,
         )
         # User eraser
@@ -708,26 +916,32 @@ class BackendInterface:
         )
         # User list
         self.users_tabulator = pn.widgets.Tabulator(
-            value=pd.DataFrame({"users": auth.list_users(config=config)}),
-            name="Users",
+            value=auth.list_users_guests_and_privileges(config),
         )
+        # Flags content (use empty dataframe to instantiate)
+        df_flags = models.Flags.read_as_df(
+            config=config,
+            index_col="id",
+        )
+        self.flags_content = pn.widgets.Tabulator(value=df_flags)
 
         # BUTTONS
-        # Logout button
-        self.exit_button = pnw.Button(
-            name="Exit",
-            button_type="warning",
-            height=45,
-            icon="door-exit",
-            icon_size="2em",
-            sizing_mode="stretch_width",
-        )
+        # Exit button
         # Password button
         self.submit_password_button = pnw.Button(
             name="Submit",
             button_type="success",
-            height=45,
+            height=generic_button_height,
             icon="key",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        # Delete User button
+        self.add_privileged_user_button = pnw.Button(
+            name="Add",
+            button_type="success",
+            height=generic_button_height,
+            icon="user-plus",
             icon_size="2em",
             sizing_mode="stretch_width",
         )
@@ -735,21 +949,36 @@ class BackendInterface:
         self.delete_user_button = pnw.Button(
             name="Delete",
             button_type="danger",
-            height=45,
-            icon="trash-x-filled",
+            height=generic_button_height,
+            icon="user-minus",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        # Clear flags table button
+        self.clear_flags_button = pnw.Button(
+            name="Clear Guest Override Flags",
+            button_type="danger",
+            height=generic_button_height,
+            icon="file-shredder",
             icon_size="2em",
             sizing_mode="stretch_width",
         )
 
         # COLUMN
-        # Create column with user credentials controls
+        # Create column with user credentials controls (basic auth)
         self.add_update_user_column = pn.Column(
             config.panel.gui.psw_text,
             self.password_widget,
             pn.VSpacer(),
             self.submit_password_button,
             pn.Spacer(height=5),
-            name="Add/Update Credentials",
+            width=sidebar_width,
+        )
+        # Create column with user authenthication controls (oauth)
+        self.add_privileged_user_column = pn.Column(
+            self.add_privileged_user_widget,
+            pn.VSpacer(),
+            self.add_privileged_user_button,
             width=sidebar_width,
         )
         # Create for deleting users
@@ -757,16 +986,19 @@ class BackendInterface:
             self.user_eraser,
             pn.VSpacer(),
             self.delete_user_button,
-            pn.Spacer(height=5),
-            name="Delete User",
+            width=sidebar_width,
+        )
+        self.clear_flags_column = pn.Column(
+            pn.pane.HTML("<b>Flags Table Content</b>"),
+            self.flags_content,
+            pn.VSpacer(),
+            self.clear_flags_button,
             width=sidebar_width,
         )
         # Create for deleting users
         self.list_user_column = pn.Column(
+            pn.pane.HTML("<b>Users and Privileges</b>"),
             self.users_tabulator,
-            pn.VSpacer(),
-            pn.Spacer(height=5),
-            name="Users",
             width=sidebar_width,
         )
 
@@ -776,33 +1008,51 @@ class BackendInterface:
             sizing_mode="stretch_both",
             min_height=450,
         )
-        # Add controls only for authenticated users
-        if (
-            auth.get_username_from_cookie(config.server.cookie_secret)
-            != "admin"
-        ):
+        # Add controls only for admin users
+        if not auth.is_admin(user=pn.state.user, config=config):
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:
-            self.backend_controls.append(self.add_update_user_column)
+            # For basic auth use a password renewer, for oauth a widget for
+            # adding privileged users
+            if auth.is_basic_auth_active(config=config):
+                self.backend_controls.append(self.add_update_user_column)
+            else:
+                self.backend_controls.append(self.add_privileged_user_column)
+            self.backend_controls.append(
+                pn.pane.HTML(
+                    styles=dict(background="lightgray"),
+                    width=2,
+                    sizing_mode="stretch_height",
+                )
+            )
             self.backend_controls.append(self.delete_user_column)
+            self.backend_controls.append(
+                pn.pane.HTML(
+                    styles=dict(background="lightgray"),
+                    width=2,
+                    sizing_mode="stretch_height",
+                )
+            )
+            self.backend_controls.append(self.clear_flags_column)
+            self.backend_controls.append(
+                pn.pane.HTML(
+                    styles=dict(background="lightgray"),
+                    width=2,
+                    sizing_mode="stretch_height",
+                )
+            )
             self.backend_controls.append(self.list_user_column)
 
-        # Add exit button
-        self.backend_main = pn.Column(
-            self.backend_controls,
-            pn.Spacer(height=15),
-            self.exit_button,
-            width=sidebar_content_width * 3,
-        )
-
         # CALLBACKS
-        # Exit callback
-        self.exit_button.on_click(lambda e: self.exit_backend())
-
         # Submit password button callback
         def submit_password_button_callback(self, config):
-            success = core.backend_submit_password(self, config)
+            success = core.backend_submit_password(
+                gi=self,
+                is_admin=self.password_widget.object.admin,
+                is_guest=self.password_widget.object.guest,
+                config=config,
+            )
             if success:
                 self.reload_backend(config)
 
@@ -810,15 +1060,35 @@ class BackendInterface:
             lambda e: submit_password_button_callback(self, config)
         )
 
+        # Add privileged user callback
+        def add_privileged_user_button_callback(self):
+            auth.add_privileged_user(
+                self.add_privileged_user_widget.object.user,
+                is_admin=self.add_privileged_user_widget.object.admin,
+                config=config,
+            )
+
+            self.reload_backend(config)
+            pn.state.notifications.success(
+                f"User '{self.add_privileged_user_widget.object.user}' added",
+                duration=config.panel.notifications.duration,
+            )
+
+        self.add_privileged_user_button.on_click(
+            lambda e: add_privileged_user_button_callback(self)
+        )
+
         # Delete user callback
         def delete_user_button_callback(self):
             deleted_data = auth.remove_user(
-                self.user_eraser.object.user, config=config
+                user=self.user_eraser.object.user, config=config
             )
-            if deleted_data:
+            if (deleted_data["privileged_users_deleted"] > 0) or (
+                deleted_data["credentials_deleted"] > 0
+            ):
                 self.reload_backend(config)
                 pn.state.notifications.success(
-                    f"User '{self.user_eraser.object.user}' deleted",
+                    f"User '{self.user_eraser.object.user}' deleted<br>auth: {deleted_data['privileged_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
                     duration=config.panel.notifications.duration,
                 )
             else:
@@ -831,15 +1101,37 @@ class BackendInterface:
             lambda e: delete_user_button_callback(self)
         )
 
+        # Clear flags callback
+        def clear_flags_button_callback(self):
+            # Clear flags
+            num_rows_deleted = models.Flags.clear_guest_override(config=config)
+            # Reload and notify user
+            self.reload_backend(config)
+            pn.state.notifications.success(
+                f"Guest override flags cleared<br>{num_rows_deleted} rows deleted",
+                duration=config.panel.notifications.duration,
+            )
+
+        self.clear_flags_button.on_click(
+            lambda e: clear_flags_button_callback(self)
+        )
+
     # UTILITY FUNCTIONS
     # MAIN SECTION
     def reload_backend(self, config) -> None:
-        self.users_tabulator.value = pd.DataFrame(
-            {"users": auth.list_users(config=config)}
+        # Users and guests lists
+        self.users_tabulator.value = auth.list_users_guests_and_privileges(
+            config
         )
+        # Flags table content
+        df_flags = models.Flags.read_as_df(
+            config=config,
+            index_col="id",
+        )
+        self.flags_content.value = df_flags
 
     def exit_backend(self) -> None:
-        # Edit pathname to force logout
+        # Edit pathname to force exit
         pn.state.location.pathname = (
             pn.state.location.pathname.split("/")[0] + "/"
         )

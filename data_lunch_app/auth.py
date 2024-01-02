@@ -4,16 +4,16 @@ from omegaconf import DictConfig
 from omegaconf.errors import ConfigAttributeError
 from passlib.context import CryptContext
 from passlib.utils import saslprep
-import pathlib
+import pandas as pd
 import panel as pn
 from panel.auth import OAuthProvider
 from panel.util import base64url_encode
-from panel.io.resources import BASIC_LOGIN_TEMPLATE, _env
 import secrets
 import string
-from sqlalchemy.ext.mutable import Mutable
+from sqlalchemy.sql import true as sql_true
+from sqlalchemy import select, delete
 import tornado
-from tornado.web import RequestHandler, decode_signed_value
+from tornado.web import RequestHandler
 
 # Database
 from . import models
@@ -42,30 +42,19 @@ pwd_context = CryptContext(
 )
 
 # PROPERTIES ------------------------------------------------------------------
-credentials_filename = (
-    pathlib.Path(__file__).parent.parent / "shared_data" / "credentials.json"
-)
-guest_password_filename = (
-    pathlib.Path(__file__).parent.parent
-    / "shared_data"
-    / "guest_password.pickle"
-)
+# Intentionally left void
 
 # CLASSES ---------------------------------------------------------------------
 
 
 class DataLunchProvider(OAuthProvider):
-    def __init__(self, config, basic_login_template=None):
-        # Set basic template
-        if basic_login_template is None:
-            self._basic_login_template = BASIC_LOGIN_TEMPLATE
-        else:
-            with open(basic_login_template) as f:
-                self._basic_login_template = _env.from_string(f.read())
+    def __init__(self, config, login_template=None, logout_template=None):
         # Set Hydra config info
         self.config = config
 
-        super().__init__()
+        super().__init__(
+            login_template=login_template, logout_template=logout_template
+        )
 
     @property
     def login_url(self):
@@ -74,9 +63,7 @@ class DataLunchProvider(OAuthProvider):
     @property
     def login_handler(self):
         # Set basic template
-        DataLunchLoginHandler._basic_login_template = (
-            self._basic_login_template
-        )
+        DataLunchLoginHandler._login_template = self._login_template
         # Set Hydra config info
         DataLunchLoginHandler.config = self.config
 
@@ -90,7 +77,7 @@ class DataLunchLoginHandler(RequestHandler):
             errormessage = self.get_argument("error")
         except Exception:
             errormessage = ""
-        html = self._basic_login_template.render(errormessage=errormessage)
+        html = self._login_template.render(errormessage=errormessage)
         self.write(html)
 
     def check_permission(self, user, password):
@@ -230,7 +217,7 @@ class PasswordEncrypt:
         return encrypted_password
 
     def decrypt(self):
-        """Return encrypted password."""
+        """Return decrypted password."""
         if pn.state.encryption:
             password = pn.state.encryption.decrypt(
                 self.encrypted_password.encode("utf-8")
@@ -246,6 +233,62 @@ class PasswordEncrypt:
 
 
 # FUNCTIONS -------------------------------------------------------------------
+
+
+def is_basic_auth_active(config: DictConfig) -> bool:
+    """Check config object and return true if basic authentication is active.
+    Return false otherwise."""
+
+    # Check if a valid auth key exists
+    auth_provider = config.server.get("auth_provider", None)
+
+    return auth_provider
+
+
+def is_auth_active(config: DictConfig) -> bool:
+    """Check config object and return true if basic authentication or OAuth is active.
+    Return false otherwise."""
+
+    # Check if a valid auth key exists
+    auth_provider = is_basic_auth_active(config=config)
+    oauth_provider = config.server.get("oauth_provider", None)
+
+    return auth_provider or oauth_provider
+
+
+def authorize(
+    config: DictConfig,
+    user_info: dict,
+    target_path: str,
+    authorize_guest_users=False,
+) -> bool:
+    """Authorization callback, read config, user info and target path.
+    Return True (authorized) or False (not authorized) by checking current user
+    and target path"""
+    # Set current user and existing users info
+    if is_basic_auth_active(config=config):
+        # For basic authentication username is under the 'user' key
+        current_user_key = "user"
+    else:
+        # For github is under the 'login' key
+        current_user_key = "login"
+    current_user = user_info[current_user_key]
+    privileged_users = list_users(config=config)
+    log.debug(f"target path: {target_path}")
+    # If user is not authenticated block it
+    if not current_user:
+        return False
+    # All privileged users can reach backend (but the backend will have
+    # controls only for admins)
+    if current_user in privileged_users:
+        return True
+    # If the target is the mainpage always authorized (if authenticated)
+    if authorize_guest_users and (target_path == "/"):
+        return True
+
+    # In all other cases, don't authorize and logout
+    pn.state.location.pathname.split("/")[0] + "/logout"
+    return False
 
 
 def set_app_auth_and_encryption(config: DictConfig) -> None:
@@ -280,8 +323,9 @@ def set_app_auth_and_encryption(config: DictConfig) -> None:
 def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
     # Create session
     session = models.create_session(config)
-    # Load user from json file
-    user_credential = session.query(models.Credentials).get(user)
+    # Load user from database
+    with session:
+        user_credential = session.get(models.Credentials, user)
 
     # Get the hashed password
     if user_credential:
@@ -292,12 +336,37 @@ def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
     return hash
 
 
-def add_user_hashed_password(
-    user: str, password: str, config: DictConfig
-) -> None:
+def add_privileged_user(user: str, is_admin: bool, config: DictConfig) -> None:
+    """Add user id to 'privileged_users' table.
+    The table is used by all authentication method to understand which users are
+    privileged and which ones are guests."""
     # Create session
     session = models.create_session(config)
     # New credentials
+    new_privileged_user = models.PrivilegedUsers(user=user, admin=is_admin)
+
+    # Update credentials
+    # Use an upsert for postgresql, a simple session add otherwise
+    models.session_add_with_upsert(
+        session=session,
+        constraint="privileged_users_pkey",
+        new_record=new_privileged_user,
+    )
+    session.commit()
+
+
+def add_user_hashed_password(
+    user: str, password: str, config: DictConfig
+) -> None:
+    """Add user credentials to 'credentials' table.
+    Used only by basic authentication"""
+    # Create session
+    session = models.create_session(config)
+    # New credentials
+    # For the user named "guest" add also the encrypted password so that panel
+    # can show the decrypted guest password to logged users
+    # Can't use is_guest to determine the user that need encription, because
+    # only the user named guest is shown in the guest user password widget
     if user == "guest":
         new_user_credential = models.Credentials(
             user=user, password_hash=password, password_encrypted=password
@@ -308,7 +377,12 @@ def add_user_hashed_password(
         )
 
     # Update credentials
-    session.add(new_user_credential)
+    # Use an upsert for postgresql, a simple session add otherwise
+    models.session_add_with_upsert(
+        session=session,
+        constraint="credentials_pkey",
+        new_record=new_user_credential,
+    )
     session.commit()
 
 
@@ -316,37 +390,122 @@ def remove_user(user: str, config: DictConfig) -> None:
     # Create session
     session = models.create_session(config)
 
-    # Delete user
-    users_deleted = (
-        session.query(models.Credentials)
-        .filter(models.Credentials.user == user)
-        .delete()
-    )
-    session.commit()
+    with session:
+        # Delete user from privileged_users table
+        privileged_users_deleted = session.execute(
+            delete(models.PrivilegedUsers).where(
+                models.PrivilegedUsers.user == user
+            )
+        )
+        session.commit()
 
-    return users_deleted
+        # Delete user from credentials table
+        credentials_deleted = session.execute(
+            delete(models.Credentials).where(models.Credentials.user == user)
+        )
+        session.commit()
+
+    return {
+        "privileged_users_deleted": privileged_users_deleted.rowcount,
+        "credentials_deleted": credentials_deleted.rowcount,
+    }
 
 
 def list_users(config: DictConfig) -> list[str]:
+    """List only privileged users.
+    Returns a list."""
     # Create session
     session = models.create_session(config)
 
-    credentials = session.query(models.Credentials).all()
+    with session:
+        privileged_users = session.scalars(
+            select(models.PrivilegedUsers)
+        ).all()
 
-    # Return keys (users)
-    users_list = [c.user for c in credentials]
+    # Return users
+    users_list = [u.user for u in privileged_users]
     users_list.sort()
 
     return users_list
 
 
-def get_username_from_cookie(cookie_secret: str) -> str:
-    secure_cookie = pn.state.curdoc.session_context.request.cookies["user"]
-    user = decode_signed_value(cookie_secret, "user", secure_cookie).decode(
-        "utf-8"
+def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
+    """Join privileged users' table and credentials tables to list users,
+    admins and guests.
+    Returns a dataframe."""
+
+    # Query tables required to understand users and guests
+    df_privileged_users = models.PrivilegedUsers.read_as_df(
+        config=config,
+        index_col="user",
+    )
+    df_credentials = models.Credentials.read_as_df(
+        config=config,
+        index_col="user",
+    )
+    # Change admin column to privileges (used after join)
+    df_privileged_users["group"] = df_privileged_users.admin.map(
+        {True: "admin", False: "user"}
+    )
+    df_user_guests_privileges = df_privileged_users.join(
+        df_credentials, how="outer"
+    )[["group"]]
+    df_user_guests_privileges = df_user_guests_privileges.fillna("guest")
+
+    return df_user_guests_privileges
+
+
+def is_guest(
+    user: str, config: DictConfig, allow_override: bool = True
+) -> bool:
+    """Check if a user is a guest by checking if it is listed inside the 'privileged_users' table
+    The guest override chached value (per-user) can force the function to always return True.
+    If allow_override is set to False the guest override value is ignored."""
+
+    # Load guest override from flag table (if the button is pressed its value
+    # is True). If not available use False.
+    guest_override = models.get_flag(
+        config=config,
+        id=f"{pn.state.user}_guest_override",
+        value_if_missing=False,
     )
 
-    return user
+    # If guest override is active always return true (user act like guest)
+    if guest_override and allow_override:
+        return True
+
+    # Otherwise check if user is not included in privileged users
+    privileged_users = list_users(config)
+
+    is_guest = user not in privileged_users
+
+    return is_guest
+
+
+def is_admin(user: str, config: DictConfig) -> bool:
+    """Check if a user is an dmin by checking the 'privileged_users' table"""
+    # Create session
+    session = models.create_session(config)
+
+    with session:
+        admin_users = session.scalars(
+            select(models.PrivilegedUsers).where(
+                models.PrivilegedUsers.admin == sql_true()
+            )
+        ).all()
+    admin_list = [u.user for u in admin_users]
+
+    is_admin = user in admin_list
+
+    return is_admin
+
+
+def open_backend() -> None:
+    # Edit pathname to open backend
+    pn.state.location.pathname = (
+        pn.state.location.pathname.split("/")[0] + "/backend"
+    )
+    pn.state.location.reload = True
 
 
 def force_logout() -> None:
