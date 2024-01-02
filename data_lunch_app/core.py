@@ -303,6 +303,18 @@ def reload_menu(
             value_if_missing=False,
         )
 
+        # Set no more orders toggle button visibility and activation
+        if auth.is_guest(
+            user=pn.state.user, config=config, allow_override=False
+        ):
+            # Deactivate the no_more_orders button for guest users
+            gi.toggle_no_more_order_button.disabled = True
+            gi.toggle_no_more_order_button.visible = False
+        else:
+            # Activate the no_more_orders button for privileged users
+            gi.toggle_no_more_order_button.disabled = False
+            gi.toggle_no_more_order_button.visible = True
+
         # Guest graphic configuration
         if auth.is_guest(user=pn.state.user, config=config):
             # If guest show guest type selection group
