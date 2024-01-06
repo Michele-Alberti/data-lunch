@@ -22,6 +22,7 @@ from . import gui
 
 # Authentication
 from . import auth
+from .auth import pn_user
 import cryptography.fernet
 
 # LOGGER ----------------------------------------------------------------------
@@ -88,10 +89,18 @@ def set_guest_user_password(config: DictConfig) -> str:
     """If guest user is requested return a password, otherwise return ""
     This function always returns "" if basic auth is not used
     """
-    if config.auth.basic_auth.guest_user and auth.is_basic_auth_active(
-        config=config
-    ):
-        # If flag does not exist use the default value
+    # Check if basic auth is active
+    if auth.is_basic_auth_active(config=config):
+        # If active basic_auth.guest_user is true if guest user is active
+        is_guest_user_active = config.basic_auth.guest_user
+    else:
+        # Otherwise the guest user feature is not applicable
+        is_guest_user_active = False
+
+    # Set the guest password variable
+    if is_guest_user_active:
+        # If flag for resetting the password does not exist use the default
+        # value
         if (
             models.get_flag(config=config, id="reset_guest_user_password")
             is None
@@ -99,7 +108,7 @@ def set_guest_user_password(config: DictConfig) -> str:
             models.set_flag(
                 config=config,
                 id="reset_guest_user_password",
-                value=config.auth.basic_auth.default_reset_guest_user_password_flag,
+                value=config.basic_auth.default_reset_guest_user_password_flag,
             )
         # Generate a random password only if requested (check on flag)
         # otherwise load from pickle
@@ -114,8 +123,8 @@ def set_guest_user_password(config: DictConfig) -> str:
             )
             # Create password
             guest_password = auth.generate_password(
-                special_chars=config.auth.basic_auth.psw_special_chars,
-                length=config.auth.basic_auth.generated_psw_length,
+                special_chars=config.basic_auth.psw_special_chars,
+                length=config.basic_auth.generated_psw_length,
             )
             # Add hashed password to database
             auth.add_user_hashed_password(
@@ -299,13 +308,13 @@ def reload_menu(
         # Check guest override button status (if not in table use False)
         gi.toggle_guest_override_button.value = models.get_flag(
             config=config,
-            id=f"{pn.state.user}_guest_override",
+            id=f"{pn_user(config)}_guest_override",
             value_if_missing=False,
         )
 
         # Set no more orders toggle button visibility and activation
         if auth.is_guest(
-            user=pn.state.user, config=config, allow_override=False
+            user=pn_user(config), config=config, allow_override=False
         ):
             # Deactivate the no_more_orders button for guest users
             gi.toggle_no_more_order_button.disabled = True
@@ -316,7 +325,7 @@ def reload_menu(
             gi.toggle_no_more_order_button.visible = True
 
         # Guest graphic configuration
-        if auth.is_guest(user=pn.state.user, config=config):
+        if auth.is_guest(user=pn_user(config), config=config):
             # If guest show guest type selection group
             gi.person_widget.widgets["guest"].disabled = False
             gi.person_widget.widgets["guest"].visible = True
@@ -500,7 +509,7 @@ def reload_menu(
         stats_and_info_text = gi.build_stats_and_info_text(
             config=config,
             df_stats=df_stats,
-            user=pn.state.user,
+            user=pn_user(config),
             version=__version__,
             host_name=get_host_name(config),
             stylesheets=[config.panel.gui.css_files.stats_info_path],
@@ -563,7 +572,7 @@ def send_order(
         # If auth is active, check if a guests is using a name reserved to a
         # privileged user
         if (
-            auth.is_guest(user=pn.state.user, config=config)
+            auth.is_guest(user=pn_user(config), config=config)
             and (person.username in auth.list_users(config=config))
             and (auth.is_auth_active(config=config))
         ):
@@ -583,7 +592,7 @@ def send_order(
 
         # Check if a privileged user is ordering for an invalid name
         if (
-            not auth.is_guest(user=pn.state.user, config=config)
+            not auth.is_guest(user=pn_user(config), config=config)
             and (
                 person.username
                 not in (
@@ -626,7 +635,7 @@ def send_order(
                 try:
                     # Add User (note is empty by default)
                     # Do not pass guest for privileged users (default to NotAGuest)
-                    if auth.is_guest(user=pn.state.user, config=config):
+                    if auth.is_guest(user=pn_user(config), config=config):
                         new_user = models.Users(
                             id=person.username,
                             guest=person.guest,
@@ -726,7 +735,7 @@ def delete_order(
             # If auth is active, check if a guests is deleting an order of a
             # privileged user
             if (
-                auth.is_guest(user=pn.state.user, config=config)
+                auth.is_guest(user=pn_user(config), config=config)
                 and (person.username in auth.list_users(config=config))
                 and (auth.is_auth_active(config=config))
             ):
@@ -929,12 +938,12 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
     """Same as backend_submit_password with an additional check on old
     password"""
     # Get user's password hash
-    password_hash = auth.get_hash_from_user(pn.state.user, config=config)
+    password_hash = auth.get_hash_from_user(pn_user(config), config=config)
     # Check if old password is correct
     if password_hash == gi.password_widget.object.old_password:
         # Check if new password match repeat password
         return backend_submit_password(
-            gi=gi, config=config, user=pn.state.user, logout_on_success=True
+            gi=gi, config=config, user=pn_user(config), logout_on_success=True
         )
     else:
         pn.state.notifications.error(
@@ -973,7 +982,7 @@ def backend_submit_password(
         ):
             # Check if new password is valid with regex
             if re.fullmatch(
-                config.auth.basic_auth.psw_regex,
+                config.basic_auth.psw_regex,
                 gi.password_widget.object.new_password,
             ):
                 # If is_guest and is_admin are None (not passed) use the ones

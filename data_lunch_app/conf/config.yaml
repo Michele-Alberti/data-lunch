@@ -4,6 +4,7 @@ defaults:
   - db: sqlite
   - server: no_oauth
   - auth: ${oc.env:PANEL_ENV}
+  - optional basic_auth: ${server}
   - override hydra/job_logging: custom
 #  - _self_ #config.yaml is overriding configs from the Defaults List
 

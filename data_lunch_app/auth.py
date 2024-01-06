@@ -8,6 +8,7 @@ import pandas as pd
 import panel as pn
 from panel.auth import OAuthProvider
 from panel.util import base64url_encode
+import re
 import secrets
 import string
 from sqlalchemy.sql import true as sql_true
@@ -235,12 +236,28 @@ class PasswordEncrypt:
 # FUNCTIONS -------------------------------------------------------------------
 
 
+def pn_user(config: DictConfig) -> str:
+    """Return the user from Panel state object.
+    If remove_email_domain is True, remove the domain from the user."""
+    # Store user
+    user = pn.state.user
+
+    if user:
+        # Check if username is an email
+        if re.fullmatch(r"[^@]+@[^@]+\.[^@]+", user):
+            # Remove domain from username
+            if config.auth.remove_email_domain:
+                user = user.split("@")[0]
+
+    return user
+
+
 def is_basic_auth_active(config: DictConfig) -> bool:
     """Check config object and return true if basic authentication is active.
     Return false otherwise."""
 
     # Check if a valid auth key exists
-    auth_provider = config.server.get("auth_provider", None)
+    auth_provider = config.get("basic_auth", None)
 
     return auth_provider
 
@@ -265,14 +282,13 @@ def authorize(
     """Authorization callback, read config, user info and target path.
     Return True (authorized) or False (not authorized) by checking current user
     and target path"""
-    # Set current user and existing users info
-    if is_basic_auth_active(config=config):
-        # For basic authentication username is under the 'user' key
-        current_user_key = "user"
-    else:
-        # For github is under the 'login' key
-        current_user_key = "login"
-    current_user = user_info[current_user_key]
+
+    # If authorization is not active authorize every user
+    if not is_auth_active(config=config):
+        return True
+
+    # Set current user from panel state
+    current_user = pn_user(config)
     privileged_users = list_users(config=config)
     log.debug(f"target path: {target_path}")
     # If user is not authenticated block it
@@ -462,11 +478,15 @@ def is_guest(
     The guest override chached value (per-user) can force the function to always return True.
     If allow_override is set to False the guest override value is ignored."""
 
+    # If authorization is not active always return false (user is not guest)
+    if not is_auth_active(config=config):
+        return False
+
     # Load guest override from flag table (if the button is pressed its value
     # is True). If not available use False.
     guest_override = models.get_flag(
         config=config,
-        id=f"{pn.state.user}_guest_override",
+        id=f"{pn_user(config)}_guest_override",
         value_if_missing=False,
     )
 
@@ -484,6 +504,11 @@ def is_guest(
 
 def is_admin(user: str, config: DictConfig) -> bool:
     """Check if a user is an dmin by checking the 'privileged_users' table"""
+
+    # If authorization is not active always return false (ther is no admin)
+    if not is_auth_active(config=config):
+        return False
+
     # Create session
     session = models.create_session(config)
 
