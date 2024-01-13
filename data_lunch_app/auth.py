@@ -259,7 +259,7 @@ def is_basic_auth_active(config: DictConfig) -> bool:
     # Check if a valid auth key exists
     auth_provider = config.get("basic_auth", None)
 
-    return auth_provider
+    return auth_provider is not None
 
 
 def is_auth_active(config: DictConfig) -> bool:
