@@ -76,7 +76,7 @@ send_from = mail_sender
 for user in new_users_names_df.itertuples():
     # Generate a random password
     password = auth.generate_password(
-        special_chars=config.auth.basic_auth.psw_special_chars
+        special_chars=config.basic_auth.psw_special_chars
     )
     # Add hashed password to credentials file
     auth.add_user_hashed_password(user.name, password, config=config)
