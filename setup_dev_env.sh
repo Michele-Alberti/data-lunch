@@ -9,13 +9,9 @@ echo -e "${YELLOW}installing development environment${NC}"
 conda env create -f requirements/environment.yml
 echo -e "${YELLOW}activate with ${CODE} conda activate data-lunch ${NC}\n"
 
-echo -e "${YELLOW}installing pre-commit environment${NC}"
-conda env create -f requirements/pre-commit.yml
-echo -e "${YELLOW}activate with ${CODE} conda activate pre-commit ${NC}\n"
-
-echo -e "${YELLOW}installing commitizen environment${NC}"
-conda env create -f requirements/commitizen.yml
-echo -e "${YELLOW}activate with ${CODE} conda activate commitizen ${NC}\n"
+echo -e "${YELLOW}installing ci-cd environment${NC}"
+conda env create -f requirements/ci-cd.yml
+echo -e "${YELLOW}activate with ${CODE} conda activate ci-cd ${NC}\n"
 
 echo -e "${YELLOW}installing google cloud environment${NC}"
 conda env create -f requirements/gc-sdk.yml
@@ -35,7 +31,7 @@ done
 
 # Install pre-commit hooks
 echo -e "${YELLOW}installing pre-commit environment${NC}"
-conda activate pre-commit
+conda activate ci-cd
 pre-commit install
 echo -e "\n${GREEN}pre-commit hooks installed${NC}\n"
 while true; do

@@ -40,5 +40,5 @@
 		echo "dhparam already exists"
 	fi
 else
-    make ssl-cert
+    make ssl-gen-certificate
 fi
