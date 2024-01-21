@@ -64,6 +64,10 @@ help:
 	@echo -e " ${WHITE}  clean               :${NC} runs clean-notebooks, clean-docker, clean-folders, clean-k8s"
 	@echo -e " ${YELLOW}MISC -------------------------------------------------------------------------------------------${NC}"
 	@echo -e " ${WHITE}  interrogate         :${NC} runs interrogate to check code quality"
+	@echo -e " ${WHITE}  package-build       :${NC} build python package"
+	@echo -e " ${WHITE}  package-publish     :${NC} publish python package to PyPI"
+	@echo -e " ${WHITE}  package-test-publish:${NC} publish python package to TestPyPI"
+	@echo -e " ${WHITE}  package-test-install:${NC} install package with pip from TestPyPI (use only in a test env)"
 	@echo -e " ${WHITE}  pre-commit-run      :${NC} runs pre-commit hooks"
 	@echo -e " ${WHITE}  commitizen-bump     :${NC} runs commitizen for releasing a new version on master branch"
 	@echo -e " ${WHITE}  commitizen-push     :${NC} use git to push commits on 'development' and 'master' branches"
@@ -186,12 +190,12 @@ docker-stop:
 docker-db-run:
 	@echo -e "${YELLOW}run database locally${NC}"
 	docker run -d --name ${DBCONTAINERNAME} \
-	-v ${PWD}/shared_data/db_pg:/var/lib/postgresql/data \
-	-p 127.0.0.1:${DBPORT}:${DBPORT} \
-	-e POSTGRES_USER=data_lunch_rw \
-	-e POSTGRES_PASSWORD=${DATA_LUNCH_DB_PASSWORD} \
-	-e POSTGRES_DB=data_lunch_database \
-	${DBIMAGEFULLNAME}
+		-v ${PWD}/shared_data/db_pg:/var/lib/postgresql/data \
+		-p 127.0.0.1:${DBPORT}:${DBPORT} \
+		-e POSTGRES_USER=data_lunch_rw \
+		-e POSTGRES_PASSWORD=${DATA_LUNCH_DB_PASSWORD} \
+		-e POSTGRES_DB=data_lunch_database \
+		${DBIMAGEFULLNAME}
 	@echo -e "${GREEN}done${NC}"
 
 docker-db-stop:
@@ -202,12 +206,21 @@ docker-db-stop:
 docker-up: check-dialect
 	@echo -e "${YELLOW}start docker compose system${NC}"
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
-		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --scale web=3; \
+		docker compose -p ${PROJECTNAME} \
+			-f docker/docker-compose.yaml \
+			--project-directory . \
+			up -d --scale web=3; \
 	else \
 		if [[ ${DB_DIALECT} == "postgresql" ]] ; then \
-			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d ${UP_SERVICES} ${DBSERVICE} --scale web=3; \
+			docker compose -p ${PROJECTNAME} \
+				-f docker/docker-compose.yaml \
+				--project-directory . \
+				up -d ${UP_SERVICES} ${DBSERVICE} --scale web=3; \
 		else \
-			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d ${UP_SERVICES} --scale web=3; \
+			docker compose -p ${PROJECTNAME} \
+				-f docker/docker-compose.yaml \
+				--project-directory . \
+				up -d ${UP_SERVICES} --scale web=3; \
 		fi; \
 	fi;
 	@echo -e "${GREEN}done${NC}"
@@ -215,12 +228,21 @@ docker-up: check-dialect
 docker-up-build: check-dialect build
 	@echo -e "${YELLOW}start docker compose system${NC}"
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
-		docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build --scale web=3; \
+		docker compose -p ${PROJECTNAME} \
+			-f docker/docker-compose.yaml \
+			--project-directory . \
+			up -d --build --scale web=3; \
 	else \
 		if [[ ${DB_DIALECT} == "postgresql" ]] ; then \
-			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build ${UP_SERVICES} ${DBSERVICE} --scale web=3; \
+			docker compose -p ${PROJECTNAME} \
+				-f docker/docker-compose.yaml \
+				--project-directory . \
+				up -d --build ${UP_SERVICES} ${DBSERVICE} --scale web=3; \
 		else \
-			docker compose -p ${PROJECTNAME} -f docker/docker-compose.yaml --project-directory . up -d --build ${UP_SERVICES} --scale web=3; \
+			docker compose -p ${PROJECTNAME} \
+				-f docker/docker-compose.yaml \
+				--project-directory . \
+				up -d --build ${UP_SERVICES} --scale web=3; \
 		fi; \
 	fi;
 	@echo -e "${GREEN}done${NC}"
@@ -257,7 +279,14 @@ interrogate:
 	@echo -e "${YELLOW}check docstrings${NC}"
 	@${CONDA_ACTIVATE_BASE} \
 	conda activate ci-cd;\
-	interrogate -vv --ignore-module --ignore-init-method --ignore-private --ignore-magic --ignore-property-decorators --fail-under=80 ${APP//-/_}
+	interrogate -vv \
+		--ignore-module \
+		--ignore-init-method \
+		--ignore-private \
+		--ignore-magic \
+		--ignore-property-decorators \
+		--fail-under=80 \
+		dlunch
 	@echo -e "${GREEN}done${NC}"
 
 package-build:
@@ -271,7 +300,19 @@ package-publish:
 	@echo -e "${YELLOW}publish python package to PyPI${NC}"
 	@${CONDA_ACTIVATE_BASE} \
 	conda activate ci-cd;\
-	twine upload dist/*
+	twine upload --repository dlunch dist/*
+	@echo -e "${GREEN}done${NC}"
+
+package-test-publish:
+	@echo -e "${YELLOW}publish python package to TestPyPI${NC}"
+	@${CONDA_ACTIVATE_BASE} \
+	conda activate ci-cd;\
+	twine upload --repository testpypi dist/*
+	@echo -e "${GREEN}done${NC}"
+
+package-test-install:
+	@echo -e "${YELLOW}install package from TestPyPI${NC}"
+	pip install --index-url https://test.pypi.org/simple/ dlunch
 	@echo -e "${GREEN}done${NC}"
 
 pre-commit-run:
@@ -312,30 +353,30 @@ commitizen-push:
 send-ip-email:
 	@echo -e "${YELLOW}send email with GCP instance IP${NC}"
 	docker run --rm --name send_email \
-	--entrypoint "" \
-	-v ${PWD}/scripts:/app/scripts \
-	-v ${PWD}/shared_data:/app/shared_data \
-	-e MAIL_USER=${MAIL_USER} \
-	-e MAIL_APP_PASSWORD=${MAIL_APP_PASSWORD} \
-	-e MAIL_RECIPIENTS=${MAIL_RECIPIENTS} \
-	-e DOMAIN=${DOMAIN} \
-	${IMAGEFULLNAME} /bin/sh -c "python /app/scripts/send_email_with_ip.py ${PANEL_ARGS}"
+		--entrypoint "" \
+		-v ${PWD}/scripts:/app/scripts \
+		-v ${PWD}/shared_data:/app/shared_data \
+		-e MAIL_USER=${MAIL_USER} \
+		-e MAIL_APP_PASSWORD=${MAIL_APP_PASSWORD} \
+		-e MAIL_RECIPIENTS=${MAIL_RECIPIENTS} \
+		-e DOMAIN=${DOMAIN} \
+		${IMAGEFULLNAME} /bin/sh -c "python /app/scripts/send_email_with_ip.py ${PANEL_ARGS}"
 	@echo -e "${GREEN}done${NC}"
 
 create-users-credentials:
 	@echo -e "${YELLOW}create user credentials from list in GCP storage${NC}"
 	docker run --rm --name create_users \
-	--entrypoint "" \
-	-v ${PWD}/scripts:/app/scripts \
-	-v ${PWD}/shared_data:/app/shared_data \
-	-e PANEL_ENV=${PANEL_ENV} \
-	-e GCLOUD_BUCKET=${GCLOUD_BUCKET} \
-	-e GCLOUD_PROJECT=${GCLOUD_PROJECT} \
-	-e MAIL_USER=${MAIL_USER} \
-	-e MAIL_APP_PASSWORD=${MAIL_APP_PASSWORD} \
-	-e MAIL_RECIPIENTS=${MAIL_RECIPIENTS} \
-	-e DOMAIN=${DOMAIN} \
-	${IMAGEFULLNAME} /bin/sh -c "python /app/scripts/create_users_from_list.py ${PANEL_ARGS}"
+		--entrypoint "" \
+		-v ${PWD}/scripts:/app/scripts \
+		-v ${PWD}/shared_data:/app/shared_data \
+		-e PANEL_ENV=${PANEL_ENV} \
+		-e GCLOUD_BUCKET=${GCLOUD_BUCKET} \
+		-e GCLOUD_PROJECT=${GCLOUD_PROJECT} \
+		-e MAIL_USER=${MAIL_USER} \
+		-e MAIL_APP_PASSWORD=${MAIL_APP_PASSWORD} \
+		-e MAIL_RECIPIENTS=${MAIL_RECIPIENTS} \
+		-e DOMAIN=${DOMAIN} \
+		${IMAGEFULLNAME} /bin/sh -c "python /app/scripts/create_users_from_list.py ${PANEL_ARGS}"
 	@echo -e "${GREEN}done${NC}"
 
 clean: clean-docker clean-folders

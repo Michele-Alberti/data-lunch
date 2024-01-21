@@ -1,6 +1,6 @@
-# Bump version with Commitizen
+# Manual Docker build
 
-name: Manual build
+name: ⚙️ Manual build
 
 on: 
   workflow_dispatch:
@@ -14,8 +14,11 @@ on:
 
 jobs:
   build_container:
-    name: Build container image
+    name: 🐋 Build Docker image
     runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://hub.docker.com/r/michelealberti/data-lunch-app
     steps:
       - name: Print build info
         run: |
