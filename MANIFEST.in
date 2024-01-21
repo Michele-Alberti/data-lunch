@@ -1,0 +1,4 @@
+recursive-include data_lunch_app/conf *
+recursive-include data_lunch_app/static *
+recursive-include data_lunch_app/templates *
+include data_lunch_app/quotes.xlsx

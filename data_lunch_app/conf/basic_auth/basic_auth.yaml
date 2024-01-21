@@ -4,8 +4,8 @@
 # AUTH PROVIDER OBJECT
 auth_provider:
   _target_: data_lunch_app.auth.DataLunchProvider
-  login_template: data_lunch_app/templates/login_basic.html
-  logout_template: data_lunch_app/templates/logout.html
+  login_template: ${package_path}/templates/login_basic.html
+  logout_template: ${package_path}/templates/logout.html
 # Those values are  used by basic authentication specific features
 
 # PASSWORD

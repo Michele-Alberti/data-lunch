@@ -267,6 +267,13 @@ package-build:
 	python -m build
 	@echo -e "${GREEN}done${NC}"
 
+package-publish:
+	@echo -e "${YELLOW}publish python package to PyPI${NC}"
+	@${CONDA_ACTIVATE_BASE} \
+	conda activate ci-cd;\
+	twine upload dist/*
+	@echo -e "${GREEN}done${NC}"
+
 pre-commit-run:
 	@echo -e "${YELLOW}run pre-commit hooks${NC}"
 	@${CONDA_ACTIVATE_BASE} \

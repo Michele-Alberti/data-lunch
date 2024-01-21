@@ -1,6 +1,7 @@
 # App metadata
 __version__ = "2.7.0"
 
+import importlib.resources
 import pathlib
 import hydra
 import logging
@@ -17,6 +18,11 @@ from . import auth
 from .auth import pn_user
 
 log = logging.getLogger(__name__)
+
+# OMEGACONF RESOLVER ----------------------------------------------------------
+OmegaConf.register_new_resolver(
+    "pkg_path", lambda pkg: str(importlib.resources.files(pkg))
+)
 
 
 # APP FACTORY FUNCTION --------------------------------------------------------
