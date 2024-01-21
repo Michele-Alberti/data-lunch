@@ -18,8 +18,8 @@ import os
 import pathlib
 
 # Password
-import data_lunch_app.auth as auth
-from data_lunch_app.cloud import download_from_gcloud_as_bytes
+import dlunch.auth as auth
+from dlunch.cloud import download_from_gcloud_as_bytes
 import pandas as pd
 from hydra import compose, initialize
 import sys
@@ -30,7 +30,7 @@ hydra_args = sys.argv[1:]
 
 # global initialization
 initialize(
-    config_path="../data_lunch_app/conf",
+    config_path="../dlunch/conf",
     job_name="script_create_users_from_list",
     version_base="1.3",
 )

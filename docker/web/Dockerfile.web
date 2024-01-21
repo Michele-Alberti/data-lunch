@@ -45,4 +45,4 @@ ENV PANEL_APP=data-lunch-app
 EXPOSE 5000
 
 # Set command
-ENTRYPOINT ["python", "-m", "data_lunch_app"]
+ENTRYPOINT ["python", "-m", "dlunch"]

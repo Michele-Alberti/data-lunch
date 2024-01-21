@@ -9,7 +9,7 @@ defaults:
 #  - _self_ #config.yaml is overriding configs from the Defaults List
 
 # PACKAGE PATH
-package_path: ${pkg_path:data_lunch_app}
+package_path: ${pkg_path:dlunch}
 
 # LOCAL TIMEZONE
 local_timezone: Europe/Rome
