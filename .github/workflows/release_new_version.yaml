@@ -15,6 +15,14 @@ jobs:
     outputs:
       version: ${{ steps.cz.outputs.version }}
     steps:
+      - name: Set pre-release
+        id: vars
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pre_release=$(awk -F'[][]' '{print $2}' <<< "$TITLE")
+          echo "pre_release=$pre_release" >> $GITHUB_OUTPUT
+          echo "pre-release: $pre_release"
       - name: Check out
         uses: actions/checkout@v3
         with:
@@ -25,6 +33,7 @@ jobs:
         uses: commitizen-tools/commitizen-action@0.16.1
         with:
           github_token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+          prerelease: "${{ steps.vars.outputs.pre_release }}"
       - name: Print version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
   merge_back_to_dev:
