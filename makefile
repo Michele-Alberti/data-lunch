@@ -303,6 +303,11 @@ package-publish:
 	twine upload --repository dlunch dist/*
 	@echo -e "${GREEN}done${NC}"
 
+package-test-install:
+	@echo -e "${YELLOW}install package from PyPI${NC}"
+	pip install dlunch
+	@echo -e "${GREEN}done${NC}"
+
 package-test-publish:
 	@echo -e "${YELLOW}publish python package to TestPyPI${NC}"
 	@${CONDA_ACTIVATE_BASE} \
@@ -312,7 +317,7 @@ package-test-publish:
 
 package-test-install:
 	@echo -e "${YELLOW}install package from TestPyPI${NC}"
-	pip install --index-url https://test.pypi.org/simple/ dlunch
+	pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple dlunch
 	@echo -e "${GREEN}done${NC}"
 
 pre-commit-run:
