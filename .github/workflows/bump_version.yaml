@@ -9,7 +9,7 @@ on:
 
 jobs:
   bump_version:
-    name: 🚀 Bump version and log
+    name: 🚀 Bump and changelog
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'Merge')
     environment:
@@ -41,7 +41,7 @@ jobs:
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
 
   merge_back_to_dev:
-    name: 🔗 Merge back to dev
+    name: 🔗 Merge back
     needs: bump_version
     runs-on: ubuntu-latest
     environment:

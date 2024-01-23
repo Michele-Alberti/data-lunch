@@ -1,6 +1,6 @@
 # Manual Docker build
 
-name: ⚙️ Manual build
+name: 🪛 Manual build
 
 on: 
   workflow_dispatch:

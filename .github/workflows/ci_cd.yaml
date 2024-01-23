@@ -1,6 +1,6 @@
 # Continuous improvement and delivery
 
-name: 🐍 Publish Python distribution 📦 to PyPI and TestPyPI
+name: 🐍 Publish and release 📦
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 jobs:
   # Build the package for PyPI
   build:
-    name: 🛠️ Build distribution 📦
+    name: 🛠️ Build 📦
     # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
     if: startsWith(github.ref_name, 'refs/tags/v')
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
   # Publish to PyPI only for tags that start with 'v'
   publish-to-pypi:
     name: >-
-      🐍 Publish Python distribution 📦 to PyPI
+      🐍 Publish 📦 to PyPI
     needs:
     - build
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
   # Then release to github
   github-release:
     name: >-
-      🖋️ Sign the Python distribution 📦 with Sigstore
+      🛫 Release 📦 on GitHub
       and upload them to GitHub Release
     needs:
     - publish-to-pypi
@@ -141,7 +141,7 @@ jobs:
   # If on development just publish to TestPyPI
   # Build the package for TestPyPI
   test-build:
-    name: 🚧 Build test distribution 📦
+    name: 🚧 Build test 📦
     # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
     if: github.ref_name == 'development'
     runs-on: ubuntu-latest
@@ -174,7 +174,7 @@ jobs:
         path: dist/
 
   publish-to-testpypi:
-    name: 🧪 Publish Python distribution 📦 to TestPyPI
+    name: 🧪 Publish 📦 to TestPyPI
     needs:
     - test-build
     runs-on: ubuntu-latest
