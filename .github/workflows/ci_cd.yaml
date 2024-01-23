@@ -9,11 +9,11 @@ on:
       - development
 
 jobs:
-  # Always build the package
+  # Build the package for PyPI
   build:
     name: 🛠️ Build distribution 📦
     # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
-    if: startsWith(github.ref_name, 'refs/tags/v') || github.ref_name == 'development'
+    if: startsWith(github.ref_name, 'refs/tags/v')
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +40,6 @@ jobs:
   publish-to-pypi:
     name: >-
       🐍 Publish Python distribution 📦 to PyPI
-    if: startsWith(github.ref_name, 'refs/tags/v')  # only publish to PyPI on tag pushes
     needs:
     - build
     runs-on: ubuntu-latest
@@ -111,7 +110,6 @@ jobs:
     needs:
     - publish-to-pypi
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'Merge')
 
     environment:
       name: release
@@ -119,7 +117,7 @@ jobs:
 
     steps:
       - name: Checkout 
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with: 
           ref: main
       - name: Login to DockerHub
@@ -141,12 +139,45 @@ jobs:
           cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache,mode=max
 
   # If on development just publish to TestPyPI
+  # Build the package for TestPyPI
+  test-build:
+    name: 🚧 Build test distribution 📦
+    # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
+    if: github.ref_name == 'development'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+            fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Change package version to unique value
+      run: |
+        test_ver=$(git describe | sed 's/\(.*-.*\)-.*/\1/')
+        echo test version: $test_ver
+        sed -i "s/version = \".*\"/version = \"$test_ver\"/g" pyproject.toml
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+
   publish-to-testpypi:
     name: 🧪 Publish Python distribution 📦 to TestPyPI
     needs:
-    - build
+    - test-build
     runs-on: ubuntu-latest
-    if: github.ref_name == 'development' # only publish to PyPI on tag pushes
 
     environment:
       name: test-release
@@ -161,7 +192,7 @@ jobs:
       with:
         name: python-package-distributions
         path: dist/
-    - name: Publish distribution 📦 to TestPyPI
+    - name: Publish distribution package to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/

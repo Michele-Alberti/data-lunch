@@ -27,7 +27,7 @@ jobs:
           echo "pre_release=$pre_release" >> $GITHUB_OUTPUT
           echo "pre-release: $pre_release"
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
@@ -44,17 +44,15 @@ jobs:
     name: 🔗 Merge back to dev
     needs: bump_version
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'Merge')
     environment:
       name: release
       url: https://github.com/Michele-Alberti/data-lunch/commits/development
     steps:
       - name: Check out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with: 
           fetch-depth: 0
           ref: main
-          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
       - name: Set Git config
         run: |
           git config --local user.name "github-actions[bot]"
