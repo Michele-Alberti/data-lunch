@@ -17,7 +17,7 @@ jobs:
     name: 🐋 Build Docker image
     runs-on: ubuntu-latest
     environment:
-      name: release
+      name: test-release
       url: https://hub.docker.com/r/michelealberti/data-lunch-app
     steps:
       - name: Print build info
