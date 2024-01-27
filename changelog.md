@@ -1,3 +1,20 @@
+## v2.8.0 (2024-01-27)
+
+### Feat
+
+- **__main__.py**: add an /health endpoint
+- add azure as oauth provider and improve config files to handle different auth approaches
+
+### Fix
+
+- **cli.py**: fix error in __version__ evaluation
+- **auth.py-is_basic_auth_active**: fix error when returning the result of is_basic_auth_active
+- fix reference to psw_special_chars
+
+### Refactor
+
+- **package-name**: change package name from data_lunch_app to dlunch
+
 ## v2.7.0 (2024-01-02)
 
 ### Feat
