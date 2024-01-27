@@ -53,6 +53,7 @@ jobs:
         with: 
           fetch-depth: 0
           ref: main
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
       - name: Set Git config
         run: |
           git config --local user.name "github-actions[bot]"
