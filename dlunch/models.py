@@ -667,7 +667,7 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
             # Check if guest exists
             if (
                 session.get(Credentials, "guest") is None
-            ) and config.auth.basic_auth.guest_user:
+            ) and config.basic_auth.guest_user:
                 # Add only credentials for guest (guest users are not included
                 # in privileged_users table)
                 auth.add_user_hashed_password(

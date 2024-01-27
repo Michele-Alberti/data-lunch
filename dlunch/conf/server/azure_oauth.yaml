@@ -1,0 +1,13 @@
+defaults:
+  - /${oc.env:PANEL_ENV}
+
+oauth_provider: azure
+oauth_key: ${oc.env:DATA_LUNCH_OAUTH_KEY}
+oauth_secret: ${oc.env:DATA_LUNCH_OAUTH_SECRET}
+oauth_redirect_uri: ${oc.env:DATA_LUNCH_OAUTH_REDIRECT_URI}
+oauth_extra_params:
+  scope: ${server.oauth_key}/.default
+  tenant: ${oc.env:DATA_LUNCH_OAUTH_TENANT_ID}
+login_template: ${package_path}/templates/login_oauth.html
+logout_template: ${package_path}/templates/logout.html
+oauth_error_template: ${package_path}/templates/error.html

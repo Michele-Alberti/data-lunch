@@ -1,0 +1,24 @@
+# BASIC AUTHENTICATION DATA
+# These values are added to server config only if server is "basic_auth"
+
+# AUTH PROVIDER OBJECT
+auth_provider:
+  _target_: dlunch.auth.DataLunchProvider
+  login_template: ${package_path}/templates/login_basic.html
+  logout_template: ${package_path}/templates/logout.html
+# Those values are  used by basic authentication specific features
+
+# PASSWORD
+# Special charachters and reg expression used to check (or create) a password
+psw_special_chars: ';:,.+-=_#!$%&?^*@'
+psw_regex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[${basic_auth.psw_special_chars}]).{8,}$
+# Set generated password length (call to generate_password)
+generated_psw_length: 12
+
+# GUEST USER
+# If true create default guest user credentials (i.e. a user named "guest")
+# It is an unprivileged user (is_guest = true) named guest
+guest_user: true
+# Guest user password flag default value
+# If true a new password for guest user is set everytime the main function is called
+default_reset_guest_user_password_flag: false

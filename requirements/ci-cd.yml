@@ -1,0 +1,13 @@
+name: ci-cd
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.5
+  - pre_commit=3.4.0
+  - interrogate=1.5.0
+  - twine=4.0.2
+  - pip=23.3.1
+  - pip:
+      - commitizen==3.13.0
+      - build==1.0.3

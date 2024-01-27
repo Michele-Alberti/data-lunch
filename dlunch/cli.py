@@ -13,7 +13,7 @@ from .core import clean_tables as clean_tables_func
 from . import auth
 
 # Version
-__version__ = pkg_resources.require("data_lunch")[0].version
+__version__ = pkg_resources.require("dlunch")[0].version
 
 
 # CLI COMMANDS ----------------------------------------------------------------

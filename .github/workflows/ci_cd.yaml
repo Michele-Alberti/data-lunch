@@ -1,0 +1,204 @@
+# Continuous improvement and delivery
+
+name: 🐍 Publish and release 📦
+
+on:
+  push:
+    branches:
+      - main
+      - development
+    tags:
+      - v*
+
+jobs:
+  # Build the package for PyPI
+  build:
+    name: 🛠️ Build 📦
+    # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    environment:
+      name: release
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  # Publish to PyPI only for tags that start with 'v'
+  publish-to-pypi:
+    name: >-
+      🐍 Publish 📦 to PyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: release
+      url: https://pypi.org/p/dlunch
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Then release to github
+  github-release:
+    name: 🛫 Release 📦 on GitHub
+    needs:
+    - publish-to-pypi
+    runs-on: ubuntu-latest
+
+    environment:
+      name: release
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v1.2.3
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        '${{ github.ref_name }}'
+        --repo '${{ github.repository }}'
+        --notes ""
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        '${{ github.ref_name }}' dist/**
+        --repo '${{ github.repository }}'
+
+  # And build container
+  build_container:
+    name: 🐋 Build Docker image
+    needs:
+    - publish-to-pypi
+    runs-on: ubuntu-latest
+
+    environment:
+      name: release
+      url: https://hub.docker.com/r/michelealberti/data-lunch-app
+
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+        with: 
+          ref: main
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./docker/web/Dockerfile.web
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:stable
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/data-lunch-app:buildcache,mode=max
+
+  # If on development just publish to TestPyPI
+  # Build the package for TestPyPI
+  test-build:
+    name: 🚧 Build test 📦
+    # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
+    if: github.ref_name == 'development'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+            fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Change package version to unique value
+      run: |
+        test_ver=$(git describe | sed 's/\(.*-.*\)-.*/\1/')
+        echo test version: $test_ver
+        sed -i "s/version = \".*\"/version = \"$test_ver\"/g" pyproject.toml
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  publish-to-testpypi:
+    name: 🧪 Publish 📦 to TestPyPI
+    needs:
+    - test-build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: test-release
+      url: https://test.pypi.org/p/dlunch
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution package to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/

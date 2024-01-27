@@ -1,0 +1,65 @@
+# Bump version with Commitizen
+
+name: 🚀 Bump version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump_version:
+    name: 🚀 Bump and changelog
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'Merge')
+    environment:
+      name: release
+      url: https://github.com/Michele-Alberti/data-lunch/tags
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+    steps:
+      - name: Set pre-release
+        id: vars
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pre_release=$(awk -F'[][]' '{print $2}' <<< "$TITLE")
+          echo "pre_release=$pre_release" >> $GITHUB_OUTPUT
+          echo "pre-release: $pre_release"
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+      - name: Bump and changelog
+        id: cz
+        uses: commitizen-tools/commitizen-action@0.16.1
+        with:
+          github_token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+          prerelease: "${{ steps.vars.outputs.pre_release }}"
+      - name: Print version
+        run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+
+  merge_back_to_dev:
+    name: 🔗 Merge back
+    needs: bump_version
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://github.com/Michele-Alberti/data-lunch/commits/development
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+          ref: main
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+      - name: Set Git config
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Merge master back to dev
+        run: |
+          git checkout development
+          git merge --no-ff main -m "Merge branch 'main' into development"
+          git push

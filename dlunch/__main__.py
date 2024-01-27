@@ -63,36 +63,37 @@ def run_app(config: DictConfig):
     # ensure that each invocation has a dedicated state variable (users'
     # selections are not shared between instances)
     # Backend exist only if auth is active
+    # Health is an endpoint for app health assessments
     # Pass a dictionary for a multipage app
-    pages = {"": lambda: create_app(config=config)}
+    pages = {
+        "": lambda: create_app(config=config),
+        "health": pn.Column("Data-Lunch is alive!"),
+    }
     if auth.is_auth_active(config=config):
         pages["backend"] = lambda: create_backend(config=config)
 
-    # If config.server.auth_provider exists, update
-    # config.server.auth_provider key with the instantiated object
-    try:
+    # If basic authentication is active, instantiate ta special auth object
+    # otherwise leave an empty dict
+    # This step is done before panel.serve because auth_provider requires that
+    # the whole config is passed as an input
+    if auth.is_basic_auth_active(config=config):
         auth_object = {
             "auth_provider": hydra.utils.instantiate(
-                config.server.auth_provider, config
+                config.basic_auth.auth_provider, config
             )
         }
         log.debug(
             "auth_object dict set to instantiated object from config.server.auth_provider"
         )
-    except ConfigAttributeError:
+    else:
         auth_object = {}
         log.debug(
             "missing config.server.auth_provider, auth_object dict left empty"
         )
 
-    # Mask the auth_provider key from config.server to avoid a TypeError
-    # (multiple values for keyword argument 'auth_provider')
-    masked_server_config = OmegaConf.masked_copy(
-        config.server,
-        [k for k in config.server.keys() if k != "auth_provider"],
+    pn.serve(
+        panels=pages, **hydra.utils.instantiate(config.server), **auth_object
     )
-
-    pn.serve(panels=pages, **masked_server_config, **auth_object)
 
 
 def schedule_task(

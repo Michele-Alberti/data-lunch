@@ -1,0 +1,19 @@
+# Remove email domain from usernames (e.g. "user@example.com" -> "user")
+remove_email_domain: true
+# oauth config (not used by panel.serve)
+oauth_encryption_key: ${oc.env:DATA_LUNCH_OAUTH_ENC_KEY}
+oauth_expiry: 15
+# Template not set by panel.serve
+auth_error_template: ${package_path}/templates/error.html
+# Autorization callback (_partial_ is required for usage with lambda functions)
+authorization_callback:
+  _target_: dlunch.auth.authorize
+  _partial_: true
+  # Flag to authorize access of guest users to the home page
+  # They can only place orders for guests 
+  authorize_guest_users: true
+# Set cookie function arguments (set to empty dict to turn off)
+cookie_kwargs:
+  httponly: true
+  secure: true
+  samesite: strict

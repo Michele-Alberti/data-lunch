@@ -8,6 +8,10 @@ The ultimate web app for a well organized lunch.
 - [2. Development environment setup](#2-development-environment-setup)
   - [2.1. Miniconda](#21-miniconda)
   - [2.2. Environment variables](#22-environment-variables)
+    - [2.2.1. General](#221-general)
+    - [2.2.2. Docker and Google Cloud Platform](#222-docker-and-google-cloud-platform)
+    - [2.2.3. TLS/SSL Certificate](#223-tlsssl-certificate)
+    - [2.2.4. Encryption and Authorization](#224-encryption-and-authorization)
   - [2.3. Setup the development environment](#23-setup-the-development-environment)
   - [2.4. Manually install data-lunch CLI](#24-manually-install-data-lunch-cli)
   - [2.5. Running the docker-compose system](#25-running-the-docker-compose-system)
@@ -42,27 +46,48 @@ conda activate data-lunch
 ### 2.2. Environment variables
 
 The following environment variables are required for running the _web app_, the _makefile_ or _utility scripts_.
-| Variable | Type | Example Value |
+
+#### 2.2.1. General
+| Variable | Type | Description |
 |----------|:------:|-------|
-`PANEL_APP` | _str_ | data-lunch-app (used by `makefile`)
-`PANEL_ENV` | _str_ | development
+`PANEL_APP` | _str_ | app name, _data-lunch-app_ by default (used by `makefile`)
+`PANEL_ENV` | _str_ | environment, e.g. _development_, _quality_, _production_
 `PANEL_ARGS` | _str_ | additional arguments passed to _Hydra_ (e.g. `panel/gui=major_release`)
-`PORT` | _int_ | 5000
+`PORT` | _int_ | port used bu the web app (or the container), default to _5000_
+
+#### 2.2.2. Docker and Google Cloud Platform
+| Variable | Type | Description |
+|----------|:------:|-------|
 `DOCKER_USERNAME` | _str_ | your _Docker Hub_ username, used by `makefile` and stats panel to extract container name (optional)
+`IMAGE_VERSION` | _str_ |  _Docker_ image version, typically `stable` or `latest`
 `GCLOUD_PROJECT` | _str_ | _Google Cloud Platform_ `project_id`, used by `makefile` for _GCP's CLI_ authentication and for uploading the database to _gcp_ storage, if active in web app configuration files (see panel.scheduled_tasks)
 `GCLOUD_BUCKET` | _str_ | _Google Cloud Platform_ `bucket`, used for uploading database to _gcp_ storage, if active in web app configuration files (see panel.scheduled_tasks)
-`CERT_EMAIL` | _str_ | email for _SSL certificates_
-`DOMAIN` | _str_ | mywebapp.com (domain name)
-`MAIL_USER` | _str_ | mywebappemail@email.com (email client user, used for sending emails with the current instance IP)
-`MAIL_APP_PASSWORD` | _str_ | email client password (used for sending emails with the current instance IP)
-`MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (used for sending emails with the current instance IP)
-`DUCKDNS_URL` | _str_ | _URL_ used in `compose_init.sh` to update dynamic address (see _Duck DNS's_ instructions for details)
-`IMAGE_VERSION` | _str_ | _stable_ (_Docker_ image version, typically `stable` or `latest`)
+`MAIL_USER` | _str_ | email client user, used for sending emails containing the instance IP, e.g._mywebappemail@email.com_ (used only for _Google Cloud Platform_)
+`MAIL_APP_PASSWORD` | _str_ | email client password used for sending emails containing the instance IP (used only for _Google Cloud Platform_)
+`MAIL_RECIPIENTS` | _str_ | email recipients as string, separated by `,` (used for sending emails containing the instance IP when hosted on _Google Cloud Platform_)
+`DUCKDNS_URL` | _str_ | _URL_ used in `compose_init.sh` to update dynamic address (see _Duck DNS's_ instructions for details, used when hosted on _Google Cloud Platform_)
+
+#### 2.2.3. TLS/SSL Certificate
+| Variable | Type | Description |
+|----------|:------:|-------|
+`CERT_EMAIL` | _str_ | email for registering _SSL certificates_, shared with the authority _Let's Encrypt_ (via `certbot`)
+`DOMAIN` | _str_ |  domain name, e.g. _mywebapp.com_
+
+#### 2.2.4. Encryption and Authorization
+| Variable | Type | Description |
+|----------|:------:|-------|
 `DATA_LUNCH_COOKIE_SECRET` | _str_ | _Secret_ used for securing the authentication cookie (use `make generate-secrets` to generate a valid secret)
 `DATA_LUNCH_OAUTH_ENC_KEY` | _str_ | _Encription key_ used by the OAuth algorithm for encryption (use `make generate-secrets` to generate a valid secret)
-`DATA_LUNCH_OAUTH_KEY` | _str_ | _OAuth key_ used for configuring the OAuth provider (_GitHub_)
-`DATA_LUNCH_OAUTH_SECRET` | _str_ | _OAuth secret_ used for configuring the OAuth provider (_GitHub_)
-`DATA_LUNCH_OAUTH_REDIRECT_URI` | _str_ | _OAuth redirect uri_ used for configuring the OAuth provider (_GitHub_), leave empty to panel use default value
+`DATA_LUNCH_OAUTH_KEY` | _str_ | _OAuth key_ used for configuring the OAuth provider (_GitHub_, _Azure_)
+`DATA_LUNCH_OAUTH_SECRET` | _str_ | _OAuth secret_ used for configuring the OAuth provider (_GitHub_, _Azure_)
+`DATA_LUNCH_OAUTH_REDIRECT_URI` | _str_ | _OAuth redirect uri_ used for configuring the OAuth provider (_GitHub_, _Azure_), do not set to use default value
+`DATA_LUNCH_OAUTH_TENANT_ID` | _str_ | _OAuth tenant id_ used for configuring the OAuth provider (_Azure_), do not set to use default value
+`DATA_LUNCH_DB_USER` | _str_ | _Postgresql_ user, do not set to use default value
+`DATA_LUNCH_DB_PASSWORD` | _str_ | _Postgresql_ password
+`DATA_LUNCH_DB_HOST` | _str_ | _Postgresql_ host, do not set to use default value
+`DATA_LUNCH_DB_PORT` | _str_ | _Postgresql_ port, do not set to use default value
+`DATA_LUNCH_DB_DATABASE` | _str_ | _Postgresql_ database, do not set to use default value
+`DATA_LUNCH_DB_SCHEMA` | _str_ | _Postgresql_ schema, do not set to use default value
 
 ### 2.3. Setup the development environment
 
@@ -190,6 +215,8 @@ cz commit
 `cz c` is a shorther alias for `cz commit`.
 
 ## 4. Release strategy from `development` to `main` branch
+
+> This step is required only if the CI-CD pipeline on _GitHub_ does not work.
 
 In order to take advantage of _Commitizen_ `bump` command follow this guideline.
 

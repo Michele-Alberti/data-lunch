@@ -1,7 +1,0 @@
-name: pre-commit
-channels:
-  - defaults
-  - conda-forge
-dependencies:
-  - python=3.11.5
-  - pre_commit=3.4.0

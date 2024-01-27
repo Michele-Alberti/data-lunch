@@ -17,6 +17,7 @@ from . import core
 
 # Auth
 from . import auth
+from .auth import pn_user
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class Person(param.Parameterized):
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
         # Check user (a username is already set for privileged users)
-        username = pn.state.user
+        username = pn_user(config)
         if not auth.is_guest(user=username, config=config) and (
             username is not None
         ):
@@ -203,11 +204,11 @@ class GraphicInterface:
         if auth.is_auth_active(config=config):
             self.header_row.append(pn.HSpacer())
             # Backend only for admin
-            if auth.is_admin(user=pn.state.user, config=config):
+            if auth.is_admin(user=pn_user(config), config=config):
                 self.header_row.append(self.backend_button)
             # Guest override only for non guests
             if not auth.is_guest(
-                user=pn.state.user, config=config, allow_override=False
+                user=pn_user(config), config=config, allow_override=False
             ):
                 self.header_row.append(self.toggle_guest_override_button)
             self.header_row.append(self.logout_button)
@@ -230,11 +231,11 @@ class GraphicInterface:
             # Only non guest can store this value in 'flags' table (guest users
             # are always guests, there is no use in sotring a flag for them)
             if not auth.is_guest(
-                user=pn.state.user, config=config, allow_override=False
+                user=pn_user(config), config=config, allow_override=False
             ):
                 models.set_flag(
                     config=config,
-                    id=f"{pn.state.user}_guest_override",
+                    id=f"{pn_user(config)}_guest_override",
                     value=toggle,
                 )
             # Show banner if override is active
@@ -719,7 +720,7 @@ class GraphicInterface:
         # Append upload, download and stats only for non-guest
         # Append password only for non-guest users if auth is active
         if not auth.is_guest(
-            user=pn.state.user, config=config, allow_override=False
+            user=pn_user(config), config=config, allow_override=False
         ):
             self.sidebar_tabs.append(self.sidebar_menu_upload_col)
             self.sidebar_tabs.append(self.sidebar_download_orders_col)
@@ -1009,7 +1010,7 @@ class BackendInterface:
             min_height=450,
         )
         # Add controls only for admin users
-        if not auth.is_admin(user=pn.state.user, config=config):
+        if not auth.is_admin(user=pn_user(config), config=config):
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:

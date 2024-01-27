@@ -1,0 +1,4 @@
+recursive-include dlunch/conf *
+recursive-include dlunch/static *
+recursive-include dlunch/templates *
+include dlunch/quotes.xlsx

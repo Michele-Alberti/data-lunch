@@ -1,7 +1,0 @@
-defaults:
-  - /${oc.env:PANEL_ENV}
-
-auth_provider:
-  _target_: data_lunch_app.auth.DataLunchProvider
-  login_template: data_lunch_app/templates/login_basic.html
-  logout_template: data_lunch_app/templates/logout.html
