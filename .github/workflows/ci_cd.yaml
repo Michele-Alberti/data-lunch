@@ -7,14 +7,19 @@ on:
     branches:
       - main
       - development
+    tags:
+      - v*
 
 jobs:
   # Build the package for PyPI
   build:
     name: 🛠️ Build 📦
     # Only publish to PyPI on tag pushes and on TestPyPI if branch is development
-    if: startsWith(github.ref_name, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+
+    environment:
+      name: release
 
     steps:
     - uses: actions/checkout@v4
