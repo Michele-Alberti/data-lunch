@@ -7,6 +7,8 @@ on:
     branches:
       - main
       - development
+    tags:
+      - v*
 
 jobs:
   # Build the package for PyPI
