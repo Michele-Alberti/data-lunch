@@ -216,6 +216,8 @@ cz commit
 
 ## 4. Release strategy from `development` to `main` branch
 
+> This step is required only if the CI-CD pipeline on _GitHub_ does not work.
+
 In order to take advantage of _Commitizen_ `bump` command follow this guideline.
 
 First check that you are on the correct branch.
