@@ -875,9 +875,9 @@ def df_list_by_lunch_time(
         # TAKEAWAY
         if not df_users_takeaways.empty:
             df_users_takeaways = clean_up_table(config, df_users_takeaways)
-            df_dict[
-                f"{time} {config.panel.gui.takeaway_id}"
-            ] = df_users_takeaways
+            df_dict[f"{time} {config.panel.gui.takeaway_id}"] = (
+                df_users_takeaways
+            )
 
     return df_dict
 
