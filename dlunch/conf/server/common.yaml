@@ -13,3 +13,4 @@ static_dirs:
 compress_response: true
 cookie_secret: ${oc.env:DATA_LUNCH_COOKIE_SECRET} # Secure cookies are required (this vakue can't be null)
 enable_xsrf_cookies: true
+liveness: health

@@ -65,10 +65,7 @@ def run_app(config: DictConfig):
     # Backend exist only if auth is active
     # Health is an endpoint for app health assessments
     # Pass a dictionary for a multipage app
-    pages = {
-        "": lambda: create_app(config=config),
-        "health": pn.Column("Data-Lunch is alive!"),
-    }
+    pages = {"": lambda: create_app(config=config)}
     if auth.is_auth_active(config=config):
         pages["backend"] = lambda: create_backend(config=config)
 
