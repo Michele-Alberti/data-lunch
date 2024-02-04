@@ -273,7 +273,7 @@ class GraphicInterface:
             styles={"text-align": "center"},
         )
         # "no more order" message
-        self.no_more_order_text = pn.pane.HTML(
+        self.no_more_order_alert = pn.pane.HTML(
             """
             <div class="no-more-order-flag">
                 <div class="icon-container">
@@ -292,11 +292,6 @@ class GraphicInterface:
             sizing_mode="stretch_width",
             stylesheets=[config.panel.gui.css_files.no_more_orders_path],
         )
-        # Takeaway alert
-        self.takeaway_alert_sign = f"<span {config.panel.gui.takeaway_alert_icon_options}>{config.panel.gui.takeaway_svg_icon}</span>"
-        self.takeaway_alert_text = f"<span {config.panel.gui.takeaway_alert_text_options}>{config.panel.gui.takeaway_id}</span> "
-
-        # WIDGETS
         # Alert for guest override
         self.guest_override_alert = pn.pane.HTML(
             """
@@ -317,6 +312,38 @@ class GraphicInterface:
             margin=5,
             sizing_mode="stretch_width",
             stylesheets=[config.panel.gui.css_files.guest_override_path],
+        )
+        # Takeaway alert
+        self.takeaway_alert_sign = f"<span {config.panel.gui.takeaway_alert_icon_options}>{config.panel.gui.takeaway_svg_icon}</span>"
+        self.takeaway_alert_text = f"<span {config.panel.gui.takeaway_alert_text_options}>{config.panel.gui.takeaway_id}</span> "
+        # No menu image attribution
+        self.no_menu_image_attribution = pn.pane.HTML(
+            """
+            <i>
+                Image by
+                <a
+                    href="https://www.freepik.com/free-vector/tiny-cooks-making-spaghetti-dinner-isolated-flat-illustration_11235909.htm"
+                    referrerpolicy="no-referrer"
+                    rel="external"
+                    target="_blank"
+                >
+                    pch.vector
+                </a>
+                on Freepik
+            </i>
+            """,
+            align="end",
+            styles={
+                "color": "darkgray",
+                "font-size": "10px",
+                "font-weight": "light",
+            },
+        )
+
+        # WIDGETS
+        # JPG shown when no menu is available
+        self.no_menu_image = pn.pane.JPG(
+            config.panel.gui.no_menu_image_path, alt_text="no menu"
         )
         # Create dataframe instance
         self.dataframe = pnw.Tabulator(
@@ -373,10 +400,17 @@ class GraphicInterface:
         )
 
         # COLUMNS
+        # Create column shown when no menu is available
+        self.no_menu_col = pn.Column(
+            self.no_menu_image,
+            self.no_menu_image_attribution,
+            sizing_mode="stretch_width",
+            min_width=465,
+        )
         # Create column for lunch time labels
         self.time_col = pn.Column(width=85)
         # Create column for resulting menus
-        self.res_col = pn.Column(sizing_mode="stretch_width", min_width=430)
+        self.res_col = pn.Column(sizing_mode="stretch_width", min_width=465)
 
         # FLEXBOXES
         self.menu_flexbox = pn.FlexBox(
@@ -407,7 +441,7 @@ class GraphicInterface:
             models.set_flag(config=config, id="no_more_orders", value=toggle)
 
             # Show "no more order" text
-            self.no_more_order_text.visible = toggle
+            self.no_more_order_alert.visible = toggle
 
             # Deactivate send order and delete order buttons
             self.send_order_button.disabled = toggle

@@ -9,6 +9,12 @@ logo_filename: logo.png
 logo_static_dir: images
 logo_path: ${panel.gui.logo_static_dir}/${panel.gui.logo_filename}
 
+# IMAGES
+# No menu
+no_menu_image_static_dir: images
+no_menu_image_filename: no_menu.jpg
+no_menu_image_path: ${panel.gui.no_menu_image_static_dir}/${panel.gui.no_menu_image_filename}
+
 # CSS FILES
 css_static_dir: css
 css_files:

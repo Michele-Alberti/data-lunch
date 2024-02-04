@@ -66,6 +66,7 @@ help:
 	@echo -e " ${WHITE}  interrogate         :${NC} runs interrogate to check code quality"
 	@echo -e " ${WHITE}  package-build       :${NC} build python package"
 	@echo -e " ${WHITE}  package-publish     :${NC} publish python package to PyPI"
+	@echo -e " ${WHITE}  package-install     :${NC} install package with pip from PyPI (use only in a test env)"
 	@echo -e " ${WHITE}  package-test-publish:${NC} publish python package to TestPyPI"
 	@echo -e " ${WHITE}  package-test-install:${NC} install package with pip from TestPyPI (use only in a test env)"
 	@echo -e " ${WHITE}  pre-commit-run      :${NC} runs pre-commit hooks"
@@ -225,7 +226,7 @@ docker-up: check-dialect
 	fi;
 	@echo -e "${GREEN}done${NC}"
 
-docker-up-build: check-dialect build
+docker-up-build: check-dialect docker-build
 	@echo -e "${YELLOW}start docker compose system${NC}"
 	if [[ ${PANEL_ENV} == "production" ]] ; then \
 		docker compose -p ${PROJECTNAME} \
@@ -303,7 +304,7 @@ package-publish:
 	twine upload --repository dlunch dist/*
 	@echo -e "${GREEN}done${NC}"
 
-package-test-install:
+package-install:
 	@echo -e "${YELLOW}install package from PyPI${NC}"
 	pip install dlunch
 	@echo -e "${GREEN}done${NC}"
