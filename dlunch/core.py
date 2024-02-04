@@ -356,6 +356,24 @@ def reload_menu(
             gi.dataframe.hidden_columns = []
             gi.dataframe.disabled = False
 
+        # If menu is empty show banner image, otherwise show menu
+        if df.empty:
+            gi.no_menu_col.visible = True
+            gi.main_header_row.visible = False
+            gi.quote.visible = False
+            gi.menu_flexbox.visible = False
+            gi.buttons_flexbox.visible = False
+            gi.results_divider.visible = False
+            gi.res_col.visible = False
+        else:
+            gi.no_menu_col.visible = False
+            gi.main_header_row.visible = True
+            gi.quote.visible = True
+            gi.menu_flexbox.visible = True
+            gi.buttons_flexbox.visible = True
+            gi.results_divider.visible = True
+            gi.res_col.visible = True
+
         log.debug("menu reloaded")
 
         # Load results
@@ -847,6 +865,7 @@ def df_list_by_lunch_time(
         def clean_up_table(config, df_in):
             # Add columns of totals
             df = df_in.copy()
+            df = df.astype(object)  # Avoid mixed types (float and notes str)
             df[config.panel.gui.total_column_name] = df.sum(axis=1)
             if config.panel.drop_unused_menu_items:
                 df = df[df[config.panel.gui.total_column_name] > 0]
