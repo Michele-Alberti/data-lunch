@@ -1,3 +1,10 @@
+## v2.9.0 (2024-02-04)
+
+### Feat
+
+- move health endpoint from custom page to liveness endpoint
+- add a banner shown when no menu is available
+
 ## v2.8.0 (2024-01-27)
 
 ### Feat
