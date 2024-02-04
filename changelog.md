@@ -1,3 +1,9 @@
+## v2.9.1 (2024-02-04)
+
+### Fix
+
+- **Dockerfile.web**: remove reference to unofficial package repo
+
 ## v2.9.0 (2024-02-04)
 
 ### Feat
