@@ -37,7 +37,7 @@ RUN pip install --no-cache-dir -e .
 ENV PANEL_APP=data-lunch-app
 
 # Expose port 5000
-EXPOSE 5000
+EXPOSE ${PORT}
 
 # Set command
 ENTRYPOINT ["python", "-m", "dlunch"]
