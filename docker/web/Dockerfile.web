@@ -3,7 +3,7 @@
 # See makefile for docker commands
 
 # PYTHON 3.10.8
-FROM python:3.11.4-slim-bookworm
+FROM python:3.11.8-slim-bookworm
 
 # Tell the docker runtime process to use the default shell
 SHELL ["/bin/sh", "-c"]
