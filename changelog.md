@@ -1,3 +1,9 @@
+## v2.10.0 (2024-02-23)
+
+### Feat
+
+- add flag to activate/deactivate database creation
+
 ## v2.9.1 (2024-02-04)
 
 ### Fix
