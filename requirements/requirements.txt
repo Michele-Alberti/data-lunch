@@ -2,7 +2,7 @@ setuptools==67.8.0
 click==8.0.4
 cryptography==42.0.4
 ipykernel==6.19.2
-ipywidgets==8.0.4
+ipywidgets==8.1.2
 openpyxl==3.0.10
 pandas==2.1.4
 passlib==1.7.4
