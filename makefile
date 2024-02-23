@@ -70,8 +70,8 @@ help:
 	@echo -e " ${WHITE}  package-test-publish:${NC} publish python package to TestPyPI"
 	@echo -e " ${WHITE}  package-test-install:${NC} install package with pip from TestPyPI (use only in a test env)"
 	@echo -e " ${WHITE}  pre-commit-run      :${NC} runs pre-commit hooks"
-	@echo -e " ${WHITE}  commitizen-bump     :${NC} runs commitizen for releasing a new version on master branch"
-	@echo -e " ${WHITE}  commitizen-push     :${NC} use git to push commits on 'development' and 'master' branches"
+	@echo -e " ${WHITE}  commitizen-bump     :${NC} runs commitizen for releasing a new version on 'main' branch"
+	@echo -e " ${WHITE}  commitizen-push     :${NC} use git to push commits on 'development' and 'main' branches"
 	@echo -e "${RED}=======================|=========================================================================${NC}"
 	@echo ""
 
@@ -334,12 +334,12 @@ commitizen-bump:
 	conda activate ci-cd && \
 	git checkout development && \
 	git pull --ff-only && \
-	git checkout master && \
+	git checkout main && \
 	git pull --ff-only && \
 	git merge development --no-ff && \
 	cz bump --no-verify && \
 	git checkout development && \
-	git merge master --no-ff
+	git merge main --no-ff
 	@echo -e "${GREEN}done${NC}"
 
 commitizen-push:
@@ -348,7 +348,7 @@ commitizen-push:
 	conda activate ci-cd && \
 	git checkout development && \
 	git pull --ff-only && \
-	git checkout master && \
+	git checkout main && \
 	git pull --ff-only && \
 	git push &&\
 	git push --tags &&\

@@ -2,7 +2,11 @@ shared_data_folder: ${oc.env:PANEL_SHARED_DATA_FOLDER, /app/shared_data}
 engine:
   _target_: sqlalchemy.create_engine
   url: ${db.url}
-# CREATE DATABASE RETRIES
+# CREATE DATABASE 
+# Set attempt_creation to false to stop panel from creating database tables
+# Table shall exist on first run if false
+attempt_creation: true
+# Retries: 
 # Stop after delay in seconds or max attempts
 # Wait time in seconds before retrying
 create_retries:
