@@ -637,12 +637,14 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
         Data.metadata.create_all(engine)
 
     # Create tables
-    create_database_with_retries(config)
+    log.debug(f"attempt database creation: {config.db.attempt_creation}")
+    if config.db.attempt_creation:
+        create_database_with_retries(config)
 
-    # Retries stats
-    log.debug(
-        f"create database attempts: {create_database_with_retries.retry.statistics}"
-    )
+        # Retries stats
+        log.debug(
+            f"create database attempts: {create_database_with_retries.retry.statistics}"
+        )
 
     # If requested add users for basic auth (admin and guest)
     if add_basic_auth_users:
