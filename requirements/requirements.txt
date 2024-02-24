@@ -1,4 +1,4 @@
-setuptools==67.8.0
+setuptools==69.1.1
 click==8.0.4
 cryptography==42.0.4
 ipykernel==6.19.2
