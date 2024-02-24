@@ -1,3 +1,9 @@
+## v2.11.0 (2024-02-24)
+
+### Feat
+
+- **gui.py**: improve columns layout in backend
+
 ## v2.10.0 (2024-02-23)
 
 ### Feat
