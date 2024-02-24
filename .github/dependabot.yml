@@ -7,6 +7,14 @@ updates:
       interval: "weekly"
     target-branch: development
     open-pull-requests-limit: 25
+    groups:
+      pip-minor-deps:
+        update-types:
+          - "minor"
+          - "patch"
+      pip-major-deps:
+        update-types:
+          - "major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -14,3 +22,11 @@ updates:
       interval: "weekly"
     target-branch: development
     open-pull-requests-limit: 25
+    groups:
+      gh-minor-deps:
+        update-types:
+          - "minor"
+          - "patch"
+      gh-major-deps:
+        update-types:
+          - "major"
