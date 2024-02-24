@@ -29,6 +29,7 @@ header_button_width = 50
 generic_button_height = 45
 sidebar_width = 400
 sidebar_content_width = sidebar_width - 10
+backend_min_height = 500
 
 
 # CLASS -----------------------------------------------------------------------
@@ -952,13 +953,17 @@ class BackendInterface:
         # User list
         self.users_tabulator = pn.widgets.Tabulator(
             value=auth.list_users_guests_and_privileges(config),
+            sizing_mode="stretch_height",
         )
         # Flags content (use empty dataframe to instantiate)
         df_flags = models.Flags.read_as_df(
             config=config,
             index_col="id",
         )
-        self.flags_content = pn.widgets.Tabulator(value=df_flags)
+        self.flags_content = pn.widgets.Tabulator(
+            value=df_flags,
+            sizing_mode="stretch_height",
+        )
 
         # BUTTONS
         # Exit button
@@ -1006,8 +1011,9 @@ class BackendInterface:
             self.password_widget,
             pn.VSpacer(),
             self.submit_password_button,
-            pn.Spacer(height=5),
             width=sidebar_width,
+            sizing_mode="stretch_height",
+            min_height=backend_min_height,
         )
         # Create column with user authenthication controls (oauth)
         self.add_privileged_user_column = pn.Column(
@@ -1015,33 +1021,41 @@ class BackendInterface:
             pn.VSpacer(),
             self.add_privileged_user_button,
             width=sidebar_width,
+            sizing_mode="stretch_height",
+            min_height=backend_min_height,
         )
-        # Create for deleting users
+        # Create column for deleting users
         self.delete_user_column = pn.Column(
             self.user_eraser,
             pn.VSpacer(),
             self.delete_user_button,
             width=sidebar_width,
+            sizing_mode="stretch_height",
+            min_height=backend_min_height,
         )
+        # Create column with flags' list
         self.clear_flags_column = pn.Column(
             pn.pane.HTML("<b>Flags Table Content</b>"),
             self.flags_content,
-            pn.VSpacer(),
             self.clear_flags_button,
             width=sidebar_width,
+            sizing_mode="stretch_height",
+            min_height=backend_min_height,
         )
-        # Create for deleting users
+        # Create column for users' list
         self.list_user_column = pn.Column(
             pn.pane.HTML("<b>Users and Privileges</b>"),
             self.users_tabulator,
             width=sidebar_width,
+            sizing_mode="stretch_height",
+            min_height=backend_min_height,
         )
 
         # ROWS
         self.backend_controls = pn.Row(
             name="Actions",
             sizing_mode="stretch_both",
-            min_height=450,
+            min_height=backend_min_height,
         )
         # Add controls only for admin users
         if not auth.is_admin(user=pn_user(config), config=config):
