@@ -1,3 +1,9 @@
+## v2.11.1 (2024-02-28)
+
+### Fix
+
+- **db/postgresql.yaml**: fix error in stats query
+
 ## v2.11.0 (2024-02-24)
 
 ### Feat
