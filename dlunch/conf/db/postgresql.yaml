@@ -20,8 +20,8 @@ orders_query: |-
   ON m.id = o.menu_item_id;
 # Stats
 stats_query: |-
-  SELECT EXTRACT(YEAR FROM date) AS "Year", 
-    EXTRACT(MONTH FROM date) AS "Month",
+  SELECT EXTRACT(YEAR FROM date)::varchar(4) AS "Year", 
+    EXTRACT(MONTH FROM date)::varchar(2) AS "Month",
     guest AS "Guest",
     SUM(hungry_people) AS "Hungry People"
   FROM {schema}.stats
