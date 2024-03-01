@@ -2,7 +2,8 @@ defaults:
   - default
 
 # APP
-title: Data-Lunch&nbsp&nbsp&nbsp V2
+version: 2
+title: Data-Lunch&nbsp&nbsp&nbsp V${panel.gui.version}
 
 # CUSTOMIZABLE GRAPHIC OBJECTS
 # Instantiate a panel object to be rendered on app's header
