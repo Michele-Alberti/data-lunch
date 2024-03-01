@@ -1,3 +1,9 @@
+## v2.11.2 (2024-03-01)
+
+### Fix
+
+- **models.py**: fix error in server default for date in stats table
+
 ## v2.11.1 (2024-02-28)
 
 ### Fix
