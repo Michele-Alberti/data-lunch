@@ -1,3 +1,13 @@
+## v2.12.0 (2024-03-01)
+
+### Feat
+
+- **panel/gui/backup.yaml**: add a gui theme for backup server
+
+### Refactor
+
+- **panel/gui/major_release.yaml**: improve gui theme for major release
+
 ## v2.11.2 (2024-03-01)
 
 ### Fix
