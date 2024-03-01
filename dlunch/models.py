@@ -318,8 +318,7 @@ class Stats(Data):
     date = Column(
         Date,
         nullable=False,
-        default=datetime.utcnow(),
-        server_default=func.current_timestamp(),
+        server_default=func.current_date(),
     )
     guest = Column(
         String(20),
