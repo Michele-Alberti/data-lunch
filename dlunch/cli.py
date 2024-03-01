@@ -4,7 +4,7 @@ from hydra import compose, initialize
 import pandas as pd
 
 # Import database object
-from .models import create_database, create_engine, SCHEMA, Data
+from .models import create_database, create_engine, SCHEMA, Data, metadata_obj
 
 # Import functions from core
 from .core import clean_tables as clean_tables_func
@@ -230,8 +230,7 @@ def delete_table(obj, name):
     # Drop table
     try:
         engine = create_engine(obj["config"])
-        command = f"DROP TABLE {name};"
-        engine.execute(command)
+        metadata_obj.tables[name].drop(engine)
         click.secho(f"Table '{name}' deleted", fg="green")
     except Exception as e:
         # Generic error
