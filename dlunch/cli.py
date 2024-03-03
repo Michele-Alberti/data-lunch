@@ -31,9 +31,7 @@ __version__ = pkg_resources.require("dlunch")[0].version
 )
 @click.pass_context
 def cli(ctx, hydra_overrides: tuple | None):
-    """Command line interface for creating a local sqlite database.
-    To be used only for development purposes.
-    """
+    """Command line interface for managing Data-Lunch database and users."""
     # global initialization
     initialize(
         config_path="conf", job_name="data_lunch_cli", version_base="1.3"
