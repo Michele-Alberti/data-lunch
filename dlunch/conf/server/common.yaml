@@ -14,3 +14,7 @@ compress_response: true
 cookie_secret: ${oc.env:DATA_LUNCH_COOKIE_SECRET} # Secure cookies are required (this vakue can't be null)
 enable_xsrf_cookies: true
 liveness: health
+keep_alive_milliseconds: 29000 # Default 37000
+check_unused_sessions_milliseconds: 17000 # Default 17000
+unused_session_lifetime_milliseconds: 15000 # Default 15000
+session_token_expiration: 300 # Default 300

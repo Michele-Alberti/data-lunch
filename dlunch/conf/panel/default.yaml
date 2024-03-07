@@ -64,6 +64,11 @@ guest_types: # Check also guests icons in panel/gui
 # NOTIFICATIONS
 notifications:
   duration: 0
+  # Notification on first connection or on disconnection (set to ""
+  # to deactivate)
+  disconnect_notification: |-
+    Connection lost<br>Please reload the page
+  ready_notification: ""
 # Drop unused menus entries in orders tables (drop unused if true)
 drop_unused_menu_items: true
 
