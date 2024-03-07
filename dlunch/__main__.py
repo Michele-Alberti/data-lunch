@@ -37,6 +37,11 @@ def run_app(config: DictConfig):
     )
 
     log.info("set panel config")
+    # Set notifications options
+    pn.extension(
+        disconnect_notification=config.panel.notifications.disconnect_notification,
+        ready_notification=config.panel.notifications.ready_notification,
+    )
     # Configurations
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True
@@ -87,6 +92,10 @@ def run_app(config: DictConfig):
         log.debug(
             "missing config.server.auth_provider, auth_object dict left empty"
         )
+
+    # Set session begin/end logs
+    pn.state.on_session_created(lambda ctx: log.debug("session created"))
+    pn.state.on_session_destroyed(lambda ctx: log.debug("session closed"))
 
     pn.serve(
         panels=pages, **hydra.utils.instantiate(config.server), **auth_object
