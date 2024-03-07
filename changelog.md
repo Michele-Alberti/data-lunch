@@ -1,3 +1,14 @@
+## v2.13.0 (2024-03-07)
+
+### Feat
+
+- **server/common.yaml**: add keep alive and session timeout config values to server config file
+- **pn.extension**: add ready and disconnect notification
+
+### Fix
+
+- **cli.py**: fix error in drop table command (CLI)
+
 ## v2.12.0 (2024-03-01)
 
 ### Feat
