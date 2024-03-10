@@ -566,7 +566,7 @@ def send_order(
 ) -> None:
     # Get username and note, updated at each key press
     username_key_press = gi.person_widget._widgets["username"].value_input
-    note_key_press = gi.person_widget._widgets["username"].value_input
+    note_key_press = gi.person_widget._widgets["note"].value_input
 
     # Hide messages
     gi.error_message.visible = False
