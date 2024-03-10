@@ -1111,15 +1111,20 @@ class BackendInterface:
 
         # Add privileged user callback
         def add_privileged_user_button_callback(self):
+            # Get username, updated at each key press
+            username_key_press = self.add_privileged_user_widget._widgets[
+                "user"
+            ].value_input
+            # Add user
             auth.add_privileged_user(
-                self.add_privileged_user_widget.object.user,
+                username_key_press,
                 is_admin=self.add_privileged_user_widget.object.admin,
                 config=config,
             )
 
             self.reload_backend(config)
             pn.state.notifications.success(
-                f"User '{self.add_privileged_user_widget.object.user}' added",
+                f"User '{username_key_press}' added",
                 duration=config.panel.notifications.duration,
             )
 
@@ -1129,8 +1134,11 @@ class BackendInterface:
 
         # Delete user callback
         def delete_user_button_callback(self):
+            # Get username, updated at each key press
+            username_key_press = self.user_eraser._widgets["user"].value_input
+            # Delete user
             deleted_data = auth.remove_user(
-                user=self.user_eraser.object.user, config=config
+                user=username_key_press, config=config
             )
             if (deleted_data["privileged_users_deleted"] > 0) or (
                 deleted_data["credentials_deleted"] > 0
@@ -1142,7 +1150,7 @@ class BackendInterface:
                 )
             else:
                 pn.state.notifications.error(
-                    f"User '{self.user_eraser.object.user}' does not exist",
+                    f"User '{username_key_press}' does not exist",
                     duration=config.panel.notifications.duration,
                 )
 
