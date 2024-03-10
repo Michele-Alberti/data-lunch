@@ -7,6 +7,7 @@ import subprocess
 from . import __version__
 from . import models
 from omegaconf import DictConfig, OmegaConf
+from openpyxl.utils import get_column_interval
 from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
@@ -929,12 +930,31 @@ def download_dataframe(
     if df_dict:
         for time, df in df_dict.items():
             log.info(f"writing sheet {time}")
-            df.to_excel(writer, sheet_name=time.replace(":", "."), startrow=1)
-            writer.sheets[time.replace(":", ".")].cell(
-                1,
-                1,
-                f"Time - {time} | # {len([c for c in df.columns if c != config.panel.gui.total_column_name])}",
+            # users that placed an order for a given time
+            users_n = len(
+                [
+                    c
+                    for c in df.columns
+                    if c != config.panel.gui.total_column_name
+                ]
             )
+            # Export dataframe to new sheet
+            worksheet_name = time.replace(":", ".")
+            df.to_excel(writer, sheet_name=worksheet_name, startrow=1)
+            # Add title
+            worksheet = writer.sheets[worksheet_name]
+            worksheet.cell(
+                1,
+                1,
+                f"Time - {time} | # {users_n}",
+            )
+            # Group and hide columns, leave only ID and total
+            column_letters = get_column_interval(start=2, end=users_n + 1)
+            worksheet.column_dimensions.group(
+                column_letters[0], column_letters[-1], hidden=True
+            )
+
+            # Close and reset bytes_io for the next dataframe
             writer.close()  # Important!
             bytes_io.seek(0)  # Important!
 
