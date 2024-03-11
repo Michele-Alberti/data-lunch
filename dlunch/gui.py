@@ -56,9 +56,9 @@ class Person(param.Parameterized):
         self.guest = config.panel.guest_types[0]
         # Check user (a username is already set for privileged users)
         username = pn_user(config)
-        if not auth.is_guest(user=username, config=config) and (
-            username is not None
-        ):
+        if not auth.is_guest(
+            user=username, config=config, allow_override=False
+        ) and (username is not None):
             self.username = username
 
     def __str__(self):
@@ -520,13 +520,18 @@ class GraphicInterface:
         self.person_widget = pn.Param(
             person.param,
             widgets={
-                "guest": pn.widgets.RadioButtonGroup(
+                "guest": pnw.RadioButtonGroup(
                     options=OmegaConf.to_container(
                         config.panel.guest_types, resolve=True
                     ),
                     button_type="primary",
                     button_style="outline",
-                )
+                ),
+                "username": pnw.TextInput(
+                    value=person.username,
+                    value_input=person.username,
+                    description=person.param.username.doc,
+                ),
             },
             width=sidebar_content_width,
         )
