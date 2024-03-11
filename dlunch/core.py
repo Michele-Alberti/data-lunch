@@ -7,6 +7,7 @@ import subprocess
 from . import __version__
 from . import models
 from omegaconf import DictConfig, OmegaConf
+from openpyxl.utils import get_column_interval
 from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
@@ -563,6 +564,10 @@ def send_order(
     person: gui.Person,
     gi: gui.GraphicInterface,
 ) -> None:
+    # Get username and note, updated at each key press
+    username_key_press = gi.person_widget._widgets["username"].value_input
+    note_key_press = gi.person_widget._widgets["note"].value_input
+
     # Hide messages
     gi.error_message.visible = False
     gi.confirm_message.visible = False
@@ -591,11 +596,11 @@ def send_order(
         # privileged user
         if (
             auth.is_guest(user=pn_user(config), config=config)
-            and (person.username in auth.list_users(config=config))
+            and (username_key_press in auth.list_users(config=config))
             and (auth.is_auth_active(config=config))
         ):
             pn.state.notifications.error(
-                f"{person.username} is a reserved name<br>Please choose a different one",
+                f"{username_key_press} is a reserved name<br>Please choose a different one",
                 duration=config.panel.notifications.duration,
             )
 
@@ -612,7 +617,7 @@ def send_order(
         if (
             not auth.is_guest(user=pn_user(config), config=config)
             and (
-                person.username
+                username_key_press
                 not in (
                     name
                     for name in auth.list_users(config=config)
@@ -622,7 +627,7 @@ def send_order(
             and (auth.is_auth_active(config=config))
         ):
             pn.state.notifications.error(
-                f"{person.username} is not a valid name<br>for a privileged user<br>Please choose a different one",
+                f"{username_key_press} is not a valid name<br>for a privileged user<br>Please choose a different one",
                 duration=config.panel.notifications.duration,
             )
 
@@ -640,14 +645,14 @@ def send_order(
         df_order = df[df.order]
 
         # If username is missing or the order is empty return an error message
-        if person.username and not df_order.empty:
+        if username_key_press and not df_order.empty:
             # Check if the user already placed an order
-            if session.get(models.Users, person.username):
+            if session.get(models.Users, username_key_press):
                 pn.state.notifications.warning(
-                    f"Cannot overwrite an order<br>Delete {person.username}'s order first and retry",
+                    f"Cannot overwrite an order<br>Delete {username_key_press}'s order first and retry",
                     duration=config.panel.notifications.duration,
                 )
-                log.warning(f"an order already exist for {person.username}")
+                log.warning(f"an order already exist for {username_key_press}")
             else:
                 # Place order
                 try:
@@ -655,23 +660,23 @@ def send_order(
                     # Do not pass guest for privileged users (default to NotAGuest)
                     if auth.is_guest(user=pn_user(config), config=config):
                         new_user = models.Users(
-                            id=person.username,
+                            id=username_key_press,
                             guest=person.guest,
                             takeaway=person.takeaway,
-                            note=person.note,
+                            note=note_key_press,
                         )
                     else:
                         new_user = models.Users(
-                            id=person.username,
+                            id=username_key_press,
                             takeaway=person.takeaway,
-                            note=person.note,
+                            note=note_key_press,
                         )
                     session.add(new_user)
                     # Add orders as long table (one row for each item selected by a user)
                     for index, row in df_order.iterrows():
                         # Order
                         new_order = models.Orders(
-                            user=person.username,
+                            user=username_key_press,
                             lunch_time=person.lunch_time,
                             menu_item_id=index,
                         )
@@ -689,7 +694,7 @@ def send_order(
                         "Order sent",
                         duration=config.panel.notifications.duration,
                     )
-                    log.info(f"{person.username}'s order saved")
+                    log.info(f"{username_key_press}'s order saved")
                 except Exception as e:
                     # Any exception here is a database fault
                     pn.state.notifications.error(
@@ -704,7 +709,7 @@ def send_order(
                     # Open modal window
                     app.open_modal()
         else:
-            if not person.username:
+            if not username_key_press:
                 pn.state.notifications.warning(
                     "Please insert user name",
                     duration=config.panel.notifications.duration,
@@ -725,6 +730,9 @@ def delete_order(
     person: gui.Person,
     gi: gui.GraphicInterface,
 ) -> None:
+    # Get username, updated on every keypress
+    username_key_press = gi.person_widget._widgets["username"].value_input
+
     # Hide messages
     gi.error_message.visible = False
     gi.confirm_message.visible = False
@@ -749,16 +757,16 @@ def delete_order(
 
             return
 
-        if person.username:
+        if username_key_press:
             # If auth is active, check if a guests is deleting an order of a
             # privileged user
             if (
                 auth.is_guest(user=pn_user(config), config=config)
-                and (person.username in auth.list_users(config=config))
+                and (username_key_press in auth.list_users(config=config))
                 and (auth.is_auth_active(config=config))
             ):
                 pn.state.notifications.error(
-                    f"You do not have enough privileges<br>to delete<br>{person.username}'s order",
+                    f"You do not have enough privileges<br>to delete<br>{username_key_press}'s order",
                     duration=config.panel.notifications.duration,
                 )
 
@@ -773,12 +781,14 @@ def delete_order(
 
             # Delete user
             num_rows_deleted_users = session.execute(
-                delete(models.Users).where(models.Users.id == person.username)
+                delete(models.Users).where(
+                    models.Users.id == username_key_press
+                )
             )
             # Delete also orders (hotfix for Debian)
             num_rows_deleted_orders = session.execute(
                 delete(models.Orders).where(
-                    models.Orders.user == person.username
+                    models.Orders.user == username_key_press
                 )
             )
             session.commit()
@@ -796,13 +806,13 @@ def delete_order(
                     "Order canceled",
                     duration=config.panel.notifications.duration,
                 )
-                log.info(f"{person.username}'s order canceled")
+                log.info(f"{username_key_press}'s order canceled")
             else:
                 pn.state.notifications.warning(
-                    f'No order for user named<br>"{person.username}"',
+                    f'No order for user named<br>"{username_key_press}"',
                     duration=config.panel.notifications.duration,
                 )
-                log.info(f"no order for user named {person.username}")
+                log.info(f"no order for user named {username_key_press}")
         else:
             pn.state.notifications.warning(
                 "Please insert user name",
@@ -920,12 +930,31 @@ def download_dataframe(
     if df_dict:
         for time, df in df_dict.items():
             log.info(f"writing sheet {time}")
-            df.to_excel(writer, sheet_name=time.replace(":", "."), startrow=1)
-            writer.sheets[time.replace(":", ".")].cell(
-                1,
-                1,
-                f"Time - {time} | # {len([c for c in df.columns if c != config.panel.gui.total_column_name])}",
+            # users that placed an order for a given time
+            users_n = len(
+                [
+                    c
+                    for c in df.columns
+                    if c != config.panel.gui.total_column_name
+                ]
             )
+            # Export dataframe to new sheet
+            worksheet_name = time.replace(":", ".")
+            df.to_excel(writer, sheet_name=worksheet_name, startrow=1)
+            # Add title
+            worksheet = writer.sheets[worksheet_name]
+            worksheet.cell(
+                1,
+                1,
+                f"Time - {time} | # {users_n}",
+            )
+            # Group and hide columns, leave only ID and total
+            column_letters = get_column_interval(start=2, end=users_n + 1)
+            worksheet.column_dimensions.group(
+                column_letters[0], column_letters[-1], hidden=True
+            )
+
+            # Close and reset bytes_io for the next dataframe
             writer.close()  # Important!
             bytes_io.seek(0)  # Important!
 
@@ -958,8 +987,12 @@ def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
     password"""
     # Get user's password hash
     password_hash = auth.get_hash_from_user(pn_user(config), config=config)
+    # Get username, updated updated at each key press
+    old_password_key_press = gi.password_widget._widgets[
+        "old_password"
+    ].value_input
     # Check if old password is correct
-    if password_hash == gi.password_widget.object.old_password:
+    if password_hash == old_password_key_press:
         # Check if new password match repeat password
         return backend_submit_password(
             gi=gi, config=config, user=pn_user(config), logout_on_success=True
@@ -990,19 +1023,23 @@ def backend_submit_password(
     # Check if user is passed, otherwise check if backend widget
     # (password_widget.object.user) is available
     if not user:
-        username = gi.password_widget.object.user
+        username = gi.password_widget._widgets["user"].value_input
     else:
         username = user
+    # Get all passwords, updated at each key press
+    new_password_key_press = gi.password_widget._widgets[
+        "new_password"
+    ].value_input
+    repeat_new_password_key_press = gi.password_widget._widgets[
+        "repeat_new_password"
+    ].value_input
     # Check if new password match repeat password
     if username:
-        if (
-            gi.password_widget.object.new_password
-            == gi.password_widget.object.repeat_new_password
-        ):
+        if new_password_key_press == repeat_new_password_key_press:
             # Check if new password is valid with regex
             if re.fullmatch(
                 config.basic_auth.psw_regex,
-                gi.password_widget.object.new_password,
+                new_password_key_press,
             ):
                 # If is_guest and is_admin are None (not passed) use the ones
                 # already set for the user
@@ -1020,7 +1057,7 @@ def backend_submit_password(
                 # Green light: update the password!
                 auth.add_user_hashed_password(
                     user=username,
-                    password=gi.password_widget.object.new_password,
+                    password=new_password_key_press,
                     config=config,
                 )
 
