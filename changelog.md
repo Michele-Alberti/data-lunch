@@ -1,3 +1,15 @@
+## v2.14.0 (2024-03-11)
+
+### Feat
+
+- **core.py**: hide columns with details about single orders
+- change text input source in widget to value_input
+
+### Fix
+
+- **gui.py**: fix bug in TexInput widget from param that do not set value_input correctly
+- **core.py**: fix error in note widget selection
+
 ## v2.13.0 (2024-03-07)
 
 ### Feat
