@@ -38,14 +38,15 @@ def create_app(config: DictConfig) -> pn.Template:
         config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
     )
 
+    log.info("initialize support variables")
     # Generate a random password only if requested (check on flag)
-    log.info("set user password")
+    log.debug("config guest user")
     guest_password = core.set_guest_user_password(config)
 
-    log.info("instantiate Panel app")
+    log.info("instantiate app")
 
     # Panel configurations
-    log.debug("set toggle initial state")
+    log.debug("set toggles initial state")
     # Set the no_more_orders flag if it is None (not found in flags table)
     if models.get_flag(config=config, id="no_more_orders") is None:
         models.set_flag(config=config, id="no_more_orders", value=False)
