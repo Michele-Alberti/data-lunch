@@ -2,7 +2,7 @@ defaults:
   - default
 
 # APP
-version: 2
+version: 3
 title: Data-Lunch&nbsp&nbsp&nbsp V${panel.gui.version}
 
 # CUSTOMIZABLE GRAPHIC OBJECTS
