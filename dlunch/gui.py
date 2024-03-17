@@ -351,7 +351,7 @@ class GraphicInterface:
         # Create dataframe instance
         self.dataframe = pnw.Tabulator(
             name="Order",
-            widths={"note": 180},
+            widths={config.panel.gui.note_column_name: 180},
             selectable=False,
             stylesheets=[config.panel.gui.css_files.custom_tabulator_path],
         )

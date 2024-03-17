@@ -346,14 +346,14 @@ def reload_menu(
         )
         # Add order (for selecting items) and note columns
         df["order"] = False
-        df["note"] = ""
+        df[config.panel.gui.note_column_name] = ""
         gi.dataframe.value = df
         gi.dataframe.formatters = {"order": {"type": "tickCross"}}
         gi.dataframe.editors = {
             "id": None,
             "item": None,
             "order": CheckboxEditor(),
-            "note": "input",
+            config.panel.gui.note_column_name: "input",
         }
         gi.dataframe.header_align = OmegaConf.to_container(
             config.panel.gui.menu_column_align, resolve=True
@@ -693,7 +693,9 @@ def send_order(
                             user=username_key_press,
                             lunch_time=person.lunch_time,
                             menu_item_id=row.Index,
-                            note=row.note.lower(),
+                            note=getattr(
+                                row, config.panel.gui.note_column_name
+                            ).lower(),
                         )
                         session.add(new_order)
                         session.commit()
