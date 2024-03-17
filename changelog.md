@@ -1,3 +1,18 @@
+## v3.0.0 (2024-03-17)
+
+### BREAKING CHANGE
+
+- move notes from user to order
+
+### Feat
+
+- move notes from user to menu items and adapt excel file to this change
+
+### Fix
+
+- use config file to define note column name in every widget and excel table
+- **gui-config**: fix major_release and women_day config files
+
 ## v2.14.0 (2024-03-11)
 
 ### Feat
