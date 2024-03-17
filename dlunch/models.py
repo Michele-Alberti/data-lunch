@@ -15,6 +15,7 @@ from sqlalchemy import (
     TypeDecorator,
     Date,
     Boolean,
+    Identity,
     event,
     MetaData,
     delete,
@@ -162,7 +163,7 @@ class Encrypted(TypeDecorator):
 
 class Menu(Data):
     __tablename__ = "menu"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
     item = Column(String(250), unique=False, nullable=False)
     orders = relationship(
         "Orders",
@@ -204,7 +205,7 @@ class Menu(Data):
 
 class Orders(Data):
     __tablename__ = "orders"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
     user = Column(
         String(100),
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -218,7 +219,7 @@ class Orders(Data):
         nullable=False,
     )
     menu_item = relationship("Menu", back_populates="orders")
-    note = relationship("Users", back_populates="orders", uselist=False)
+    note = Column(String(300), unique=False, nullable=True)
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
@@ -266,13 +267,6 @@ class Users(Data):
     )
     takeaway = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
-    )
-    note = Column(String(500), unique=False, nullable=True)
-    orders = relationship(
-        "Orders",
-        back_populates="note",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
     )
 
     @classmethod

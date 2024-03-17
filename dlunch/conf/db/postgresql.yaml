@@ -14,7 +14,7 @@ url: ${db.dialect}+${db.driver}://${db.username}:${db.password}@${db.host}:${db.
 # QUERIES
 # Orders
 orders_query: |-
-  SELECT o.user, o.lunch_time, m.item
+  SELECT o.user, o.lunch_time, m.item, o.note
   FROM {schema}.orders o
   LEFT JOIN {schema}.menu m
   ON m.id = o.menu_item_id;
