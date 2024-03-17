@@ -100,9 +100,23 @@ takeaway_svg_icon: |-
   </svg>
 takeaway_alert_text_options: 'class="flashing-animation"'
 
+# MENU TABLE
+# Table column alignment
+menu_column_align:
+  id: center
+  item: left
+  order: center
+  note: left
+
 # ORDERS' TABLE
 # Name of the column with total values for orders
 total_column_name: totale
+# Name of the column with notes for orders
+note_column_name: note
+# Note separators
+note_sep:
+  count: " " # Between note and counter
+  element: ", " # Between notes
 
 # CUSTOMIZABLE GRAPHIC OBJECTS
 # Instantiate a panel object to be rendered on app's header

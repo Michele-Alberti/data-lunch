@@ -56,7 +56,7 @@ additional_items_to_concat:
   - name: Altro
     short_name: Altro
     icon: 🃏
-    description: richieste speciali (da specificare nelle note).
+    description: richieste speciali (da specificare nella colonna note).
 guest_types: # Check also guests icons in panel/gui
   - Edison Guest
   - External Guest

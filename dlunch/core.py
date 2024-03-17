@@ -8,6 +8,7 @@ from . import __version__
 from . import models
 from omegaconf import DictConfig, OmegaConf
 from openpyxl.utils import get_column_interval
+from openpyxl.styles import Alignment, Font
 from bokeh.models.widgets.tables import CheckboxEditor
 from io import BytesIO
 from PIL import Image
@@ -94,9 +95,11 @@ def set_guest_user_password(config: DictConfig) -> str:
     if auth.is_basic_auth_active(config=config):
         # If active basic_auth.guest_user is true if guest user is active
         is_guest_user_active = config.basic_auth.guest_user
+        log.debug("guest user flag is {is_guest_user_active}")
     else:
         # Otherwise the guest user feature is not applicable
         is_guest_user_active = False
+        log.debug("guest user not applicable")
 
     # Set the guest password variable
     if is_guest_user_active:
@@ -341,20 +344,29 @@ def reload_menu(
             config=config,
             index_col="id",
         )
+        # Add order (for selecting items) and note columns
         df["order"] = False
+        df["note"] = ""
         gi.dataframe.value = df
         gi.dataframe.formatters = {"order": {"type": "tickCross"}}
         gi.dataframe.editors = {
             "id": None,
             "item": None,
             "order": CheckboxEditor(),
+            "note": "input",
         }
+        gi.dataframe.header_align = OmegaConf.to_container(
+            config.panel.gui.menu_column_align, resolve=True
+        )
+        gi.dataframe.text_align = OmegaConf.to_container(
+            config.panel.gui.menu_column_align, resolve=True
+        )
 
         if gi.toggle_no_more_order_button.value:
-            gi.dataframe.hidden_columns = ["order"]
+            gi.dataframe.hidden_columns = ["id", "order"]
             gi.dataframe.disabled = True
         else:
-            gi.dataframe.hidden_columns = []
+            gi.dataframe.hidden_columns = ["id"]
             gi.dataframe.disabled = False
 
         # If menu is empty show banner image, otherwise show menu
@@ -404,7 +416,11 @@ def reload_menu(
                     [
                         c
                         for c in df.columns
-                        if c.lower() != config.panel.gui.total_column_name
+                        if c
+                        not in (
+                            config.panel.gui.total_column_name,
+                            config.panel.gui.note_column_name,
+                        )
                     ]
                 )
                 # Set different graphics for takeaway lunches
@@ -468,9 +484,10 @@ def reload_menu(
                         ],
                     }
                 # Add text to result column
-                gi.res_col.append(pn.Spacer(height=10))
+                gi.res_col.append(pn.Spacer(height=15))
                 gi.res_col.append(gi.build_time_label(**res_col_label_kwargs))
                 # Add non editable table to result column
+                gi.res_col.append(pn.Spacer(height=5))
                 gi.res_col.append(
                     gi.build_order_table(
                         config, df=df, time=time, guests_lists=guests_lists
@@ -564,9 +581,8 @@ def send_order(
     person: gui.Person,
     gi: gui.GraphicInterface,
 ) -> None:
-    # Get username and note, updated at each key press
+    # Get username updated at each key press
     username_key_press = gi.person_widget._widgets["username"].value_input
-    note_key_press = gi.person_widget._widgets["note"].value_input
 
     # Hide messages
     gi.error_message.visible = False
@@ -643,7 +659,6 @@ def send_order(
         # Write order into database table
         df = gi.dataframe.value.copy()
         df_order = df[df.order]
-
         # If username is missing or the order is empty return an error message
         if username_key_press and not df_order.empty:
             # Check if the user already placed an order
@@ -656,29 +671,29 @@ def send_order(
             else:
                 # Place order
                 try:
-                    # Add User (note is empty by default)
+                    # Add User
                     # Do not pass guest for privileged users (default to NotAGuest)
                     if auth.is_guest(user=pn_user(config), config=config):
                         new_user = models.Users(
                             id=username_key_press,
                             guest=person.guest,
                             takeaway=person.takeaway,
-                            note=note_key_press,
                         )
                     else:
                         new_user = models.Users(
                             id=username_key_press,
                             takeaway=person.takeaway,
-                            note=note_key_press,
                         )
                     session.add(new_user)
+                    session.commit()
                     # Add orders as long table (one row for each item selected by a user)
-                    for index, row in df_order.iterrows():
+                    for row in df_order.itertuples(name="OrderTuple"):
                         # Order
                         new_order = models.Orders(
                             user=username_key_press,
                             lunch_time=person.lunch_time,
-                            menu_item_id=index,
+                            menu_item_id=row.Index,
+                            note=row.note.lower(),
                         )
                         session.add(new_order)
                         session.commit()
@@ -842,20 +857,22 @@ def df_list_by_lunch_time(
                 select(models.Users).where(models.Users.takeaway == sql_true())
             ).all()
         ]
-    # Read dataframe
+    # Read dataframe (including notes)
     df = pd.read_sql_query(
         config.db.orders_query.format(
             schema=config.db.get("schema", models.SCHEMA)
         ),
         engine,
     )
+
     # Build a dict of dataframes, one for each lunch time
     df_dict = {}
     for time in df.lunch_time.sort_values().unique():
-        # Take only one lunch time
+        # Take only one lunch time (and remove notes so they do not alter
+        # numeric counters inside the pivot table)
         temp_df = (
             df[df.lunch_time == time]
-            .drop(columns="lunch_time")
+            .drop(columns=["lunch_time", "note"])
             .reset_index(drop=True)
         )
         # Users' selections
@@ -872,38 +889,58 @@ def df_list_by_lunch_time(
             :, [c for c in df_users.columns if c in takeaway_list]
         ]
 
-        def clean_up_table(config, df_in):
-            # Add columns of totals
+        def clean_up_table(
+            config: DictConfig, df_in: pd.DataFrame, df_complete: pd.DataFrame
+        ):
             df = df_in.copy()
-            df = df.astype(object)  # Avoid mixed types (float and notes str)
+            # Group notes per menu item by concat users notes
+            # Use value counts to keep track of how many time a note is repeated
+            df_notes = (
+                df_complete[
+                    (df_complete.lunch_time == time)
+                    & (df_complete.note != "")
+                    & (df_complete.user.isin(df.columns))
+                ]
+                .drop(columns=["user", "lunch_time"])
+                .value_counts()
+                .reset_index(level="note")
+            )
+            df_notes.note = (
+                df_notes["count"]
+                .astype(str)
+                .str.cat(df_notes.note, sep=config.panel.gui.note_sep.count)
+            )
+            df_notes = df_notes.drop(columns="count")
+            df_notes = (
+                df_notes.groupby("item")["note"]
+                .apply(config.panel.gui.note_sep.element.join)
+                .to_frame()
+            )
+            # Add columns of totals
             df[config.panel.gui.total_column_name] = df.sum(axis=1)
+            # Drop unused rows if requested
             if config.panel.drop_unused_menu_items:
                 df = df[df[config.panel.gui.total_column_name] > 0]
-            # Find users included in this lunch time
-            users = df.columns
-            # Find relevant notes
-            session = models.create_session(config)
-
-            with session:
-                user_data = session.scalars(
-                    select(models.Users).where(models.Users.id.in_(users))
-                ).all()
             # Add notes
-            for user in user_data:
-                df.loc["NOTE", user.id] = user.note
+            df = df.join(df_notes)
+            df = df.rename(columns={"note": config.panel.gui.note_column_name})
             # Change NaNs to '-'
             df = df.fillna("-")
+            # Avoid mixed types (float and notes str)
+            df = df.astype(object)
 
             return df
 
         # Clean and add resulting dataframes to dict
         # RESTAURANT LUNCH
         if not df_users_restaurant.empty:
-            df_users_restaurant = clean_up_table(config, df_users_restaurant)
+            df_users_restaurant = clean_up_table(
+                config, df_users_restaurant, df
+            )
             df_dict[time] = df_users_restaurant
         # TAKEAWAY
         if not df_users_takeaways.empty:
-            df_users_takeaways = clean_up_table(config, df_users_takeaways)
+            df_users_takeaways = clean_up_table(config, df_users_takeaways, df)
             df_dict[f"{time} {config.panel.gui.takeaway_id}"] = (
                 df_users_takeaways
             )
@@ -930,14 +967,20 @@ def download_dataframe(
     if df_dict:
         for time, df in df_dict.items():
             log.info(f"writing sheet {time}")
-            # users that placed an order for a given time
+
+            # Find users that placed an order for a given time
             users_n = len(
                 [
                     c
                     for c in df.columns
-                    if c != config.panel.gui.total_column_name
+                    if c
+                    not in (
+                        config.panel.gui.total_column_name,
+                        config.panel.gui.note_column_name,
+                    )
                 ]
             )
+
             # Export dataframe to new sheet
             worksheet_name = time.replace(":", ".")
             df.to_excel(writer, sheet_name=worksheet_name, startrow=1)
@@ -948,7 +991,64 @@ def download_dataframe(
                 1,
                 f"Time - {time} | # {users_n}",
             )
-            # Group and hide columns, leave only ID and total
+
+            # HEADER FORMAT
+            worksheet["A1"].font = Font(size=13, bold=True, color="00FF0000")
+
+            # INDEX ALIGNMENT
+            for row in worksheet[worksheet.min_row : worksheet.max_row]:
+                cell = row[0]  # column A
+                cell.alignment = Alignment(horizontal="left")
+                cell = row[users_n + 2]  # column note
+                cell.alignment = Alignment(horizontal="left")
+                cells = row[1 : users_n + 2]  # from column B to note-1
+                for cell in cells:
+                    cell.alignment = Alignment(horizontal="center")
+
+            # AUTO SIZE
+            # Set auto-size for all columns
+            # Use end +1 for ID column, and +2 for 'total' and 'note' columns
+            column_letters = get_column_interval(start=1, end=users_n + 1 + 2)
+            # Get columns
+            columns = worksheet[column_letters[0] : column_letters[-1]]
+            for column_letter, column in zip(column_letters, columns):
+                # Instantiate max length then loop on cells to find max value
+                max_length = 0
+                # Cell loop
+                for cell in column:
+                    log.debug(
+                        f"autosize for cell {cell.coordinate} with value '{cell.value}'"
+                    )
+                    try:  # Necessary to avoid error on empty cells
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                            log.debug(f"new max length set to {max_length}")
+                    except Exception:
+                        log.debug("empty cell")
+                log.debug(f"final max length is {max_length}")
+                adjusted_width = (max_length + 2) * 0.85
+                log.debug(
+                    f"adjusted width for column '{column_letter}' is {adjusted_width}"
+                )
+                worksheet.column_dimensions[column_letter].width = (
+                    adjusted_width
+                )
+            # Since grouping fix width equal to first column width (openpyxl
+            # bug), set first column of users' order equal to max width of
+            # all users columns to avoid issues
+            max_width = 0
+            log.debug(
+                f"find max width for users' columns '{column_letters[1]}:{column_letters[-3]}'"
+            )
+            for column_letter in column_letters[1:-2]:
+                max_width = max(
+                    max_width, worksheet.column_dimensions[column_letter].width
+                )
+            log.debug(f"max width for first users' columns is {max_width}")
+            worksheet.column_dimensions[column_letters[1]].width = max_width
+
+            # GROUPING
+            # Group and hide columns, leave only ID, total and note
             column_letters = get_column_interval(start=2, end=users_n + 1)
             worksheet.column_dimensions.group(
                 column_letters[0], column_letters[-1], hidden=True

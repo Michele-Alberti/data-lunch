@@ -29,6 +29,9 @@ header_button_width = 50
 generic_button_height = 45
 sidebar_width = 400
 sidebar_content_width = sidebar_width - 10
+time_col_width = 90
+time_col_spacer_width = 5
+main_area_min_width = 580 + time_col_spacer_width + time_col_width
 backend_min_height = 500
 
 
@@ -44,7 +47,6 @@ class Person(param.Parameterized):
     takeaway = param.Boolean(
         default=False, doc="tick to order a takeaway meal"
     )
-    note = param.String(default="", doc="write your notes here")
 
     def __init__(self, config, **params):
         super().__init__(**params)
@@ -349,6 +351,8 @@ class GraphicInterface:
         # Create dataframe instance
         self.dataframe = pnw.Tabulator(
             name="Order",
+            widths={"note": 180},
+            selectable=False,
             stylesheets=[config.panel.gui.css_files.custom_tabulator_path],
         )
 
@@ -406,17 +410,23 @@ class GraphicInterface:
             self.no_menu_image,
             self.no_menu_image_attribution,
             sizing_mode="stretch_width",
-            min_width=465,
+            min_width=main_area_min_width,
         )
         # Create column for lunch time labels
-        self.time_col = pn.Column(width=85)
+        self.time_col = pn.Column(width=time_col_width)
         # Create column for resulting menus
-        self.res_col = pn.Column(sizing_mode="stretch_width", min_width=465)
+        self.res_col = pn.Column(
+            sizing_mode="stretch_width", min_width=main_area_min_width
+        )
 
         # FLEXBOXES
         self.menu_flexbox = pn.FlexBox(
-            *[self.dataframe, pn.Spacer(width=5), self.time_col],
-            min_width=465,
+            *[
+                self.dataframe,
+                pn.Spacer(width=time_col_spacer_width),
+                self.time_col,
+            ],
+            min_width=main_area_min_width,
         )
         self.buttons_flexbox = pn.FlexBox(
             *[
@@ -425,11 +435,11 @@ class GraphicInterface:
                 self.delete_order_button,
             ],
             flex_wrap="nowrap",
-            min_width=465,
+            min_width=main_area_min_width,
             sizing_mode="stretch_width",
         )
         self.results_divider = pn.layout.Divider(
-            sizing_mode="stretch_width", min_width=465
+            sizing_mode="stretch_width", min_width=main_area_min_width
         )
 
         # CALLBACKS
@@ -697,7 +707,7 @@ class GraphicInterface:
         config: DictConfig,
         df: pd.DataFrame,
         time: str,
-        guests_lists: list[str] = [],
+        guests_lists: dict = {},
     ) -> pnw.Tabulator:
         # Add guest icon to users' id
         columns_with_guests_icons = df.columns.to_series()
@@ -711,13 +721,11 @@ class GraphicInterface:
             name=time,
             value=df,
             frozen_columns=[0],
-            sizing_mode="stretch_width",
-            layout="fit_data_stretch",
+            layout="fit_data_table",
             stylesheets=[config.panel.gui.css_files.custom_tabulator_path],
         )
         # Make the table non-editable
         orders_table_widget.editors = {c: None for c in df.columns}
-
         return orders_table_widget
 
     def build_time_label(
