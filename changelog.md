@@ -1,3 +1,9 @@
+## v3.1.0 (2024-04-14)
+
+### Feat
+
+- add button to change lunch time or takeaway option
+
 ## v3.0.0 (2024-03-17)
 
 ### BREAKING CHANGE
