@@ -383,7 +383,17 @@ class GraphicInterface:
             button_style="outline",
             button_type="warning",
             height=generic_button_height,
-            icon="alarm",
+            icon="hand-stop",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        # Create change time
+        self.change_order_time_takeaway_button = pnw.Button(
+            name="Change Time/Takeaway",
+            button_type="primary",
+            button_style="outline",
+            height=generic_button_height,
+            icon="clock-edit",
             icon_size="2em",
             sizing_mode="stretch_width",
         )
@@ -432,6 +442,7 @@ class GraphicInterface:
             *[
                 self.send_order_button,
                 self.toggle_no_more_order_button,
+                self.change_order_time_takeaway_button,
                 self.delete_order_button,
             ],
             flex_wrap="nowrap",
@@ -454,9 +465,10 @@ class GraphicInterface:
             # Show "no more order" text
             self.no_more_order_alert.visible = toggle
 
-            # Deactivate send order and delete order buttons
+            # Deactivate send, delete and change order buttons
             self.send_order_button.disabled = toggle
             self.delete_order_button.disabled = toggle
+            self.change_order_time_takeaway_button.disabled = toggle
 
             # Simply reload the menu when the toggle button value changes
             if reload:
@@ -493,6 +505,14 @@ class GraphicInterface:
                 e,
                 config,
                 app,
+                self,
+            )
+        )
+        # Change order time button callback
+        self.change_order_time_takeaway_button.on_click(
+            lambda e: core.change_order_time_takeaway(
+                e,
+                config,
                 person,
                 self,
             )
@@ -505,12 +525,6 @@ class GraphicInterface:
             sizing_mode="stretch_width",
         )
         self.error_message.visible = False
-        # Confirm message
-        self.confirm_message = pn.pane.HTML(
-            styles={"color": "green", "font-weight": "bold"},
-            sizing_mode="stretch_width",
-        )
-        self.confirm_message.visible = False
 
         # SIDEBAR -------------------------------------------------------------
         # TEXTS
@@ -610,7 +624,7 @@ class GraphicInterface:
         )
         # Download button and callback
         self.download_button = pn.widgets.FileDownload(
-            callback=lambda: core.download_dataframe(config, app, self),
+            callback=lambda: core.download_dataframe(config, self),
             filename=config.panel.file_name + ".xlsx",
             sizing_mode="stretch_width",
             icon="download",

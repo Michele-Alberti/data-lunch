@@ -15,7 +15,7 @@ from PIL import Image
 from pytesseract import pytesseract
 import random
 import re
-from sqlalchemy import func, select, delete
+from sqlalchemy import func, select, delete, update
 from sqlalchemy.sql.expression import true as sql_true
 from time import sleep
 
@@ -166,7 +166,6 @@ def build_menu(
 ) -> pd.DataFrame:
     # Hide messages
     gi.error_message.visible = False
-    gi.confirm_message.visible = False
 
     # Build image path
     menu_filename = str(
@@ -316,17 +315,24 @@ def reload_menu(
             value_if_missing=False,
         )
 
-        # Set no more orders toggle button visibility and activation
+        # Set no more orders toggle button and the change order time button
+        # visibility and activation
         if auth.is_guest(
             user=pn_user(config), config=config, allow_override=False
         ):
-            # Deactivate the no_more_orders button for guest users
+            # Deactivate the no_more_orders_button for guest users
             gi.toggle_no_more_order_button.disabled = True
             gi.toggle_no_more_order_button.visible = False
+            # Deactivate the change_order_time_button for guest users
+            gi.change_order_time_takeaway_button.disabled = True
+            gi.change_order_time_takeaway_button.visible = False
         else:
-            # Activate the no_more_orders button for privileged users
+            # Activate the no_more_orders_button for privileged users
             gi.toggle_no_more_order_button.disabled = False
             gi.toggle_no_more_order_button.visible = True
+            # Show the change_order_time_button for privileged users
+            # It is disabled by the no more order button if necessary
+            gi.change_order_time_takeaway_button.visible = True
 
         # Guest graphic configuration
         if auth.is_guest(user=pn_user(config), config=config):
@@ -586,7 +592,6 @@ def send_order(
 
     # Hide messages
     gi.error_message.visible = False
-    gi.confirm_message.visible = False
 
     # Create session
     session = models.create_session(config)
@@ -677,11 +682,13 @@ def send_order(
                         new_user = models.Users(
                             id=username_key_press,
                             guest=person.guest,
+                            lunch_time=person.lunch_time,
                             takeaway=person.takeaway,
                         )
                     else:
                         new_user = models.Users(
                             id=username_key_press,
+                            lunch_time=person.lunch_time,
                             takeaway=person.takeaway,
                         )
                     session.add(new_user)
@@ -691,7 +698,6 @@ def send_order(
                         # Order
                         new_order = models.Orders(
                             user=username_key_press,
-                            lunch_time=person.lunch_time,
                             menu_item_id=row.Index,
                             note=getattr(
                                 row, config.panel.gui.note_column_name
@@ -722,7 +728,7 @@ def send_order(
                         f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
                     )
                     gi.error_message.visible = True
-                    log.warning("database error")
+                    log.error("database error")
                     # Open modal window
                     app.open_modal()
         else:
@@ -744,7 +750,6 @@ def delete_order(
     event,
     config: DictConfig,
     app: pn.Template,
-    person: gui.Person,
     gi: gui.GraphicInterface,
 ) -> None:
     # Get username, updated on every keypress
@@ -752,7 +757,6 @@ def delete_order(
 
     # Hide messages
     gi.error_message.visible = False
-    gi.confirm_message.visible = False
 
     # Create session
     session = models.create_session(config)
@@ -797,21 +801,114 @@ def delete_order(
                 return
 
             # Delete user
-            num_rows_deleted_users = session.execute(
-                delete(models.Users).where(
-                    models.Users.id == username_key_press
+            try:
+                num_rows_deleted_users = session.execute(
+                    delete(models.Users).where(
+                        models.Users.id == username_key_press
+                    )
                 )
-            )
-            # Delete also orders (hotfix for Debian)
-            num_rows_deleted_orders = session.execute(
-                delete(models.Orders).where(
-                    models.Orders.user == username_key_press
+                # Delete also orders (hotfix for Debian)
+                num_rows_deleted_orders = session.execute(
+                    delete(models.Orders).where(
+                        models.Orders.user == username_key_press
+                    )
                 )
+                session.commit()
+                if (num_rows_deleted_users.rowcount > 0) or (
+                    num_rows_deleted_orders.rowcount > 0
+                ):
+                    # Update dataframe widget
+                    reload_menu(
+                        None,
+                        config,
+                        gi,
+                    )
+
+                    pn.state.notifications.success(
+                        "Order canceled",
+                        duration=config.panel.notifications.duration,
+                    )
+                    log.info(f"{username_key_press}'s order canceled")
+                else:
+                    pn.state.notifications.warning(
+                        f'No order for user named<br>"{username_key_press}"',
+                        duration=config.panel.notifications.duration,
+                    )
+                    log.info(f"no order for user named {username_key_press}")
+            except Exception as e:
+                # Any exception here is a database fault
+                pn.state.notifications.error(
+                    "Database error",
+                    duration=config.panel.notifications.duration,
+                )
+                gi.error_message.object = (
+                    f"DATABASE ERROR<br><br>ERROR:<br>{str(e)}"
+                )
+                gi.error_message.visible = True
+                log.error("database error")
+                # Open modal window
+                app.open_modal()
+        else:
+            pn.state.notifications.warning(
+                "Please insert user name",
+                duration=config.panel.notifications.duration,
             )
+            log.warning("missing username")
+
+
+def change_order_time_takeaway(
+    event,
+    config: DictConfig,
+    person: gui.Person,
+    gi: gui.GraphicInterface,
+) -> None:
+    # Get username, updated on every keypress
+    username_key_press = gi.person_widget._widgets["username"].value_input
+
+    # Create session
+    session = models.create_session(config)
+
+    with session:
+        # Check if the "no more order" toggle button is pressed
+        if models.get_flag(config=config, id="no_more_orders"):
+            pn.state.notifications.error(
+                "It is not possible to update orders (time)",
+                duration=config.panel.notifications.duration,
+            )
+
+            # Reload the menu
+            reload_menu(
+                None,
+                config,
+                gi,
+            )
+
+            return
+
+        if username_key_press:
+            # Build and execute the update statement
+            update_statement = (
+                update(models.Users)
+                .where(models.Users.id == username_key_press)
+                .values(lunch_time=person.lunch_time, takeaway=person.takeaway)
+                .returning(models.Users)
+            )
+
+            updated_user = session.scalars(update_statement).one_or_none()
+
             session.commit()
-            if (num_rows_deleted_users.rowcount > 0) or (
-                num_rows_deleted_orders.rowcount > 0
-            ):
+
+            if updated_user:
+                # Find updated values
+                updated_time = updated_user.lunch_time
+                updated_takeaway = (
+                    (" " + config.panel.gui.takeaway_id)
+                    if updated_user.takeaway
+                    else ""
+                )
+                updated_items_names = [
+                    order.menu_item.item for order in updated_user.orders
+                ]
                 # Update dataframe widget
                 reload_menu(
                     None,
@@ -820,10 +917,10 @@ def delete_order(
                 )
 
                 pn.state.notifications.success(
-                    "Order canceled",
+                    f"{username_key_press}'s<br>lunch time changed to<br>{updated_time}{updated_takeaway}<br>({', '.join(updated_items_names)})",
                     duration=config.panel.notifications.duration,
                 )
-                log.info(f"{username_key_press}'s order canceled")
+                log.info(f"{username_key_press}'s order updated")
             else:
                 pn.state.notifications.warning(
                     f'No order for user named<br>"{username_key_press}"',
@@ -952,12 +1049,8 @@ def df_list_by_lunch_time(
 
 def download_dataframe(
     config: DictConfig,
-    app: pn.Template,
     gi: gui.GraphicInterface,
 ) -> None:
-    # Hide messages
-    gi.error_message.visible = False
-    gi.confirm_message.visible = False
 
     # Build a dict of dataframes, one for each lunch time (the key contains
     # a lunch time)

@@ -212,7 +212,7 @@ class Orders(Data):
         index=True,
         nullable=False,
     )
-    lunch_time = Column(String(7), index=True, nullable=False)
+    user_record = relationship("Users", back_populates="orders", uselist=False)
     menu_item_id = Column(
         Integer,
         ForeignKey("menu.id", ondelete="CASCADE"),
@@ -265,8 +265,15 @@ class Users(Data):
         default="NotAGuest",
         server_default="NotAGuest",
     )
+    lunch_time = Column(String(7), index=True, nullable=False)
     takeaway = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
+    )
+    orders = relationship(
+        "Orders",
+        back_populates="user_record",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
     @classmethod

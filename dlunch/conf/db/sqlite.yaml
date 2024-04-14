@@ -9,10 +9,12 @@ url: ${db.dialect}:///${db.db_path}
 # QUERIES
 # Orders
 orders_query: |-
-  SELECT o.user, o.lunch_time, m.item, o.note
+  SELECT o.user, u.lunch_time, m.item, o.note
   FROM orders o
   LEFT JOIN menu m
-  ON m.id = o.menu_item_id;
+  ON m.id = o.menu_item_id
+  LEFT JOIN users u
+  ON u.id = o.user;
 # Stats
 stats_query: |-
   SELECT STRFTIME('%Y', date) AS "Year", 

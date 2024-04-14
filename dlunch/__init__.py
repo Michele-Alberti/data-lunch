@@ -102,7 +102,6 @@ def create_app(config: DictConfig) -> pn.Template:
     app.main.append(gi.results_divider)
     app.main.append(gi.res_col)
     app.modal.append(gi.error_message)
-    app.modal.append(gi.confirm_message)
 
     # Set components visibility based on no_more_order_button state
     # and reload menu
