@@ -14,10 +14,12 @@ url: ${db.dialect}+${db.driver}://${db.username}:${db.password}@${db.host}:${db.
 # QUERIES
 # Orders
 orders_query: |-
-  SELECT o.user, o.lunch_time, m.item, o.note
+  SELECT o.user, u.lunch_time, m.item, o.note
   FROM {schema}.orders o
   LEFT JOIN {schema}.menu m
-  ON m.id = o.menu_item_id;
+  ON m.id = o.menu_item_id
+  LEFT JOIN {schema}.users u
+  ON u.id = o.user;
 # Stats
 stats_query: |-
   SELECT EXTRACT(YEAR FROM date)::varchar(4) AS "Year", 
