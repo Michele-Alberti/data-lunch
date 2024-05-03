@@ -7,7 +7,7 @@ openpyxl==3.1.2
 pandas==2.2.1
 passlib==1.7.4
 tenacity==8.2.3
-tqdm==4.66.2
+tqdm==4.66.3
 panel==1.4.0
 sqlalchemy==2.0.29
 psycopg==3.1.18
