@@ -1,3 +1,9 @@
+## v3.2.0 (2024-07-14)
+
+### Feat
+
+- update conda env dependencies
+
 ## v3.1.0 (2024-04-14)
 
 ### Feat
