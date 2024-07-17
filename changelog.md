@@ -1,3 +1,9 @@
+## v3.3.0 (2024-07-17)
+
+### Feat
+
+- update setuptools and openpyxl
+
 ## v3.2.0 (2024-07-14)
 
 ### Feat
