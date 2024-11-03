@@ -275,6 +275,24 @@ clean-docker:
 	docker system prune -f
 	@echo -e "${GREEN}done${NC}"
 
+# Docs rules ------------------------------------------------------------------
+#sphinx-apidoc:
+#	@echo -e "${YELLOW}auto build rst files from docstrings${NC}"
+#	@sphinx-apidoc --module-first --separate --remove-old -o docs/_modules dlunch
+#	@echo -e "${GREEN}done${NC}"
+
+sphinx-build:
+	@echo -e "${YELLOW}build html docs pages${NC}"
+	@cd docs && make html
+	@echo -e "${GREEN}done${NC}"
+
+docs: sphinx-build
+	@echo -e "${GREEN}docs build successfully${NC}"
+
+docs-serve: docs
+	@cd docs/_build/html && python -m http.server -b 127.0.0.1 8000
+
+
 # Other rules -----------------------------------------------------------------
 
 interrogate:
