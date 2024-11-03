@@ -1,5 +1,4 @@
-# App metadata
-__version__ = "3.3.0"
+"""Main Data-Lunch package."""
 
 import importlib.resources
 import pathlib
@@ -17,7 +16,14 @@ from . import gui
 from . import auth
 from .auth import pn_user
 
+# App metadata
+__version__ = "3.3.0"
+"""str: Data-Lunch version."""
+
+# LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
+"""Logger: module logger."""
+
 
 # OMEGACONF RESOLVER ----------------------------------------------------------
 OmegaConf.register_new_resolver(

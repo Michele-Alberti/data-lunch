@@ -1,3 +1,5 @@
+"""Data-Lunch package entrypoint."""
+
 import datetime as dt
 import hydra
 import logging
@@ -9,8 +11,12 @@ from . import auth
 from . import create_app, create_backend
 from . import models
 
+# LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
+"""Logger: module logger."""
 
+
+# PANEL EXTENSIONS ------------------------------------------------------------
 # Set panel extensions
 log.debug("set extensions")
 pn.extension(
@@ -18,8 +24,17 @@ pn.extension(
 )
 
 
+# FUNCTIONS -------------------------------------------------------------------
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
-def run_app(config: DictConfig):
+def run_app(config: DictConfig) -> None:
+    """Main entrypoint, start the app loop.
+
+    Initialize database, authentication and encription.
+    Setup panel and create objects for frontend and backend.
+
+    Args:
+        config (DictConfig): hydra configuration object.
+    """
     # Starting scheduled cleaning
     if config.panel.scheduled_tasks:
         for task in config.panel.scheduled_tasks:
@@ -109,7 +124,26 @@ def schedule_task(
     minute: int | None,
     period: str,
     callable: Callable,
-):
+) -> None:
+    """Schedule a task execution using Panel.
+
+    Args:
+        name (str): task name (used for logs).
+        enabled (bool): flag that marks a task as enabled.
+            tasks are not executed if disabled.
+        hour (int | None): start hour (used only if also minute is not None).
+        minute (int | None): start minute (used only if also hour is not None).
+        period (str): the period between executions.
+            May be expressed as a timedelta or a string.
+
+            * Week: ``'1w'``
+            * Day: ``'1d'``
+            * Hour: ``'1h'``
+            * Minute: ``'1m'``
+            * Second: ``'1s'``
+
+        callable (Callable): the task to be executed.
+    """
     # Starting scheduled tasks (if enabled)
     if enabled:
         log.info(f"starting task '{name}'")

@@ -1,10 +1,23 @@
+"""Module with functions to interact with GCP storage service."""
+
 import logging
 from google.cloud import storage
 
+# LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
+"""Logger: module logger."""
 
 
-def get_gcloud_bucket_list(project: str):
+# FUNCTIONS -------------------------------------------------------------------
+def get_gcloud_bucket_list(project: str) -> list[str]:
+    """List buckets available in GCP storage.
+
+    Args:
+        project (str): GCP project ID.
+
+    Returns:
+        list[str]: list with bucket names.
+    """
     # Create storage client
     storage_client = storage.Client(project=project)
 
@@ -19,7 +32,15 @@ def upload_to_gcloud(
     destination_blob_name: str,
     bucket_name: str,
     project: str,
-):
+) -> None:
+    """Upload a local file to GCP storage.
+
+    Args:
+        source_file_name (str): filepath.
+        destination_blob_name (str): blob name to use as destination.
+        bucket_name (str): bucket name.
+        project (str): GCP project ID.
+    """
     # Create storage client
     storage_client = storage.Client(project=project)
 
@@ -42,7 +63,15 @@ def upload_to_gcloud_from_string(
     destination_blob_name: str,
     bucket_name: str,
     project: str,
-):
+) -> None:
+    """Upload the content of a string to GCP storage.
+
+    Args:
+        source_string (str): string to upload.
+        destination_blob_name (str): blob name to use as destination.
+        bucket_name (str): bucket name.
+        project (str): GCP project ID.
+    """
     # Create storage client
     storage_client = storage.Client(project=project)
 
@@ -65,7 +94,15 @@ def download_from_gcloud(
     destination_file_name: str,
     bucket_name: str,
     project: str,
-):
+) -> None:
+    """Download a file from GCP storage.
+
+    Args:
+        source_blob_name (str): blob name of the source object.
+        destination_file_name (str): local filepath for the downloaded resource.
+        bucket_name (str): bucket name.
+        project (str): GCP project ID.
+    """
     # Create storage client
     storage_client = storage.Client(project=project)
 
@@ -87,7 +124,17 @@ def download_from_gcloud_as_bytes(
     source_blob_name: str,
     bucket_name: str,
     project: str,
-):
+) -> bytes:
+    """Download a file from GCP storage as bytes stream.
+
+    Args:
+        source_blob_name (str): blob name of the source file.
+        bucket_name (str): bucket name.
+        project (str): GCP project ID.
+
+    Returns:
+        bytes: downloaded resource.
+    """
     # Create storage client
     storage_client = storage.Client(project=project)
 

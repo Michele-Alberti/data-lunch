@@ -14,6 +14,7 @@ from . import auth
 
 # Version
 __version__ = pkg_resources.require("dlunch")[0].version
+"""str: Data-Lunch command line version."""
 
 
 # CLI COMMANDS ----------------------------------------------------------------
@@ -117,7 +118,7 @@ def credentials(obj):
 )
 @click.pass_obj
 def add_user_credential(obj, user, password, is_admin, is_guest):
-    """Add users credentials (used by basic authentication)."""
+    """Add users credentials to credentials table (used by basic authentication)."""
 
     # Add a privileged users only if guest option is not active
     if not is_guest:

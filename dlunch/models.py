@@ -1,3 +1,8 @@
+"""Module with database tables definitions.
+
+Helper classes and utility functions for data management are defined here.
+"""
+
 from datetime import datetime
 import hydra
 import logging
@@ -32,23 +37,32 @@ import os
 # Authentication
 from . import auth
 
+# LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
+"""Logger: module logger."""
 
+
+# DATABASE CONFIGURATIONS -----------------------------------------------------
 _MODULE_TO_DIALECT_MAP = {
     "psycopg2": "postgresql",
     "psycopg": "postgresql",
     "sqlite3": "sqlite",
     "sqlite": "sqlite",
 }
+"""dict: dictionary with mappings from python module name to dialect."""
 
 # Add schema to default metadata (only if requested)
 # Read directly from environment variable because config is not available here
 # If config.db.schema is available SCHEMA value is overridden by the value
 # set in config
 SCHEMA = os.environ.get("DATA_LUNCH_DB_SCHEMA", None)
+"""str: schema name from environment (may be overridden by configuration files)."""
 metadata_obj = MetaData(schema=SCHEMA)
+"""MetaData: database metadata (SQLAlchemy)."""
+
 # Create database instance (with lazy loading)
 Data = declarative_base(metadata=metadata_obj)
+"""Any: SQLAlchemy declarative base."""
 
 
 # EVENTS ----------------------------------------------------------------------
@@ -56,7 +70,12 @@ Data = declarative_base(metadata=metadata_obj)
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
-    """Force foreign key constraints for sqlite connections."""
+    """Force foreign key constraints for sqlite connections.
+
+    Args:
+        dbapi_connection (Any): connection to database. Shall have a ``cursor`` method.
+        connection_record (Any): connection record (not used).
+    """
     if get_db_dialect(dbapi_connection) == "sqlite":
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON;")
@@ -65,35 +84,73 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 # CUSTOM COLUMNS --------------------------------------------------------------
 class Password(TypeDecorator):
-    """Allows storing and retrieving password hashes using PasswordHash."""
+    """Allows storing and retrieving password hashes using PasswordHash.
+
+    Attributes:
+         impl(String): base column implementation.
+    """
 
     impl = String
 
     def process_bind_param(
-        self, value: auth.PasswordHash | str, dialect
+        self, value: auth.PasswordHash | str | None, dialect
     ) -> str:
-        """Ensure the value is a PasswordHash and then return its hash."""
+        """Ensure the value is a PasswordHash and then return its hash.
+
+        Args:
+            value (auth.PasswordHash | str): input value (plain password or hash, or ``None`` if empty).
+            dialect (Any): dialect (not used).
+
+        Returns:
+            str: password hash.
+        """
         return self._convert(value).hashed_password
 
     def process_result_value(
-        self, value: str, dialect
+        self, value: str | None, dialect
     ) -> auth.PasswordHash | None:
-        """Convert the hash to a PasswordHash, if it's non-NULL."""
+        """Convert the hash to a PasswordHash, if it's non-NULL.
+
+        Args:
+            value (str | None): password hash (or ``None`` if empty).
+            dialect (Any): dialect (not used).
+
+        Returns:
+            auth.PasswordHash | None: hashed password as object or ``None`` (if nothing is passed as value).
+        """
         if value is not None:
             return auth.PasswordHash(value)
 
     def validator(
-        self, password: auth.PasswordHash | str
-    ) -> auth.PasswordHash:
-        """Provides a validator/converter for @validates usage."""
+        self, password: auth.PasswordHash | str | None
+    ) -> auth.PasswordHash | None:
+        """Provides a validator/converter for @validates usage.
+
+        Args:
+            password (auth.PasswordHash | str | None): input value (plain password or hash or ``None`` if empty).
+
+        Returns:
+            auth.PasswordHash | None: hashed password as object or ``None`` (if nothing is passed as value).
+        """
         return self._convert(password)
 
-    def _convert(self, value: auth.PasswordHash | str) -> auth.PasswordHash:
+    def _convert(
+        self, value: auth.PasswordHash | str | None
+    ) -> auth.PasswordHash | None:
         """Returns a PasswordHash from the given string.
 
         PasswordHash instances or None values will return unchanged.
         Strings will be hashed and the resulting PasswordHash returned.
         Any other input will result in a TypeError.
+
+        Args:
+            value (auth.PasswordHash | str | None): input value (plain password or hash or ``None`` if empty).
+
+        Raises:
+            TypeError: unknown type.
+
+        Returns:
+            auth.PasswordHash | None: hashed password as object or ``None`` (if nothing is passed as value).
         """
         if isinstance(value, auth.PasswordHash):
             return value
@@ -109,14 +166,26 @@ class Password(TypeDecorator):
 
 
 class Encrypted(TypeDecorator):
-    """Allows storing and retrieving password hashes using PasswordHash."""
+    """Allows storing and retrieving password hashes using PasswordHash.
+
+    Attributes:
+         impl(String): base column implementation.
+    """
 
     impl = String
 
     def process_bind_param(
-        self, value: auth.PasswordEncrypt | str, dialect
-    ) -> str:
-        """Ensure the value is a PasswordEncrypt and then return the encrypted password."""
+        self, value: auth.PasswordEncrypt | str | None, dialect
+    ) -> str | None:
+        """Ensure the value is a PasswordEncrypt and then return the encrypted password.
+
+        Args:
+            value (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or ``None`` if empty)
+            dialect (Any): dialect (not used).
+
+        Returns:
+            str | None: encrypted password or ``None`` if empty.
+        """
         converted_value = self._convert(value)
         if converted_value:
             return converted_value.encrypted_password
@@ -124,26 +193,50 @@ class Encrypted(TypeDecorator):
             return None
 
     def process_result_value(
-        self, value: str, dialect
+        self, value: str | None, dialect
     ) -> auth.PasswordEncrypt | None:
-        """Convert the hash to a PasswordEncrypt, if it's non-NULL."""
+        """Convert the hash to a PasswordEncrypt, if it's non-NULL.
+
+        Args:
+            value (str | None): input value (plain password or encrypted or ``None`` if empty)
+            dialect (Any): dialect (not used).
+
+        Returns:
+            auth.PasswordEncrypt | None: encrypted password as object or ``None`` (if nothing is passed as value).
+        """
         if value is not None:
             return auth.PasswordEncrypt(value)
 
     def validator(
-        self, password: auth.PasswordEncrypt | str
-    ) -> auth.PasswordEncrypt:
-        """Provides a validator/converter for @validates usage."""
+        self, password: auth.PasswordEncrypt | str | None
+    ) -> auth.PasswordEncrypt | None:
+        """Provides a validator/converter for @validates usage.
+
+        Args:
+            password (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or ``None`` if empty)
+
+        Returns:
+            auth.PasswordEncrypt | None: encrypted password as object or ``None`` (if nothing is passed as value).
+        """
         return self._convert(password)
 
     def _convert(
-        self, value: auth.PasswordEncrypt | str
-    ) -> auth.PasswordEncrypt:
+        self, value: auth.PasswordEncrypt | str | None
+    ) -> auth.PasswordEncrypt | None:
         """Returns a PasswordEncrypt from the given string.
 
         PasswordEncrypt instances or None values will return unchanged.
         Strings will be encrypted and the resulting PasswordEncrypt returned.
         Any other input will result in a TypeError.
+
+        Args:
+            value (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or ``None`` if empty)
+
+        Raises:
+            TypeError: unknown type.
+
+        Returns:
+            auth.PasswordEncrypt | None: encrypted password as object or ``None`` (if nothing is passed as value).
         """
         if isinstance(value, auth.PasswordEncrypt):
             return value

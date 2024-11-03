@@ -29,12 +29,24 @@ import cryptography.fernet
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
+"""Logger: module logger."""
 
 
 # FUNCTIONS -------------------------------------------------------------------
 
 
-def get_host_name(config: DictConfig):
+def get_host_name(config: DictConfig) -> str:
+    """Return hostname.
+
+    This function behavior changes if called from localhost, Docker container or
+    production server.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        str: hostname.
+    """
     try:
         ip_address = socket.gethostbyname(socket.gethostname())
         dig_res = subprocess.run(
@@ -57,7 +69,12 @@ def get_host_name(config: DictConfig):
     return host_name
 
 
-def delete_files(config: DictConfig):
+def delete_files(config: DictConfig) -> None:
+    """Delete local temporary files.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+    """
     # Delete menu file if exist (every extension)
     files = list(
         pathlib.Path(config.db.shared_data_folder).glob(
@@ -69,7 +86,12 @@ def delete_files(config: DictConfig):
         file.unlink(missing_ok=True)
 
 
-def clean_tables(config: DictConfig):
+def clean_tables(config: DictConfig) -> None:
+    """Clean tables that should be reset when a new menu is uploaded.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+    """
     # Clean tables
     # Clean orders
     models.Orders.clear(config=config)
@@ -88,8 +110,21 @@ def clean_tables(config: DictConfig):
 
 
 def set_guest_user_password(config: DictConfig) -> str:
-    """If guest user is requested return a password, otherwise return ""
-    This function always returns "" if basic auth is not used
+    """If guest user is active return a password, otherwise return an empty string.
+
+    This function always returns an empty string if basic authentication is not active.
+
+    Guest user and basic authentication are handled through configuration files.
+
+    If the flag ``reset_guest_user_password`` is set to ``True`` the password is created
+    and uploaded to database. Otherwise the existing password is queried from database
+    ``credentials`` table.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        str: guest user password or empty string if basic authentication is not active.
     """
     # Check if basic auth is active
     if auth.is_basic_auth_active(config=config):
@@ -163,7 +198,15 @@ def build_menu(
     config: DictConfig,
     app: pn.Template,
     gi: gui.GraphicInterface,
-) -> pd.DataFrame:
+) -> None:
+    """Read menu from file (Excel or image) and upload menu items to database ``menu`` table.
+
+    Args:
+        event (_type_): Panel button event.
+        config (DictConfig): Hydra configuration dictionary.
+        app (pn.Template): Panel app template (used to open modal windows in case of database errors).
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+    """
     # Hide messages
     gi.error_message.visible = False
 
@@ -290,6 +333,22 @@ def reload_menu(
     config: DictConfig,
     gi: gui.GraphicInterface,
 ) -> None:
+    """Main core function that sync Panel widget with database tables.
+
+    Stop orders and guest override checks are carried out by this function.
+    Also the banner image is shown based on a check run by this function.
+
+    ``menu``, ``orders`` and ``users`` tables are used to build a list of orders for each lunch time.
+    Takeaway orders are evaluated separately.
+
+    At the end stats about lunches are calculated and loaded to database. Finally
+    statistics (values and table) shown inside the app are updated accordingly.
+
+    Args:
+        event (_type_): Panel button event.
+        config (DictConfig): Hydra configuration dictionary.
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+    """
     # Create session
     session = models.create_session(config)
 
@@ -587,6 +646,23 @@ def send_order(
     person: gui.Person,
     gi: gui.GraphicInterface,
 ) -> None:
+    """Upload orders and user to database tables.
+
+    The user target of the order is uploaded to ``users`` table, while the order
+    is uploaded to ``orders`` table.
+
+    Consistency checks about the user and the order are carried out here (existing user, only one order, etc.).
+    The status of the ``stop_orders`` flag is checked to avoid that an order is uploaded when it shouldn't.
+
+    Orders for guest users are marked as such before uploading them.
+
+    Args:
+        event (_type_): Panel button event.
+        config (DictConfig): Hydra configuration dictionary.
+        app (pn.Template): Panel app template (used to open modal windows in case of database errors).
+        person (gui.Person): class that collect order data for the user that is the target of the order.
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+    """
     # Get username updated at each key press
     username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -752,6 +828,19 @@ def delete_order(
     app: pn.Template,
     gi: gui.GraphicInterface,
 ) -> None:
+    """Delete an existing order.
+
+    Consistency checks about the user and the order are carried out here (existing user, only one order, etc.).
+    The status of the ``stop_orders`` flag is checked to avoid that an order is uploaded when it shouldn't.
+
+    In addition privileges are taken into account (guest users cannot delete orders that targets a privileged user).
+
+    Args:
+        event (_type_): Panel button event.
+        config (DictConfig): Hydra configuration dictionary.
+        app (pn.Template): Panel app template (used to open modal windows in case of database errors).
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+    """
     # Get username, updated on every keypress
     username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -862,6 +951,14 @@ def change_order_time_takeaway(
     person: gui.Person,
     gi: gui.GraphicInterface,
 ) -> None:
+    """Change the time and the takeaway flag of an existing order.
+
+    Args:
+        event (_type_): anel button event.
+        config (DictConfig): Hydra configuration dictionary.
+        person (gui.Person): class that collect order data for the user that is the target of the order.
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+    """
     # Get username, updated on every keypress
     username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -938,6 +1035,19 @@ def change_order_time_takeaway(
 def df_list_by_lunch_time(
     config: DictConfig,
 ) -> dict:
+    """Build a dictionary of dataframes for each lunch-time, with takeaways included in a dedicated dataframe.
+
+    Each datframe includes orders grouped by users, notes and a total column (with the total value
+    for a specific item).
+
+    The keys of the dataframe are ``lunch-times`` and ``lunch-times + takeaway_id``.
+
+    Args:
+        config (DictConfig): _description_
+
+    Returns:
+        dict: dictionary with dataframes summarizing the orders for each lunch-time/takeaway-time.
+    """
     # Create database engine and session
     engine = models.create_engine(config)
     # Read menu and save how menu items are sorted (first courses, second courses, etc.)
@@ -988,6 +1098,8 @@ def df_list_by_lunch_time(
             :, [c for c in df_users.columns if c in takeaway_list]
         ]
 
+        # The following function prepare the dataframe before saving it into
+        # the dictionary that will be returned
         def clean_up_table(
             config: DictConfig, df_in: pd.DataFrame, df_complete: pd.DataFrame
         ):
@@ -1050,7 +1162,21 @@ def df_list_by_lunch_time(
 def download_dataframe(
     config: DictConfig,
     gi: gui.GraphicInterface,
-) -> None:
+) -> BytesIO:
+    """Build an Excel file with tables representing orders for every lunch-time/takeaway-time.
+
+    Tables are created by the function ``df_list_by_lunch_time`` and exported on dedicated Excel worksheets
+    (inside the same workbook).
+
+    The result is returned as bytes stream to satisfy panel.widgets.FileDownload class requirements.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+
+    Returns:
+        BytesIO: download stream for the Excel file.
+    """
 
     # Build a dict of dataframes, one for each lunch time (the key contains
     # a lunch time)

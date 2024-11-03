@@ -1,3 +1,8 @@
+"""Module with functions used to execute scheduled tasks.
+
+See https://panel.holoviz.org/how_to/callbacks/schedule.html for details.
+"""
+
 import logging
 import datetime as dt
 from omegaconf import DictConfig
@@ -8,6 +13,7 @@ from . import models
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)
+"""Logger: module logger."""
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -15,10 +21,17 @@ log = logging.getLogger(__name__)
 # configuration
 
 
-def clean_files_db(config: DictConfig):
-    """return a callable object for cleaning temporary tables and files"""
+def clean_files_db(config: DictConfig) -> callable:
+    """Return a callable object for cleaning temporary tables and files.
 
-    async def scheduled_function():
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        callable: function to be scheduled.
+    """
+
+    async def scheduled_function() -> None:
         log.info(f"clean task (files and db) executed at {dt.datetime.now()}")
         # Delete files
         core.delete_files(config)
@@ -28,10 +41,17 @@ def clean_files_db(config: DictConfig):
     return scheduled_function
 
 
-def reset_guest_user_password(config: DictConfig):
-    """return a callable object for resetting guest user password"""
+def reset_guest_user_password(config: DictConfig) -> callable:
+    """Return a callable object for resetting guest user password.
 
-    async def scheduled_function():
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        callable: function to be scheduled.
+    """
+
+    async def scheduled_function() -> None:
         log.info(f"reset guest user password executed at {dt.datetime.now()}")
         # Change reset flag
         models.set_flag(
@@ -43,10 +63,17 @@ def reset_guest_user_password(config: DictConfig):
     return scheduled_function
 
 
-def upload_db_to_gcp_storage(config: DictConfig, **kwargs):
-    """return a callable object for uploading database to google cloud storage"""
+def upload_db_to_gcp_storage(config: DictConfig, **kwargs) -> callable:
+    """Return a callable object for uploading database to google cloud storage.
 
-    async def scheduled_function():
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        callable: function to be scheduled.
+    """
+
+    async def scheduled_function() -> None:
         log.info(
             f"upload database to gcp storage executed at {dt.datetime.now()}"
         )
