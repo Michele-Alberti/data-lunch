@@ -1,24 +1,17 @@
 """Main Data-Lunch package."""
 
 import importlib.resources
-import pathlib
-import hydra
 import logging
 import panel as pn
 from omegaconf import DictConfig, OmegaConf
 
-# Database imports
+# Relative imports
 from . import models
-
-# Other Data-Lunch imports
 from . import core
+from .core import __version__
 from . import gui
 from . import auth
 from .auth import pn_user
-
-# App metadata
-__version__ = "3.3.0"
-"""str: Data-Lunch version."""
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)

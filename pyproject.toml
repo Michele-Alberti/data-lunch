@@ -54,7 +54,7 @@ exclude = '''
 name = "cz_conventional_commits"
 version = "3.3.0"
 version_files = [
-    "dlunch/__init__.py",
+    "dlunch/core.py",
     "pyproject.toml:version",
     "docs/conf.py:release",
 ]

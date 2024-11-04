@@ -1,11 +1,10 @@
+import cryptography.fernet
 import panel as pn
 import pandas as pd
 import pathlib
 import logging
 import socket
 import subprocess
-from . import __version__
-from . import models
 from omegaconf import DictConfig, OmegaConf
 from openpyxl.utils import get_column_interval
 from openpyxl.styles import Alignment, Font
@@ -20,12 +19,14 @@ from sqlalchemy.sql.expression import true as sql_true
 from time import sleep
 
 # Graphic interface imports (after class definition)
+from . import models
 from . import gui
-
-# Authentication
 from . import auth
 from .auth import pn_user
-import cryptography.fernet
+
+# APP METADATA ----------------------------------------------------------------
+__version__ = "3.3.0"
+"""str: Data-Lunch version."""
 
 # LOGGER ----------------------------------------------------------------------
 log = logging.getLogger(__name__)

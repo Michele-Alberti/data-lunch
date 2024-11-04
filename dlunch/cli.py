@@ -1,3 +1,11 @@
+"""Module with Data-Lunch's command line.
+
+The command line is built with ``click``.
+
+Call ``data-lunch --help`` from the terminal inside an environment where the
+``dlunch`` package is installed.
+"""
+
 import click
 import pkg_resources
 from hydra import compose, initialize
