@@ -69,6 +69,7 @@ html_theme = "pydata_sphinx_theme"
 html_favicon = "_static/favicon.ico"
 
 html_theme_options = {
+    "github_url": "https://github.com/Michele-Alberti/data-lunch",
     "logo": {
         "text": "Data-Lunch Documentation",
         "image_light": "_static/logo-light.png",
