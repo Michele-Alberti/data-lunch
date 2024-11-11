@@ -1,4 +1,5 @@
 site_name: Data-Lunch
+site_url: "http://Michele-Alberti.github.io/data-lunch/"
 
 theme:
   name: "material"
@@ -6,6 +7,11 @@ theme:
   favicon: assets/favicon.ico
   palette:
     scheme: dlunch
+  extra:
+    version:
+      provider: mike
+      default: stable
+      alias: true
 
 extra_css:
   - stylesheets/extra.css
