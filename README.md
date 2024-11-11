@@ -232,7 +232,8 @@ conda env create -f commitizen.yml
 
 ### 3.1. Pre-commit hooks
 
-> This step is not required if the [setup script](#23-setup-the-development-environment-by-using-the-setup-script) is used.
+> [!WARNING]
+> This step is not required if the [setup script](#22-setup-the-development-environment) is used.
 
 Then install the precommit hooks.
 

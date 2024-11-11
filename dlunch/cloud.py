@@ -4,8 +4,8 @@ import logging
 from google.cloud import storage
 
 # LOGGER ----------------------------------------------------------------------
-log = logging.getLogger(__name__)
-"""Logger: module logger."""
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # FUNCTIONS -------------------------------------------------------------------

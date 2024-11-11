@@ -4,7 +4,7 @@ import datetime as dt
 import hydra
 import logging
 import panel as pn
-from typing import Callable
+from collections.abc import Callable
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import ConfigAttributeError
 from . import auth
@@ -12,8 +12,8 @@ from . import create_app, create_backend
 from . import models
 
 # LOGGER ----------------------------------------------------------------------
-log = logging.getLogger(__name__)
-"""Logger: module logger."""
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # PANEL EXTENSIONS ------------------------------------------------------------
@@ -136,11 +136,11 @@ def schedule_task(
         period (str): the period between executions.
             May be expressed as a timedelta or a string.
 
-            * Week: ``'1w'``
-            * Day: ``'1d'``
-            * Hour: ``'1h'``
-            * Minute: ``'1m'``
-            * Second: ``'1s'``
+            * Week: `'1w'`
+            * Day: `'1d'`
+            * Hour: `'1h'`
+            * Minute: `'1m'`
+            * Second: `'1s'`
 
         callable (Callable): the task to be executed.
     """

@@ -276,21 +276,16 @@ clean-docker:
 	@echo -e "${GREEN}done${NC}"
 
 # Docs rules ------------------------------------------------------------------
-#sphinx-apidoc:
-#	@echo -e "${YELLOW}auto build rst files from docstrings${NC}"
-#	@sphinx-apidoc --module-first --separate --remove-old -o docs/_modules dlunch
-#	@echo -e "${GREEN}done${NC}"
-
-sphinx-build:
+mkdocs-build:
 	@echo -e "${YELLOW}build html docs pages${NC}"
-	@cd docs && make html
+	mkdocs build
 	@echo -e "${GREEN}done${NC}"
 
-docs: sphinx-build
+docs: mkdocs-build
 	@echo -e "${GREEN}docs build successfully${NC}"
 
-docs-serve: docs
-	@cd docs/_build/html && python -m http.server -b 127.0.0.1 8000
+docs-serve:
+	mkdocs serve
 
 
 # Other rules -----------------------------------------------------------------

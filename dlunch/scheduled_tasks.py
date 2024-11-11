@@ -12,8 +12,8 @@ from . import cloud
 from . import models
 
 # LOGGER ----------------------------------------------------------------------
-log = logging.getLogger(__name__)
-"""Logger: module logger."""
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -32,6 +32,7 @@ def clean_files_db(config: DictConfig) -> callable:
     """
 
     async def scheduled_function() -> None:
+        """Clean menu, orders, users and flags tables. Delete also local files."""
         log.info(f"clean task (files and db) executed at {dt.datetime.now()}")
         # Delete files
         core.delete_files(config)
@@ -52,6 +53,7 @@ def reset_guest_user_password(config: DictConfig) -> callable:
     """
 
     async def scheduled_function() -> None:
+        """Reset guest user password."""
         log.info(f"reset guest user password executed at {dt.datetime.now()}")
         # Change reset flag
         models.set_flag(
@@ -74,6 +76,7 @@ def upload_db_to_gcp_storage(config: DictConfig, **kwargs) -> callable:
     """
 
     async def scheduled_function() -> None:
+        """Upload database to GCP storage."""
         log.info(
             f"upload database to gcp storage executed at {dt.datetime.now()}"
         )

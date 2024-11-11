@@ -24,13 +24,13 @@ from . import models
 
 
 # LOGGER ----------------------------------------------------------------------
-log = logging.getLogger(__name__)
-"""Logger: module logger."""
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # CONTEXT ---------------------------------------------------------------------
 # Create a crypt context for the app
-pwd_context = CryptContext(
+pwd_context: CryptContext = CryptContext(
     # Replace this list with the hash(es) you wish to support.
     # this example sets pbkdf2_sha256 as the default,
     # add other ashes after pbkdf2_sha256 for additional support on
@@ -45,7 +45,7 @@ pwd_context = CryptContext(
     # Leaving this alone is usually safe, and will use passlib's defaults.
     ## pbkdf2_sha256__rounds = 29000,
 )
-"""CryptContext: crypt context with configurations for passlib (selected algorithm, etc.)."""
+"""Crypt context with configurations for passlib (selected algorithm, etc.)."""
 
 # PROPERTIES ------------------------------------------------------------------
 # Intentionally left void
@@ -83,7 +83,7 @@ class DataLunchLoginHandler(RequestHandler):
             password (str): password (not hashed).
 
         Returns:
-            bool: user authentication flag (``True`` if authenticated)
+            bool: user authentication flag (`True` if authenticated)
         """
         password_hash = get_hash_from_user(user, self.config)
         if password_hash == password:
@@ -144,13 +144,13 @@ class DataLunchProvider(OAuthProvider):
 
     It is used only if basic authentication is selected in Data-Lunch configuration options.
 
+    Attributes:
+        config (DictConfig): Hydra configuration dictionary.
+
     Args:
         config (DictConfig): Hydra configuration dictionary.
         login_template (str | None, optional): path to login template. Defaults to None.
         logout_template (str | None, optional): path to logout template. Defaults to None.
-
-    Attributes:
-        config (DictConfig): Hydra configuration dictionary.
     """
 
     def __init__(
@@ -168,7 +168,7 @@ class DataLunchProvider(OAuthProvider):
 
     @property
     def login_url(self):
-        """str: Login url (``/login``)."""
+        """str: Login url (`/login`)."""
         return "/login"
 
     @property
@@ -187,14 +187,11 @@ class PasswordHash:
 
     The password hash may be passed to instantiate the new object.
     If the hash is not aviailable use the class method
-    ``PasswordHash.from_str`` to create an istance with the string properly
+    `PasswordHash.from_str` to create an istance with the string properly
     hashed.
 
     Args:
         hashed_password (str): password hash.
-
-    Attributes:
-         hashed_password (str): password hash.
     """
 
     def __init__(self, hashed_password: str) -> None:
@@ -204,6 +201,7 @@ class PasswordHash:
         ), "hash should have less than 150 chars."
         # Attributes
         self.hashed_password = hashed_password
+        """str: Password hash."""
 
     def __eq__(self, candidate: str) -> bool:
         """Hashes the candidate string and compares it to the stored hash.
@@ -212,7 +210,7 @@ class PasswordHash:
             candidate (str): candidate string.
 
         Returns:
-            bool: ``True`` if equal.
+            bool: `True` if equal.
         """
         # If string check hash, otherwise return False
         if isinstance(candidate, str):
@@ -232,22 +230,22 @@ class PasswordHash:
         return f"<{type(self).__name__}>"
 
     def verify(self, password: str) -> bool:
-        """Check a password against its hash and return ``True`` if check passes,
-        ``False`` otherwise.
+        """Check a password against its hash and return `True` if check passes,
+        `False` otherwise.
 
         Args:
             password (str): plain password (not hashed).
 
         Returns:
-            bool: ``True`` if password and hash match.
+            bool: `True` if password and hash match.
         """
         valid = pwd_context.verify(saslprep(password), self.hashed_password)
 
         return valid
 
     def verify_and_update(self, password: str) -> tuple[bool, str | None]:
-        """Check a password against its hash and return ``True`` if check passes,
-        ``False`` otherwise. Return also a new hash if the original hashing  method
+        """Check a password against its hash and return `True` if check passes,
+        `False` otherwise. Return also a new hash if the original hashing  method
         is superseeded
 
         Args:
@@ -255,7 +253,7 @@ class PasswordHash:
 
         Returns:
             tuple[bool, str | None]: return a tuple with two elements (valid, new_hash).
-                valid: ``True`` if password and hash match.
+                valid: `True` if password and hash match.
                 new_hash: new hash to replace the one generated with an old algorithm.
         """
         valid, new_hash = pwd_context.verify_and_update(
@@ -300,13 +298,10 @@ class PasswordEncrypt:
 
     The encrypted password may be passed to instantiate the new object.
     If the encrypted password is not aviailable use the class method
-    ``PasswordEncrypt.from_str`` to create an istance with the string properly
+    `PasswordEncrypt.from_str` to create an istance with the string properly
     encrypted.
 
     Args:
-        encrypted_password (str): encrypted password.
-
-    Attributes:
         encrypted_password (str): encrypted password.
     """
 
@@ -317,6 +312,7 @@ class PasswordEncrypt:
         ), "encrypted string should have less than 150 chars."
         # Attributes
         self.encrypted_password = encrypted_password
+        """str: encrypted password."""
 
     def __eq__(self, candidate: str) -> bool:
         """Decrypt the candidate string and compares it to the stored encrypted value.
@@ -325,7 +321,7 @@ class PasswordEncrypt:
             candidate (str): candidate string.
 
         Returns:
-            bool: ``True`` if equal.
+            bool: `True` if equal.
         """
         # If string check hash, otherwise return False
         if isinstance(candidate, str):
@@ -365,9 +361,6 @@ class PasswordEncrypt:
     def decrypt(self) -> str:
         """Return decrypted password.
 
-        Args:
-            password (str): encrypted password.
-
         Returns:
             str: plain password (not encrypted).
         """
@@ -398,7 +391,7 @@ class PasswordEncrypt:
 def pn_user(config: DictConfig) -> str:
     """Return the user from Panel state object.
 
-    If `config.auth.remove_email_domain` is ``True``, remove the email domain from username.
+    If `config.auth.remove_email_domain` is `True`, remove the email domain from username.
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
@@ -420,14 +413,14 @@ def pn_user(config: DictConfig) -> str:
 
 
 def is_basic_auth_active(config: DictConfig) -> bool:
-    """Check config object and return ``True`` if basic authentication is active.
-    Return ``False`` otherwise.
+    """Check config object and return `True` if basic authentication is active.
+    Return `False` otherwise.
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
 
     Returns:
-        bool: ``True`` if basic authentication is active, ``False`` otherwise.
+        bool: `True` if basic authentication is active, `False` otherwise.
     """
 
     # Check if a valid auth key exists
@@ -437,14 +430,14 @@ def is_basic_auth_active(config: DictConfig) -> bool:
 
 
 def is_auth_active(config: DictConfig) -> bool:
-    """Check configuration dictionary and return ``True`` if basic authentication or OAuth is active.
-    Return ``False`` otherwise.
+    """Check configuration dictionary and return `True` if basic authentication or OAuth is active.
+    Return `False` otherwise.
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
 
     Returns:
-        bool: ``True`` if authentication (basic or OAuth) is active, ``False`` otherwise.
+        bool: `True` if authentication (basic or OAuth) is active, `False` otherwise.
     """
 
     # Check if a valid auth key exists
@@ -463,18 +456,18 @@ def authorize(
     """Authorization callback: read config, user info and the target path of the
     requested resource.
 
-    Return ``True`` (authorized) or ``False`` (not authorized) by checking current user
+    Return `True` (authorized) or `False` (not authorized) by checking current user
     and target path.
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
         user_info (dict): dictionary with user info passed by Panel to the authorization handle.
         target_path (str): path of the requested resource.
-        authorize_guest_users (bool, optional): Set to ``True`` to enable the main page to guest users.
-            Defaults to ``False``.
+        authorize_guest_users (bool, optional): Set to `True` to enable the main page to guest users.
+            Defaults to `False`.
 
     Returns:
-        bool: authorization flag. ``True`` if authorized.
+        bool: authorization flag. `True` if authorized.
     """
 
     # If authorization is not active authorize every user
@@ -546,7 +539,7 @@ def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
         config (DictConfig): Hydra configuration dictionary.
 
     Returns:
-        PasswordHash | None: returns password object if the user exist, ``None`` otherwise.
+        PasswordHash | None: returns password object if the user exist, `None` otherwise.
     """
     # Create session
     session = models.create_session(config)
@@ -564,7 +557,7 @@ def get_hash_from_user(user: str, config: DictConfig) -> PasswordHash | None:
 
 
 def add_privileged_user(user: str, is_admin: bool, config: DictConfig) -> None:
-    """Add user id to ``privileged_users`` table.
+    """Add user id to `privileged_users` table.
 
     The table is used by every authentication methods to understand which users are
     privileged and which ones are guests.
@@ -572,7 +565,7 @@ def add_privileged_user(user: str, is_admin: bool, config: DictConfig) -> None:
     Args:
         user (str): username.
         is_admin (bool): admin flag.
-            Set to ``True`` if the new user has admin privileges.
+            Set to `True` if the new user has admin privileges.
         config (DictConfig): Hydra configuration dictionary.
     """
     # Create session
@@ -593,7 +586,7 @@ def add_privileged_user(user: str, is_admin: bool, config: DictConfig) -> None:
 def add_user_hashed_password(
     user: str, password: str, config: DictConfig
 ) -> None:
-    """Add user credentials to ``credentials`` table.
+    """Add user credentials to `credentials` table.
 
     Used only by basic authentication.
 
@@ -631,14 +624,14 @@ def add_user_hashed_password(
 def remove_user(user: str, config: DictConfig) -> dict:
     """Remove user from the database.
 
-    User is removed from ``privileged_users`` and ``credentials`` tables.
+    User is removed from `privileged_users` and `credentials` tables.
 
     Args:
         user (str): username.
         config (DictConfig): Hydra configuration dictionary.
 
     Returns:
-        dict: dictionary with ``privileged_users_deleted`` and ``credentials_deleted``
+        dict: dictionary with `privileged_users_deleted` and `credentials_deleted`
             with deleted rows from each table.
     """
     # Create session
@@ -666,7 +659,7 @@ def remove_user(user: str, config: DictConfig) -> dict:
 
 
 def list_users(config: DictConfig) -> list[str]:
-    """List only privileged users (from ``privileged_users`` table).
+    """List only privileged users (from `privileged_users` table).
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
@@ -690,12 +683,12 @@ def list_users(config: DictConfig) -> list[str]:
 
 
 def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
-    """Join ``privileged_users`` and ``credentials`` tables to list normal users,
+    """Join `privileged_users` and `credentials` tables to list normal users,
     admins and guests.
 
-    ``credentials`` table is populated only if basic authetication is active (in configuration files).
-    A is considered a guest if it is not listed in ``privileged_users`` table
-    but it is available in ``credentials`` table.
+    `credentials` table is populated only if basic authetication is active (in configuration files).
+    A is considered a guest if it is not listed in `privileged_users` table
+    but it is available in `credentials` table.
 
     Returns a dataframe.
 
@@ -730,21 +723,21 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
 def is_guest(
     user: str, config: DictConfig, allow_override: bool = True
 ) -> bool:
-    """Check if a user is a guest by checking if it is listed inside the ``privileged_users`` table.
+    """Check if a user is a guest by checking if it is listed inside the `privileged_users` table.
 
-    The guest override chached value (stored in ``flags`` table, on a per-user basis) can force
+    The guest override chached value (stored in `flags` table, on a per-user basis) can force
     the function to always return True.
 
-    If ``allow_override`` is set to ``False`` the guest override value is ignored.
+    If `allow_override` is set to `False` the guest override value is ignored.
 
     Args:
         user (str): username.
         config (DictConfig): Hydra configuration dictionary.
-        allow_override (bool, optional): override enablement flag, set to ``False`` to ignore guest override value.
+        allow_override (bool, optional): override enablement flag, set to `False` to ignore guest override value.
             Defaults to True.
 
     Returns:
-        bool: guest flag. ``True`` if the user is a guest.
+        bool: guest flag. `True` if the user is a guest.
     """
 
     # If authorization is not active always return false (user is not guest)
@@ -772,14 +765,14 @@ def is_guest(
 
 
 def is_admin(user: str, config: DictConfig) -> bool:
-    """Check if a user is an admin by checking the ``privileged_users`` table
+    """Check if a user is an admin by checking the `privileged_users` table
 
     Args:
         user (str): username.
         config (DictConfig): Hydra configuration dictionary.
 
     Returns:
-        bool: admin flag. ``True`` if the user is an admin.
+        bool: admin flag. `True` if the user is an admin.
     """
 
     # If authorization is not active always return false (ther is no admin)

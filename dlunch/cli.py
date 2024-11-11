@@ -1,9 +1,9 @@
 """Module with Data-Lunch's command line.
 
-The command line is built with ``click``.
+The command line is built with `click`.
 
-Call ``data-lunch --help`` from the terminal inside an environment where the
-``dlunch`` package is installed.
+Call `data-lunch --help` from the terminal inside an environment where the
+`dlunch` package is installed.
 """
 
 import click
@@ -21,8 +21,8 @@ from .core import clean_tables as clean_tables_func
 from . import auth
 
 # Version
-__version__ = pkg_resources.require("dlunch")[0].version
-"""str: Data-Lunch command line version."""
+__version__: str = pkg_resources.require("dlunch")[0].version
+"""Data-Lunch command line version."""
 
 
 # CLI COMMANDS ----------------------------------------------------------------
@@ -356,7 +356,8 @@ def load_table(
         click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
 
 
-def main():
+def main() -> None:
+    """Main command line entrypoint."""
     cli(auto_envvar_prefix="DATA_LUNCH")
 
 

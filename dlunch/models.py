@@ -27,8 +27,14 @@ from sqlalchemy import (
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import declarative_base, relationship, validates, Session
-from sqlalchemy.sql import func, elements
+from sqlalchemy.orm import (
+    declarative_base,
+    relationship,
+    validates,
+    Session,
+    DeclarativeMeta,
+)
+from sqlalchemy.sql import func
 from sqlalchemy.sql import false as sql_false
 from sqlalchemy.dialects.postgresql import insert as postgresql_upsert
 import tenacity
@@ -38,31 +44,31 @@ import os
 from . import auth
 
 # LOGGER ----------------------------------------------------------------------
-log = logging.getLogger(__name__)
-"""Logger: module logger."""
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # DATABASE CONFIGURATIONS -----------------------------------------------------
-_MODULE_TO_DIALECT_MAP = {
+_MODULE_TO_DIALECT_MAP: dict = {
     "psycopg2": "postgresql",
     "psycopg": "postgresql",
     "sqlite3": "sqlite",
     "sqlite": "sqlite",
 }
-"""dict: dictionary with mappings from python module name to dialect."""
+"""Dictionary with mappings from python module name to dialect."""
 
 # Add schema to default metadata (only if requested)
 # Read directly from environment variable because config is not available here
 # If config.db.schema is available SCHEMA value is overridden by the value
 # set in config
-SCHEMA = os.environ.get("DATA_LUNCH_DB_SCHEMA", None)
-"""str: schema name from environment (may be overridden by configuration files)."""
-metadata_obj = MetaData(schema=SCHEMA)
-"""MetaData: database metadata (SQLAlchemy)."""
+SCHEMA: str = os.environ.get("DATA_LUNCH_DB_SCHEMA", None)
+"""Schema name from environment (may be overridden by configuration files)."""
+metadata_obj: MetaData = MetaData(schema=SCHEMA)
+"""Database metadata (SQLAlchemy)."""
 
 # Create database instance (with lazy loading)
-Data = declarative_base(metadata=metadata_obj)
-"""Any: SQLAlchemy declarative base."""
+Data: DeclarativeMeta = declarative_base(metadata=metadata_obj)
+"""SQLAlchemy declarative base."""
 
 
 # EVENTS ----------------------------------------------------------------------
@@ -73,7 +79,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     """Force foreign key constraints for sqlite connections.
 
     Args:
-        dbapi_connection (Any): connection to database. Shall have a ``cursor`` method.
+        dbapi_connection (Any): connection to database. Shall have a `cursor` method.
         connection_record (Any): connection record (not used).
     """
     if get_db_dialect(dbapi_connection) == "sqlite":
@@ -84,13 +90,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 # CUSTOM COLUMNS --------------------------------------------------------------
 class Password(TypeDecorator):
-    """Allows storing and retrieving password hashes using PasswordHash.
+    """Allows storing and retrieving password hashes using PasswordHash."""
 
-    Attributes:
-         impl(String): base column implementation.
-    """
-
-    impl = String
+    impl: String = String
+    """Base column implementation."""
 
     def process_bind_param(
         self, value: auth.PasswordHash | str | None, dialect
@@ -98,7 +101,7 @@ class Password(TypeDecorator):
         """Ensure the value is a PasswordHash and then return its hash.
 
         Args:
-            value (auth.PasswordHash | str): input value (plain password or hash, or ``None`` if empty).
+            value (auth.PasswordHash | str): input value (plain password or hash, or `None` if empty).
             dialect (Any): dialect (not used).
 
         Returns:
@@ -112,11 +115,11 @@ class Password(TypeDecorator):
         """Convert the hash to a PasswordHash, if it's non-NULL.
 
         Args:
-            value (str | None): password hash (or ``None`` if empty).
+            value (str | None): password hash (or `None` if empty).
             dialect (Any): dialect (not used).
 
         Returns:
-            auth.PasswordHash | None: hashed password as object or ``None`` (if nothing is passed as value).
+            auth.PasswordHash | None: hashed password as object or `None` (if nothing is passed as value).
         """
         if value is not None:
             return auth.PasswordHash(value)
@@ -124,13 +127,13 @@ class Password(TypeDecorator):
     def validator(
         self, password: auth.PasswordHash | str | None
     ) -> auth.PasswordHash | None:
-        """Provides a validator/converter for @validates usage.
+        """Provides a validator/converter used by @validates.
 
         Args:
-            password (auth.PasswordHash | str | None): input value (plain password or hash or ``None`` if empty).
+            password (auth.PasswordHash | str | None): input value (plain password or hash or `None` if empty).
 
         Returns:
-            auth.PasswordHash | None: hashed password as object or ``None`` (if nothing is passed as value).
+            auth.PasswordHash | None: hashed password as object or `None` (if nothing is passed as value).
         """
         return self._convert(password)
 
@@ -144,13 +147,13 @@ class Password(TypeDecorator):
         Any other input will result in a TypeError.
 
         Args:
-            value (auth.PasswordHash | str | None): input value (plain password or hash or ``None`` if empty).
+            value (auth.PasswordHash | str | None): input value (plain password or hash or `None` if empty).
 
         Raises:
             TypeError: unknown type.
 
         Returns:
-            auth.PasswordHash | None: hashed password as object or ``None`` (if nothing is passed as value).
+            auth.PasswordHash | None: hashed password as object or `None` (if nothing is passed as value).
         """
         if isinstance(value, auth.PasswordHash):
             return value
@@ -166,13 +169,10 @@ class Password(TypeDecorator):
 
 
 class Encrypted(TypeDecorator):
-    """Allows storing and retrieving password hashes using PasswordHash.
+    """Allows storing and retrieving password hashes using PasswordHash."""
 
-    Attributes:
-         impl(String): base column implementation.
-    """
-
-    impl = String
+    impl: String = String
+    """Base column implementation."""
 
     def process_bind_param(
         self, value: auth.PasswordEncrypt | str | None, dialect
@@ -180,11 +180,11 @@ class Encrypted(TypeDecorator):
         """Ensure the value is a PasswordEncrypt and then return the encrypted password.
 
         Args:
-            value (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or ``None`` if empty)
+            value (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or `None` if empty)
             dialect (Any): dialect (not used).
 
         Returns:
-            str | None: encrypted password or ``None`` if empty.
+            str | None: encrypted password or `None` if empty.
         """
         converted_value = self._convert(value)
         if converted_value:
@@ -198,11 +198,11 @@ class Encrypted(TypeDecorator):
         """Convert the hash to a PasswordEncrypt, if it's non-NULL.
 
         Args:
-            value (str | None): input value (plain password or encrypted or ``None`` if empty)
+            value (str | None): input value (plain password or encrypted or `None` if empty)
             dialect (Any): dialect (not used).
 
         Returns:
-            auth.PasswordEncrypt | None: encrypted password as object or ``None`` (if nothing is passed as value).
+            auth.PasswordEncrypt | None: encrypted password as object or `None` (if nothing is passed as value).
         """
         if value is not None:
             return auth.PasswordEncrypt(value)
@@ -210,13 +210,13 @@ class Encrypted(TypeDecorator):
     def validator(
         self, password: auth.PasswordEncrypt | str | None
     ) -> auth.PasswordEncrypt | None:
-        """Provides a validator/converter for @validates usage.
+        """Provides a validator/converter used by @validates.
 
         Args:
-            password (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or ``None`` if empty)
+            password (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or `None` if empty)
 
         Returns:
-            auth.PasswordEncrypt | None: encrypted password as object or ``None`` (if nothing is passed as value).
+            auth.PasswordEncrypt | None: encrypted password as object or `None` (if nothing is passed as value).
         """
         return self._convert(password)
 
@@ -230,13 +230,13 @@ class Encrypted(TypeDecorator):
         Any other input will result in a TypeError.
 
         Args:
-            value (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or ``None`` if empty)
+            value (auth.PasswordEncrypt | str | None): input value (plain password or encrypted or `None` if empty)
 
         Raises:
             TypeError: unknown type.
 
         Returns:
-            auth.PasswordEncrypt | None: encrypted password as object or ``None`` (if nothing is passed as value).
+            auth.PasswordEncrypt | None: encrypted password as object or `None` (if nothing is passed as value).
         """
         if isinstance(value, auth.PasswordEncrypt):
             return value
@@ -255,19 +255,34 @@ class Encrypted(TypeDecorator):
 
 
 class Menu(Data):
-    __tablename__ = "menu"
-    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
-    item = Column(String(250), unique=False, nullable=False)
-    orders = relationship(
+    """Table with menu items."""
+
+    __tablename__: str = "menu"
+    """Name of the table."""
+    id: Column = Column(
+        Integer, Identity(start=1, cycle=True), primary_key=True
+    )
+    """Menu item ID."""
+    item: Column = Column(String(250), unique=False, nullable=False)
+    """Item name."""
+    orders: DeclarativeMeta = relationship(
         "Orders",
         back_populates="menu_item",
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    """Orders connected to each menu item."""
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -282,7 +297,14 @@ class Menu(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -292,31 +314,56 @@ class Menu(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<MENU_ITEM:{self.id} - {self.item}>"
 
 
 class Orders(Data):
-    __tablename__ = "orders"
-    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
-    user = Column(
+    """Table with items that belongs to an order."""
+
+    __tablename__: str = "orders"
+    """Name of the table."""
+    id: Column = Column(
+        Integer, Identity(start=1, cycle=True), primary_key=True
+    )
+    """Order ID."""
+    user: Column = Column(
         String(100),
         ForeignKey("users.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
     )
-    user_record = relationship("Users", back_populates="orders", uselist=False)
-    menu_item_id = Column(
+    """User that placed the order."""
+    user_record: DeclarativeMeta = relationship(
+        "Users", back_populates="orders", uselist=False
+    )
+    """User connected to this order."""
+    menu_item_id: Column = Column(
         Integer,
         ForeignKey("menu.id", ondelete="CASCADE"),
         nullable=False,
     )
-    menu_item = relationship("Menu", back_populates="orders")
-    note = Column(String(300), unique=False, nullable=True)
+    """ID of the menu item included in the order."""
+    menu_item: DeclarativeMeta = relationship("Menu", back_populates="orders")
+    """Menu items connected to each order (see `menu` table)."""
+    note: Column = Column(String(300), unique=False, nullable=True)
+    """Note field attached to the order."""
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -331,7 +378,14 @@ class Orders(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -341,37 +395,57 @@ class Orders(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<ORDER:{self.user}, {self.menu_item.item}>"
 
 
 class Users(Data):
-    __tablename__ = "users"
-    id = Column(
+    """Table with users that placed an order."""
+
+    __tablename__: str = "users"
+    """Name of the table."""
+    id: Column = Column(
         String(100),
         primary_key=True,
         nullable=False,
     )
-    guest = Column(
+    """User ID."""
+    guest: Column = Column(
         String(20),
         nullable=False,
         default="NotAGuest",
         server_default="NotAGuest",
     )
-    lunch_time = Column(String(7), index=True, nullable=False)
-    takeaway = Column(
+    """Guest flag (true if guest)."""
+    lunch_time: Column = Column(String(7), index=True, nullable=False)
+    """User selected lunch time."""
+    takeaway: Column = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
-    orders = relationship(
+    """Takeaway flag (true if takeaway)."""
+    orders: DeclarativeMeta = relationship(
         "Orders",
         back_populates="user_record",
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    """Orders connected to each user."""
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -386,7 +460,14 @@ class Users(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -396,37 +477,62 @@ class Users(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<USER:{self.id}>"
 
 
 class Stats(Data):
-    # Primary key handled with __table_args__ bcause ON CONFLICT for composite
+    """Table with number of users that ate a lunch, grouped by guest type."""
+
+    # Primary key handled with __table_args__ because ON CONFLICT for composite
     # primary key is available only with __table_args__
-    __tablename__ = "stats"
-    __table_args__ = (
+    __tablename__: str = "stats"
+    """Name of the table."""
+    __table_args__: tuple = (
         PrimaryKeyConstraint(
             "date", "guest", name="stats_pkey", sqlite_on_conflict="REPLACE"
         ),
     )
-    date = Column(
+    """Table arguments, used to create primary key (ON CONFLICT options for composite
+    primary key is available only with __table_args__)."""
+    date: Column = Column(
         Date,
         nullable=False,
         server_default=func.current_date(),
     )
-    guest = Column(
+    """Day to which the statistics refers to."""
+    guest: Column = Column(
         String(20),
         nullable=True,
         default="NotAGuest",
         server_default="NotAGuest",
     )
-    hungry_people = Column(
+    """Different kind of guests are identified by the value defined in config files
+    (see config key `panel.guest_types`).
+    'NotAGuest' is the value used for locals.
+    """
+    hungry_people: Column = Column(
         Integer, nullable=False, default=0, server_default="0"
     )
+    """Number of people that ate in a certain day.
+    different kind of guests are identified by the value in guest column.
+    """
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -441,7 +547,14 @@ class Stats(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -451,23 +564,43 @@ class Stats(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
 
 
 class Flags(Data):
-    __tablename__ = "flags"
-    id = Column(
+    """Table with global flags used by Data-Lunch.
+
+    'No more orders' flag and guest override flags are stored here.
+    """
+
+    __tablename__: str = "flags"
+    """Name of the table."""
+    id: Column = Column(
         String(50),
         primary_key=True,
         nullable=False,
         sqlite_on_conflict_primary_key="REPLACE",
     )
-    value = Column(Boolean, nullable=False)
+    """Flag ID (name)."""
+    value: Column = Column(Boolean, nullable=False)
+    """Flag value."""
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -482,7 +615,14 @@ class Flags(Data):
 
     @classmethod
     def clear_guest_override(self, config: DictConfig) -> int:
-        """Clear 'guest_override' flags and return deleted rows"""
+        """Clear 'guest_override' flags and return deleted rows
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -499,7 +639,14 @@ class Flags(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -509,25 +656,46 @@ class Flags(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<FLAG:{self.id} - value:{self.value}>"
 
 
 # CREDENTIALS MODELS ----------------------------------------------------------
 class PrivilegedUsers(Data):
-    __tablename__ = "privileged_users"
-    user = Column(
+    """Table with user that have privileges (normal users and admin).
+
+    If enabled guests are all the authenticated users that do not belong to this table
+    (see config key `auth.authorize_guest_users` and `basic_auth.guest_user`)
+    """
+
+    __tablename__: str = "privileged_users"
+    """Name of the table."""
+    user: Column = Column(
         String(100),
         primary_key=True,
         sqlite_on_conflict_primary_key="REPLACE",
     )
-    admin = Column(
+    """User name."""
+    admin: Column = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
+    """Admin flag (true if admin)."""
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -542,7 +710,14 @@ class PrivilegedUsers(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -552,29 +727,49 @@ class PrivilegedUsers(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<PRIVILEGED_USER:{self.id}>"
 
 
 class Credentials(Data):
-    __tablename__ = "credentials"
-    user = Column(
+    """Table with users credentials, used only if basic authentication is active."""
+
+    __tablename__: str = "credentials"
+    """Name of the table."""
+    user: Column = Column(
         String(100),
         primary_key=True,
         sqlite_on_conflict_primary_key="REPLACE",
     )
-    password_hash = Column(Password(150), unique=False, nullable=False)
-    password_encrypted = Column(
+    """Username."""
+    password_hash: Column = Column(Password(150), unique=False, nullable=False)
+    """Hashed password."""
+    password_encrypted: Column = Column(
         Encrypted(150),
         unique=False,
         nullable=True,
         default=None,
         server_default=None,
     )
+    """Encryped password.
+
+    Used only if basic authentication and guest users are both active."""
 
     @classmethod
     def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows"""
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
 
         session = create_session(config)
         with session:
@@ -589,7 +784,14 @@ class Credentials(Data):
 
     @classmethod
     def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame"""
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
         df = pd.read_sql_table(
             self.__tablename__,
             create_engine(config=config),
@@ -599,15 +801,46 @@ class Credentials(Data):
 
         return df
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
         return f"<CREDENTIAL:{self.user}>"
 
     @validates("password_hash")
-    def _validate_password(self, key, password):
+    def _validate_password(
+        self, key: str, password: str
+    ) -> auth.PasswordHash | None:
+        """Function that validate password input.
+
+        It converts string to auth.PasswordHash if necessary.
+
+        Args:
+            key (str): validated attribute name.
+            password (str): hashed password to be validated.
+
+        Returns:
+            auth.PasswordHash | None: validated hashed password.
+        """
         return getattr(type(self), key).type.validator(password)
 
     @validates("password_encrypted")
-    def _validate_encrypted(self, key, password):
+    def _validate_encrypted(
+        self, key: str, password: str
+    ) -> auth.PasswordEncrypt | None:
+        """Function that validate encrypted input.
+
+        It converts string to auth.PasswordEncrypt if necessary.
+
+        Args:
+            key (str): validated attribute name.
+            password (str): encrypted password to be validated.
+
+        Returns:
+            auth.PasswordEncrypt | None: validated encrypted password.
+        """
         return getattr(type(self), key).type.validator(password)
 
 
@@ -617,10 +850,17 @@ class Credentials(Data):
 def get_db_dialect(
     db_obj: Session | ConnectionSqlite | ConnectionPostgresql,
 ) -> str:
-    """Return database type (postgresql, sqlite, etc.) based on the database
-    object passed as input.
-    If a session is passed
-    The database type is set based on an internal map (see models._DBTYPE_MAP).
+    """Return database type (postgresql, sqlite, etc.) based on the database object passed as input.
+    If a session is passed, the database type is set based on an internal map (see `models._DBTYPE_MAP`).
+
+    Args:
+        db_obj (Session | ConnectionSqlite | ConnectionPostgresql): session or connection object.
+
+    Raises:
+        TypeError: db_obj shall be a session or a connection object.
+
+    Returns:
+        str: database dialect.
     """
     if isinstance(db_obj, Session):
         dialect = db_obj.bind.dialect.name
@@ -638,8 +878,14 @@ def get_db_dialect(
 def session_add_with_upsert(
     session: Session, constraint: str, new_record: Stats | Flags
 ) -> None:
-    """Use an upsert statement for postgresql t a dd a new record to a table,
-    a simple session add otherwise"""
+    """Use an upsert statement for postgresql to add a new record to a table,
+    a simple session add otherwise.
+
+    Args:
+        session (Session): SQLAlchemy session object.
+        constraint (str): constraint used for upsert (usually the primary key)
+        new_record (Stats | Flags): table resord (valid tables are `stats` or `flags`)
+    """
     # Use an upsert for postgresql (for sqlite an 'on conflict replace' is set
     # on table, so session.add is fine)
     if get_db_dialect(session) == "postgresql":
@@ -663,7 +909,14 @@ def session_add_with_upsert(
 
 
 def create_engine(config: DictConfig) -> Engine:
-    """SQLAlchemy engine factory function"""
+    """Factory function for SQLAlchemy engine.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        Engine: SQLAlchemy engine.
+    """
     engine = hydra.utils.instantiate(config.db.engine)
 
     # Change schema with change_execution_options
@@ -678,7 +931,14 @@ def create_engine(config: DictConfig) -> Engine:
 
 
 def create_session(config: DictConfig) -> Session:
-    """Database session factory function"""
+    """Factory function for database session.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        Session: SQLAlchemy session.
+    """
     engine = create_engine(config)
     session = Session(engine)
 
@@ -686,9 +946,20 @@ def create_session(config: DictConfig) -> Session:
 
 
 def create_exclusive_session(config: DictConfig) -> Session:
-    """Database exclusive session factory function
+    """Factory function for database exclusive session.
     Database is locked until the transaction is completed (to be used to avoid
-    race conditions)"""
+    race conditions).
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        Session: SQLAlchemy exclusive session.
+
+    Note:
+        This function is not used inside Data-Lunch code.
+
+    """
     engine = create_engine(config)
 
     # Alter begin statement
@@ -709,7 +980,14 @@ def create_exclusive_session(config: DictConfig) -> Session:
 
 
 def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
-    """Database factory function"""
+    """Function to create the database through SQLAlchemy models.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        add_basic_auth_users (bool, optional): set to true to add admin and guest users.
+            These users are of interest only if 'basic authentication' is selected.
+            Defaults to False.
+    """
     # Create directory if missing
     log.debug("create 'shared_data' folder")
     pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
@@ -773,7 +1051,13 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
 
 
 def set_flag(config: DictConfig, id: str, value: bool) -> None:
-    """Set value inside flag table"""
+    """Set a key,value pair inside `flag` table.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        id (str): flag id (name).
+        value (bool): flag value.
+    """
 
     session = create_session(config)
 
@@ -794,6 +1078,14 @@ def get_flag(
 ) -> bool | None:
     """Get the value of a flag.
     Optionally select the values to return if the flag is missing (default to None).
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        id (str): flag id (name).
+        value_if_missing (bool | None, optional): value to return if the flag does not exist. Defaults to None.
+
+    Returns:
+        bool | None: flag value.
     """
 
     session = create_session(config)

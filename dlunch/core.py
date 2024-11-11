@@ -1,6 +1,7 @@
 import cryptography.fernet
 import panel as pn
 import pandas as pd
+import param
 import pathlib
 import logging
 import socket
@@ -25,12 +26,12 @@ from . import auth
 from .auth import pn_user
 
 # APP METADATA ----------------------------------------------------------------
-__version__ = "3.3.0"
-"""str: Data-Lunch version."""
+__version__: str = "3.3.0"
+"""Data-Lunch version."""
 
 # LOGGER ----------------------------------------------------------------------
-log = logging.getLogger(__name__)
-"""Logger: module logger."""
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # FUNCTIONS -------------------------------------------------------------------
@@ -117,9 +118,9 @@ def set_guest_user_password(config: DictConfig) -> str:
 
     Guest user and basic authentication are handled through configuration files.
 
-    If the flag ``reset_guest_user_password`` is set to ``True`` the password is created
+    If the flag `reset_guest_user_password` is set to `True` the password is created
     and uploaded to database. Otherwise the existing password is queried from database
-    ``credentials`` table.
+    `credentials` table.
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
@@ -195,15 +196,15 @@ def set_guest_user_password(config: DictConfig) -> str:
 
 
 def build_menu(
-    event,
+    event: param.parameterized.Event,
     config: DictConfig,
     app: pn.Template,
     gi: gui.GraphicInterface,
 ) -> None:
-    """Read menu from file (Excel or image) and upload menu items to database ``menu`` table.
+    """Read menu from file (Excel or image) and upload menu items to database `menu` table.
 
     Args:
-        event (_type_): Panel button event.
+        event (param.parameterized.Event): Panel button event.
         config (DictConfig): Hydra configuration dictionary.
         app (pn.Template): Panel app template (used to open modal windows in case of database errors).
         gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
@@ -330,7 +331,7 @@ def build_menu(
 
 
 def reload_menu(
-    event,
+    event: param.parameterized.Event,
     config: DictConfig,
     gi: gui.GraphicInterface,
 ) -> None:
@@ -339,14 +340,14 @@ def reload_menu(
     Stop orders and guest override checks are carried out by this function.
     Also the banner image is shown based on a check run by this function.
 
-    ``menu``, ``orders`` and ``users`` tables are used to build a list of orders for each lunch time.
+    `menu`, `orders` and `users` tables are used to build a list of orders for each lunch time.
     Takeaway orders are evaluated separately.
 
     At the end stats about lunches are calculated and loaded to database. Finally
     statistics (values and table) shown inside the app are updated accordingly.
 
     Args:
-        event (_type_): Panel button event.
+        event (param.parameterized.Event): Panel button event.
         config (DictConfig): Hydra configuration dictionary.
         gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
     """
@@ -641,7 +642,7 @@ def reload_menu(
 
 
 def send_order(
-    event,
+    event: param.parameterized.Event,
     config: DictConfig,
     app: pn.Template,
     person: gui.Person,
@@ -649,16 +650,16 @@ def send_order(
 ) -> None:
     """Upload orders and user to database tables.
 
-    The user target of the order is uploaded to ``users`` table, while the order
-    is uploaded to ``orders`` table.
+    The user target of the order is uploaded to `users` table, while the order
+    is uploaded to `orders` table.
 
     Consistency checks about the user and the order are carried out here (existing user, only one order, etc.).
-    The status of the ``stop_orders`` flag is checked to avoid that an order is uploaded when it shouldn't.
+    The status of the `stop_orders` flag is checked to avoid that an order is uploaded when it shouldn't.
 
     Orders for guest users are marked as such before uploading them.
 
     Args:
-        event (_type_): Panel button event.
+        event (param.parameterized.Event): Panel button event.
         config (DictConfig): Hydra configuration dictionary.
         app (pn.Template): Panel app template (used to open modal windows in case of database errors).
         person (gui.Person): class that collect order data for the user that is the target of the order.
@@ -824,7 +825,7 @@ def send_order(
 
 
 def delete_order(
-    event,
+    event: param.parameterized.Event,
     config: DictConfig,
     app: pn.Template,
     gi: gui.GraphicInterface,
@@ -832,12 +833,12 @@ def delete_order(
     """Delete an existing order.
 
     Consistency checks about the user and the order are carried out here (existing user, only one order, etc.).
-    The status of the ``stop_orders`` flag is checked to avoid that an order is uploaded when it shouldn't.
+    The status of the `stop_orders` flag is checked to avoid that an order is uploaded when it shouldn't.
 
     In addition privileges are taken into account (guest users cannot delete orders that targets a privileged user).
 
     Args:
-        event (_type_): Panel button event.
+        event (param.parameterized.Event): Panel button event.
         config (DictConfig): Hydra configuration dictionary.
         app (pn.Template): Panel app template (used to open modal windows in case of database errors).
         gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
@@ -947,7 +948,7 @@ def delete_order(
 
 
 def change_order_time_takeaway(
-    event,
+    event: param.parameterized.Event,
     config: DictConfig,
     person: gui.Person,
     gi: gui.GraphicInterface,
@@ -955,7 +956,7 @@ def change_order_time_takeaway(
     """Change the time and the takeaway flag of an existing order.
 
     Args:
-        event (_type_): anel button event.
+        event (param.parameterized.Event): Panel button event.
         config (DictConfig): Hydra configuration dictionary.
         person (gui.Person): class that collect order data for the user that is the target of the order.
         gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
@@ -1041,7 +1042,7 @@ def df_list_by_lunch_time(
     Each datframe includes orders grouped by users, notes and a total column (with the total value
     for a specific item).
 
-    The keys of the dataframe are ``lunch-times`` and ``lunch-times + takeaway_id``.
+    The keys of the dataframe are `lunch-times` and `lunch-times + takeaway_id`.
 
     Args:
         config (DictConfig): _description_
@@ -1166,7 +1167,7 @@ def download_dataframe(
 ) -> BytesIO:
     """Build an Excel file with tables representing orders for every lunch-time/takeaway-time.
 
-    Tables are created by the function ``df_list_by_lunch_time`` and exported on dedicated Excel worksheets
+    Tables are created by the function `df_list_by_lunch_time` and exported on dedicated Excel worksheets
     (inside the same workbook).
 
     The result is returned as bytes stream to satisfy panel.widgets.FileDownload class requirements.
@@ -1306,7 +1307,15 @@ def download_dataframe(
 
 def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
     """Same as backend_submit_password with an additional check on old
-    password"""
+    password.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+
+    Returns:
+        bool: true if successful, false otherwise.
+    """
     # Get user's password hash
     password_hash = auth.get_hash_from_user(pn_user(config), config=config)
     # Get username, updated updated at each key press
@@ -1337,10 +1346,22 @@ def backend_submit_password(
     logout_on_success: bool = False,
 ) -> bool:
     """Submit password to database from backend but used also from frontend as
-    part of submit_password function.
-    When used for backend is_guest and is_admin are selected from a widget.
-    When called from frontend they are None and the function read them from
+    part of `submit_password` function.
+
+    When used for backend `is_guest` and `is_admin` are selected from a widget.
+    When called from frontend they are `None` and the function read them from
     database using the user input.
+
+    Args:
+        gi (gui.GraphicInterface | gui.BackendInterface): graphic interface object (used to interact with Panel widgets).
+        config (DictConfig): Hydra configuration dictionary.
+        user (str, optional): username. Defaults to None.
+        is_guest (bool | None, optional): guest flag (true if guest). Defaults to None.
+        is_admin (bool | None, optional): admin flag (true if admin). Defaults to None.
+        logout_on_success (bool, optional): set to true to force logout once the new password is set. Defaults to False.
+
+    Returns:
+        bool: true if successful, false otherwise.
     """
     # Check if user is passed, otherwise check if backend widget
     # (password_widget.object.user) is available
