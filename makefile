@@ -267,7 +267,7 @@ docker-db-clean:
 # Clean rules -----------------------------------------------------------------
 clean-folders:
 	@echo -e "${YELLOW}clean folders${NC}"
-	rm -rf .ipynb_checkpoints __pycache__ .pytest_cache */.ipynb_checkpoints */__pycache__ */.pytest_cache dist docs/_build docs/api build
+	rm -rf .ipynb_checkpoints __pycache__ .pytest_cache */.ipynb_checkpoints */__pycache__ */.pytest_cache dist site
 	@echo -e "${GREEN}done${NC}"
 
 clean-docker:
