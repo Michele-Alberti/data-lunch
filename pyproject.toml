@@ -33,6 +33,9 @@ packages = ["dlunch"]
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements/requirements.txt"]}
 
+[tool.setuptools.dynamic.optional-dependencies]
+docs = {file = ['requirements/docs-requirements.txt']}
+
 [tool.black]
 line-length = 79
 include = '\.pyi?$'
@@ -56,7 +59,6 @@ version = "3.3.0"
 version_files = [
     "dlunch/core.py",
     "pyproject.toml:version",
-    "docs/conf.py:release",
 ]
 tag_format = "v$version"
 changelog_file = "changelog.md"
