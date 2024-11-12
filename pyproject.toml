@@ -32,7 +32,10 @@ packages = ["dlunch"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements/requirements.txt"]}
-optional-dependencies ={ docs = {file = ['requirements/docs-requirements.txt']} }
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = {file = ['requirements/dev-requirements.txt']}
+docs = {file = ['requirements/docs-requirements.txt']}
 
 [tool.black]
 line-length = 79
