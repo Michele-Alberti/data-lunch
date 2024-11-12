@@ -1,0 +1,13 @@
+[data-md-color-scheme="dlunch"] {
+    /* Primary color shades */
+    --md-primary-fg-color:               #0372b5;
+    --md-primary-fg-color--light:        #0496F1;
+    --md-primary-fg-color--dark:         #024B79;
+
+    /* Accent color shades */
+    --md-accent-fg-color:                #22A8FC;
+    --md-accent-fg-color--transparent:   #87D0FD;
+
+    /* Links color */
+    --md-typeset-a-color:                var(--md-primary-fg-color);
+}
