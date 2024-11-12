@@ -281,12 +281,20 @@ mkdocs-build:
 	mkdocs build
 	@echo -e "${GREEN}done${NC}"
 
+mkdocs-serve:
+	@echo -e "${YELLOW}serving without docs version ${NC}"
+	@echo -e "${YELLOW}use: ${NC}"
+	@echo -e "${CYAN}make mike-serve${NC}"
+	@echo -e "${YELLOW}to show existing docs and its versions${NC}"
+	mkdocs serve
+
+mike-serve:
+	mike serve
+
 docs: mkdocs-build
 	@echo -e "${GREEN}docs build successfully${NC}"
 
-docs-serve:
-	mkdocs serve
-
+docs-serve: mkdocs-serve
 
 # Other rules -----------------------------------------------------------------
 
