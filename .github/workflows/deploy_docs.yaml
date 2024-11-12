@@ -1,0 +1,70 @@
+name: 📚 Deploy docs
+
+on:
+  push:
+    branches:
+      - development
+    tags:
+      - v*
+
+# Makes sure only one workflow runs at a time.
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  build_deploy:
+    name: 🚚 Build and deploy 📗
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: http://Michele-Alberti.github.io/data-lunch
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+      - name: Set Git config
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.7'
+          cache: 'pip'
+      - name: Install requirements
+        # Alternatively: pip install mkdocs
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[docs]"
+      - name: Get current version
+        id: get_version
+        # Get first line starting with version from pyproject.toml, read only major and minor and add a leading v
+        run: |
+          echo "get version from pyproject.toml"
+          echo ""
+          MAJOR_MINOR_VERSION=$(grep -m 1 '^version =' pyproject.toml | sed -E 's/version = "([0-9]+\.[0-9]+).*/\1/')
+          VERSION="v$MAJOR_MINOR_VERSION"
+          echo "current version (major-minor): $VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+      - name: Set build alias for development
+        if: github.ref_name == 'development'
+        run: |
+          ALIAS=latest
+          echo "alias: $ALIAS"
+          echo "alias=$ALIAS" >> $GITHUB_ENV
+      - name: Set build alias for tagged version
+        if: startsWith(github.event.ref, 'refs/tags/v')
+        run: |
+          ALIAS=stable
+          echo "alias: $ALIAS"
+          echo "alias=$ALIAS" >> $GITHUB_ENV
+      - name: Build and deploy documentation
+        # Use mike to deploy the current version of the documentation
+        # `--push` pushes directly to the gh-pages branch on GitHub
+        run: mike deploy --push --update-aliases "${{ env.version }}" "${{ env.alias }}"
+      - name: Update default (stable)
+        if: ${{ env.alias }} == 'stable'
+        run: mike set-default --push stable
