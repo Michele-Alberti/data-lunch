@@ -286,10 +286,10 @@ mkdocs-serve:
 	@echo -e "${YELLOW}use: ${NC}"
 	@echo -e "${CYAN}make mike-serve${NC}"
 	@echo -e "${YELLOW}to show existing docs and its versions${NC}"
-	mkdocs serve
+	@mkdocs serve
 
 mike-serve:
-	mike serve
+	@mike serve
 
 docs: mkdocs-build
 	@echo -e "${GREEN}docs build successfully${NC}"
