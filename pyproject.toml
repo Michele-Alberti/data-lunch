@@ -18,7 +18,7 @@ classifiers = [
     "License :: Free for non-commercial use",
     "Operating System :: OS Independent",
 ]
-dynamic = ["dependencies"]
+dynamic = ["dependencies", "optional-dependencies"]
 
 [project.urls]
 Homepage = "https://github.com/Michele-Alberti/data-lunch"
@@ -32,9 +32,7 @@ packages = ["dlunch"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements/requirements.txt"]}
-
-[tool.setuptools.dynamic.optional-dependencies]
-docs = {file = ['requirements/docs-requirements.txt']}
+optional-dependencies ={ docs = {file = ['requirements/docs-requirements.txt']} }
 
 [tool.black]
 line-length = 79
