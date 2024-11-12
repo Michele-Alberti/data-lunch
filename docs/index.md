@@ -1,17 +1,16 @@
-# Welcome to MkDocs
+# Welcome to Data-Lunch documentation!
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+>**Data-Lunch:**
+>
+>The ultimate web app for a well organized lunch.
 
-## Commands
+**Data-Lunch** is your best friends when it's vital to collect and administer lunch orders 
+for a group of people (wether they are friends or teammates).
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+It started as a small personal project and it quickly became an unrepleaceable companion for me and my colleagues.
 
-## Project layout
+## More info
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+!!! warning "Work in Progress"
+
+    More info are coming!

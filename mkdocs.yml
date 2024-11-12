@@ -1,25 +1,41 @@
+# MAIN DATA -------------------------------------------------------------------
+# Site data
 site_name: Data-Lunch
 site_url: "http://Michele-Alberti.github.io/data-lunch/"
+site_author: Michele Alberti
 
+# Repository
+repo_name: Michele-Alberti/data-lunch
+repo_url: https://github.com/Michele-Alberti/data-lunch
+edit_uri: ""
+
+# Navigation bar
+nav:
+- Getting Started: getting_started.md
+- Code Reference: reference/
+
+# THEME -----------------------------------------------------------------------
+# Theme
 theme:
   name: "material"
   logo: assets/logo-dark.png
   favicon: assets/favicon.ico
   palette:
     scheme: dlunch
-  extra:
-    version:
-      provider: mike
-      default: stable
-      alias: true
 
+# Custom colors
 extra_css:
   - stylesheets/extra.css
 
-nav:
-- Getting Started: getting_started.md
-- Code Reference: reference/
+# PLUGINS AND MARKDOWN EXTENSIONS ---------------------------------------------
+# Docs versioning (mike)
+extra:
+  version:
+    provider: mike
+    default: stable
+    alias: true
 
+# Plugins
 plugins:
 - gh-admonitions
 - search
@@ -53,7 +69,12 @@ plugins:
           show_signature_annotations: true
           signature_crossrefs: true
 
+# Extensions
 markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
