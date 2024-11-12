@@ -11,8 +11,9 @@ edit_uri: ""
 
 # Navigation bar
 nav:
+- About Us: index.md
 - Getting Started: getting_started.md
-- Code Reference: reference/
+- Documentation: reference/
 
 # THEME -----------------------------------------------------------------------
 # Theme
