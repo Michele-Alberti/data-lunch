@@ -49,22 +49,17 @@ jobs:
           VERSION="v$MAJOR_MINOR_VERSION"
           echo "current version (major-minor): $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
-      - name: Set build alias for development
+      - name: Build and deploy documentation for development
         if: github.ref_name == 'development'
         run: |
-          ALIAS=latest
-          echo "alias: $ALIAS"
-          echo "alias=$ALIAS" >> $GITHUB_ENV
-      - name: Set build alias for tagged version
+          mike deploy --push --update-aliases latest 
+      - name: Build and deploy documentation for tagged version
         if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           ALIAS=stable
+          echo "version: $VERSION"
           echo "alias: $ALIAS"
-          echo "alias=$ALIAS" >> $GITHUB_ENV
-      - name: Build and deploy documentation
-        # Use mike to deploy the current version of the documentation
-        # `--push` pushes directly to the gh-pages branch on GitHub
-        run: mike deploy --push --update-aliases "${{ env.version }}" "${{ env.alias }}"
+          mike deploy --push --update-aliases "$VERSION" "$ALIAS"
       - name: Update default (stable)
         if: ${{ env.alias }} == 'stable'
         run: mike set-default --push stable
