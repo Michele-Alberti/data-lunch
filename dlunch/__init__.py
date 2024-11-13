@@ -1,23 +1,22 @@
-# App metadata
-__version__ = "3.3.0"
+"""Main Data-Lunch package."""
 
 import importlib.resources
-import pathlib
-import hydra
 import logging
 import panel as pn
 from omegaconf import DictConfig, OmegaConf
 
-# Database imports
+# Relative imports
 from . import models
-
-# Other Data-Lunch imports
 from . import core
+from .core import __version__
 from . import gui
 from . import auth
 from .auth import pn_user
 
-log = logging.getLogger(__name__)
+# LOGGER ----------------------------------------------------------------------
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
+
 
 # OMEGACONF RESOLVER ----------------------------------------------------------
 OmegaConf.register_new_resolver(
@@ -29,7 +28,14 @@ OmegaConf.register_new_resolver(
 
 
 def create_app(config: DictConfig) -> pn.Template:
-    """Panel app factory function"""
+    """Panel main app factory function
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        pn.Template: Panel main app template.
+    """
     log.info("starting initialization process")
 
     log.info("initialize database")
@@ -130,8 +136,15 @@ def create_app(config: DictConfig) -> pn.Template:
     return app
 
 
-def create_backend(config: DictConfig) -> pn.Column:
-    """Panel app factory function"""
+def create_backend(config: DictConfig) -> pn.Template:
+    """Panel backend app factory function
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        pn.Template: Panel backend app template.
+    """
 
     log.info("starting initialization process")
 

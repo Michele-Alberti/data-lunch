@@ -267,13 +267,34 @@ docker-db-clean:
 # Clean rules -----------------------------------------------------------------
 clean-folders:
 	@echo -e "${YELLOW}clean folders${NC}"
-	rm -rf .ipynb_checkpoints __pycache__ .pytest_cache */.ipynb_checkpoints */__pycache__ */.pytest_cache dist
+	rm -rf .ipynb_checkpoints __pycache__ .pytest_cache */.ipynb_checkpoints */__pycache__ */.pytest_cache dist site
 	@echo -e "${GREEN}done${NC}"
 
 clean-docker:
 	@echo -e "${YELLOW}clean docker${NC}"
 	docker system prune -f
 	@echo -e "${GREEN}done${NC}"
+
+# Docs rules ------------------------------------------------------------------
+mkdocs-build:
+	@echo -e "${YELLOW}build html docs pages${NC}"
+	mkdocs build
+	@echo -e "${GREEN}done${NC}"
+
+mkdocs-serve:
+	@echo -e "${YELLOW}serving without docs version ${NC}"
+	@echo -e "${YELLOW}use: ${NC}"
+	@echo -e "${CYAN}make mike-serve${NC}"
+	@echo -e "${YELLOW}to show existing docs and its versions${NC}"
+	@mkdocs serve
+
+mike-serve:
+	@mike serve
+
+docs: mkdocs-build
+	@echo -e "${GREEN}docs build successfully${NC}"
+
+docs-serve: mkdocs-serve
 
 # Other rules -----------------------------------------------------------------
 

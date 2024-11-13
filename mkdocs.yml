@@ -1,0 +1,85 @@
+# MAIN DATA -------------------------------------------------------------------
+# Site data
+site_name: Data-Lunch
+site_url: "http://Michele-Alberti.github.io/data-lunch/"
+site_author: Michele Alberti
+
+# Repository
+repo_name: Michele-Alberti/data-lunch
+repo_url: https://github.com/Michele-Alberti/data-lunch
+edit_uri: ""
+
+# Navigation bar
+nav:
+- About Us: index.md
+- getting_started.md
+- Documentation: reference/
+
+# THEME -----------------------------------------------------------------------
+# Theme
+theme:
+  name: "material"
+  logo: assets/logo-dark.png
+  favicon: assets/favicon.ico
+  palette:
+    scheme: dlunch
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+
+# Custom colors
+extra_css:
+  - stylesheets/extra.css
+
+# PLUGINS AND MARKDOWN EXTENSIONS ---------------------------------------------
+# Docs versioning (mike)
+extra:
+  version:
+    provider: mike
+    default: stable
+    alias: true
+
+# Plugins
+plugins:
+- gh-admonitions
+- search
+- autorefs
+- gen-files:
+    scripts:
+    - scripts/docs/generate_reference_pages.py
+    - scripts/docs/generate_getting_started.py
+- literate-nav:
+    nav_file: SUMMARY.md
+- section-index
+- mkdocstrings:
+    handlers:
+      python:
+        import:
+        - https://docs.python.org/3/objects.inv
+        - https://omegaconf.readthedocs.io/en/latest/objects.inv
+        - https://passlib.readthedocs.io/en/stable/objects.inv
+        - https://pandas.pydata.org/docs/objects.inv
+        - https://param.holoviz.org/objects.inv
+        - https://docs.sqlalchemy.org/objects.inv
+        options:
+          heading_level: 3
+          show_if_no_docstring: true
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
+          summary: true
+          docstring_options:
+            returns_named_value: false
+          separate_signature: true
+          show_signature_annotations: true
+          signature_crossrefs: true
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg

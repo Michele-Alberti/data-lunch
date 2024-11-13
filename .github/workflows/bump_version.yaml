@@ -33,7 +33,7 @@ jobs:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
       - name: Bump and changelog
         id: cz
-        uses: commitizen-tools/commitizen-action@0.21.0
+        uses: commitizen-tools/commitizen-action@0.22.0
         with:
           github_token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           prerelease: "${{ steps.vars.outputs.pre_release }}"
@@ -56,8 +56,8 @@ jobs:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
       - name: Set Git config
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Merge master back to dev
         run: |
           git checkout development

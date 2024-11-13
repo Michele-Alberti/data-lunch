@@ -18,7 +18,7 @@ classifiers = [
     "License :: Free for non-commercial use",
     "Operating System :: OS Independent",
 ]
-dynamic = ["dependencies"]
+dynamic = ["dependencies", "optional-dependencies"]
 
 [project.urls]
 Homepage = "https://github.com/Michele-Alberti/data-lunch"
@@ -32,6 +32,10 @@ packages = ["dlunch"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements/requirements.txt"]}
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = {file = ['requirements/dev-requirements.txt']}
+docs = {file = ['requirements/docs-requirements.txt']}
 
 [tool.black]
 line-length = 79
@@ -54,7 +58,7 @@ exclude = '''
 name = "cz_conventional_commits"
 version = "3.3.0"
 version_files = [
-    "dlunch/__init__.py",
+    "dlunch/core.py",
     "pyproject.toml:version",
 ]
 tag_format = "v$version"

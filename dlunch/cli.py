@@ -1,3 +1,11 @@
+"""Module with Data-Lunch's command line.
+
+The command line is built with `click`.
+
+Call `data-lunch --help` from the terminal inside an environment where the
+`dlunch` package is installed.
+"""
+
 import click
 import pkg_resources
 from hydra import compose, initialize
@@ -13,7 +21,8 @@ from .core import clean_tables as clean_tables_func
 from . import auth
 
 # Version
-__version__ = pkg_resources.require("dlunch")[0].version
+__version__: str = pkg_resources.require("dlunch")[0].version
+"""Data-Lunch command line version."""
 
 
 # CLI COMMANDS ----------------------------------------------------------------
@@ -117,7 +126,7 @@ def credentials(obj):
 )
 @click.pass_obj
 def add_user_credential(obj, user, password, is_admin, is_guest):
-    """Add users credentials (used by basic authentication)."""
+    """Add users credentials to credentials table (used by basic authentication)."""
 
     # Add a privileged users only if guest option is not active
     if not is_guest:
@@ -347,7 +356,8 @@ def load_table(
         click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
 
 
-def main():
+def main() -> None:
+    """Main command line entrypoint."""
     cli(auto_envvar_prefix="DATA_LUNCH")
 
 

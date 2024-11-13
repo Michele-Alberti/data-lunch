@@ -1,3 +1,7 @@
+"""Module that defines main graphic interface and backend graphic interface.
+
+Classes that uses `param` are then used to create Panel widget directly (see `Panel docs <https://panel.holoviz.org/how_to/param/uis.html>`__)."""
+
 import datetime
 from hydra.utils import instantiate
 import jinja2
@@ -19,36 +23,59 @@ from . import core
 from . import auth
 from .auth import pn_user
 
-log = logging.getLogger(__name__)
+# LOGGER ----------------------------------------------------------------------
+log: logging.Logger = logging.getLogger(__name__)
+"""Module logger."""
 
 
 # OPTIONS AND DEFAULTS --------------------------------------------------------
 # App
-header_row_height = 55
-header_button_width = 50
-generic_button_height = 45
-sidebar_width = 400
-sidebar_content_width = sidebar_width - 10
-time_col_width = 90
-time_col_spacer_width = 5
-main_area_min_width = 580 + time_col_spacer_width + time_col_width
-backend_min_height = 500
+header_row_height: int = 55
+"""Top header height."""
+header_button_width: int = 50
+"""Width for buttons used in top header."""
+generic_button_height: int = 45
+"""Button height."""
+sidebar_width: int = 400
+"""Sidebar width."""
+sidebar_content_width: int = sidebar_width - 10
+"""Sidebar content width. Should be smaller than sidebar width."""
+time_col_width: int = 90
+"""Time column width (the time column is on the side of the menu table)."""
+time_col_spacer_width: int = 5
+"""Time column spacer width."""
+main_area_min_width: int = 580 + time_col_spacer_width + time_col_width
+"""Main area width. It's the area with menu and order summary."""
+backend_min_height: int = 500
+"""Backend minimum height."""
 
 
 # CLASS -----------------------------------------------------------------------
 class Person(param.Parameterized):
-    username = param.String(default="", doc="your name")
-    lunch_time = param.ObjectSelector(
+    """Param class that define user data and lunch preferences for its order.
+
+    `username` is automatically set for privileged users. It's left empty for guest users.
+
+    `lunch_time` and `guest` available value are set when instantiation happens.
+    Check `panel.lunch_times_options` and `panel.guest_types` config keys.
+    """
+
+    username: param.String = param.String(default="", doc="your name")
+    """Username"""
+    lunch_time: param.ObjectSelector = param.ObjectSelector(
         default="12:30", doc="choose your lunch time", objects=["12:30"]
     )
-    guest = param.ObjectSelector(
+    """List of available lunch times."""
+    guest: param.ObjectSelector = param.ObjectSelector(
         default="Guest", doc="select guest type", objects=["Guest"]
     )
-    takeaway = param.Boolean(
+    """List of available guest types."""
+    takeaway: param.Boolean = param.Boolean(
         default=False, doc="tick to order a takeaway meal"
     )
+    """Takeaway flag (true if takeaway)."""
 
-    def __init__(self, config, **params):
+    def __init__(self, config: OmegaConf, **params):
         super().__init__(**params)
         # Set lunch times from config
         self.param.lunch_time.objects = config.panel.lunch_times_options
@@ -64,15 +91,32 @@ class Person(param.Parameterized):
             self.username = username
 
     def __str__(self):
+        """String representation of this object.
+
+        Returns:
+            (str): string representation.
+        """
         return f"PERSON:{self.name}"
 
 
 class PasswordRenewer(param.Parameterized):
-    old_password = param.String(default="")
-    new_password = param.String(default="")
-    repeat_new_password = param.String(default="")
+    """Param class used to create the widget that collect info to renew users password.
+
+    This widget is used only if basic authentication is active."""
+
+    old_password: param.String = param.String(default="")
+    """Old password."""
+    new_password: param.String = param.String(default="")
+    """New password."""
+    repeat_new_password: param.String = param.String(default="")
+    """Repeat the new password. This field tests if the new password is as intended."""
 
     def __str__(self):
+        """String representation of this object.
+
+        Returns:
+            (str): string representation.
+        """
         return "PasswordRenewer"
 
 
@@ -83,73 +127,139 @@ class PasswordRenewer(param.Parameterized):
 
 
 class BackendPasswordRenewer(param.Parameterized):
-    user = param.String(
+    """Param class used inside the backend to create the widget that collect info to renew users password.
+
+    It has more options compared to the standard `PasswordRenewer`.
+
+    This widget is used only if basic authentication is active."""
+
+    user: param.String = param.String(
         default="",
         doc="username for password update (use 'guest' for guest user)",
     )
-    new_password = param.String(default="")
-    repeat_new_password = param.String(default="")
-    admin = param.Boolean(default=False, doc="add admin privileges")
-    guest = param.Boolean(
+    """Username."""
+    new_password: param.String = param.String(default="")
+    """New password."""
+    repeat_new_password: param.String = param.String(default="")
+    """Repeat the new password. This field tests if the new password is as intended."""
+    admin: param.Boolean = param.Boolean(
+        default=False, doc="add admin privileges"
+    )
+    """Admin flag (true if admin)."""
+    guest: param.Boolean = param.Boolean(
         default=False,
         doc="guest account (don't add user to privileged users' table)",
     )
+    """Guest flag (true if guest).
+
+    User credentials are added to `credentials` table, but the user is not listed in `privileged_users` table."""
 
     def __str__(self):
+        """String representation of this object.
+
+        Returns:
+            (str): string representation.
+        """
         return "BackendPasswordRenewer"
 
 
 class BackendAddPrivilegedUser(param.Parameterized):
-    user = param.String(default="", doc="user to add")
-    admin = param.Boolean(default=False, doc="add admin privileges")
+    """Param class used inside the backend to create the widget add new users to the `privileged_user` table."""
+
+    user: param.String = param.String(default="", doc="user to add")
+    """Username of the new user."""
+    admin: param.Boolean = param.Boolean(
+        default=False, doc="add admin privileges"
+    )
+    """Admin flag (true if admin)."""
 
     def __str__(self):
+        """String representation of this object.
+
+        Returns:
+            (str): string representation.
+        """
         return "BackendAddUser"
 
 
 class BackendUserEraser(param.Parameterized):
-    user = param.String(default="", doc="user to be deleted")
+    """Param class used inside the backend to create the widget that delete users.
+
+    Users are deleted from both `credentials` and `privileged_user` tables."""
+
+    user: param.String = param.String(default="", doc="user to be deleted")
+    """User to be deleted."""
 
     def __str__(self):
+        """String representation of this object.
+
+        Returns:
+            (str): string representation.
+        """
         return "BackendUserEraser"
 
 
 # STATIC TEXTS ----------------------------------------------------------------
 # Tabs section text
-person_text = """
+person_text: str = """
 ### User Data
 
 _Privileged users_ do not need to fill the username.<br>
 _Guest users_ shall use a valid _unique_ name and select a guest type.
 """
-upload_text = """
+"""info Text used in `User` tab."""
+
+upload_text: str = """
 ### Menu Upload
 Select a .png, .jpg or .xlsx file with the menu.<br>
 The app may add some default items to the menu.
 
 **For .xlsx:** list menu items starting from cell A1, one per each row.
 """
-download_text = """
+"""info Text used in `Menu Upload` tab."""
+
+download_text: str = """
 ### Download Orders
 Download the order list.
 """
+"""info Text used in `Download Orders` tab."""
 
-guest_user_text = """
+guest_user_text: str = """
 ### Guest user
 """
+"""info Text used in guest `Password` widget."""
 
 
 # QUOTES ----------------------------------------------------------------------
 # Quote table
-quotes_filename = pathlib.Path(__file__).parent / "quotes.xlsx"
-df_quotes = pd.read_excel(quotes_filename)
+quotes_filename: pathlib.Path = pathlib.Path(__file__).parent / "quotes.xlsx"
+"""Excel file with quotes."""
+df_quotes: pd.DataFrame = pd.read_excel(quotes_filename)
+"""Dataframe with quotes."""
 # Quote of the day
-seed_day = int(datetime.datetime.today().strftime("%Y%m%d"))
-df_quote = df_quotes.sample(n=1, random_state=seed_day)
+seed_day: int = int(datetime.datetime.today().strftime("%Y%m%d"))
+"""seed to Select the quote of the day."""
+df_quote: pd.DataFrame = df_quotes.sample(n=1, random_state=seed_day)
+"""Dataframe with the quote of the day."""
 
 
 # USER INTERFACE CLASS ========================================================
 class GraphicInterface:
+    """Class with widgets for the main graphic interface.
+
+    All widgets are instantiated at class initialization.
+
+    Class methods handle specific operations that may be repeated multiple time after class instantiation.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        app (pn.Template): App panel template (see `Panel docs <https://panel.holoviz.org/how_to/templates/index.html>`__).
+        person (Person): Object with user data and preferences for the lunch order.
+        guest_password (str, optional): guest password to show in password tab. Used only if basic authentication is active.
+            Defaults to empty string (`""`).
+
+    """
+
     def __init__(
         self,
         config: DictConfig,
@@ -696,7 +806,7 @@ class GraphicInterface:
             width=sidebar_content_width,
         )
         # Reload tabs according to auth.is_guest results and guest_override
-        # flag (no need to oad, tabs are already empty)
+        # flag (no need to cleans, tabs are already empty)
         self.load_sidebar_tabs(config=config, clear_before_loading=False)
 
         # CALLBACKS
@@ -723,6 +833,19 @@ class GraphicInterface:
         time: str,
         guests_lists: dict = {},
     ) -> pnw.Tabulator:
+        """Build `Tabulator` object to display placed orders.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+            df (pd.DataFrame): Table with orders. It has columns for each user that placed an order, total and a note columns.
+            time (str): Lunch time.
+            guests_lists (dict, optional): Dictionary with lists of users dived by guest type.
+                Keys of the dictionary are the type of guest listed.
+                Defaults to empty dictionary (`{}`).
+
+        Returns:
+            pnw.Tabulator: Panel `Tabulator` object representing placed orders.
+        """
         # Add guest icon to users' id
         columns_with_guests_icons = df.columns.to_series()
         for guest_type, guests_list in guests_lists.items():
@@ -755,6 +878,29 @@ class GraphicInterface:
         stylesheets: list = [],
         **kwargs,
     ) -> pn.pane.HTML:
+        """Build HTML field to display the time label.
+
+        This function is used to display labels that summarize an order.
+
+        Those are shown on the side of the menu table as well as labels above each order table.
+
+        Args:
+            time (str): Lunch time.
+            diners_n (str): Number of people that placed an order.
+            separator (str, optional): Separator between lunch time and order data. Defaults to " &#10072; ".
+            emoji (str, optional): Emoji used as number lunch symbol. Defaults to "&#127829;".
+            per_icon (str, optional): icon used between the lunch emoji and the number of people that placed an order.
+                Usually a multiply operator.
+                Defaults to " &#10006; ".
+            is_takeaway (bool, optional): takeaway flag (true if the order is to takeaway). Defaults to False.
+            takeaway_alert_sign (str, optional): warning text to highlight that the order is to takeaway. Defaults to "TAKEAWAY".
+            css_classes (list, optional): CSS classes to assign to the resulting HTML pane. Defaults to [].
+            stylesheets (list, optional): Stylesheets to assign to the resulting HTML pane
+                (see `Panel docs <https://panel.holoviz.org/how_to/styling/apply_css.html>`__). Defaults to [].
+
+        Returns:
+            pn.pane.HTML: HTML pane representing a label with order summary.
+        """
         # If takeaway add alert sign
         if is_takeaway:
             takeaway = f"{separator}{takeaway_alert_sign}"
@@ -773,7 +919,16 @@ class GraphicInterface:
     # SIDEBAR SECTION
     def load_sidebar_tabs(
         self, config: DictConfig, clear_before_loading: bool = True
-    ):
+    ) -> None:
+        """Append tabs to the app template sidebar.
+
+        The flag `clear_before_loading` is set to true only during first instantiation, because the sidebar is empty at first.
+        Use the default value during normal operation to avoid tabs duplication.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+            clear_before_loading (bool, optional): Set to true to remove all tabs before appending the new ones. Defaults to True.
+        """
         # Clean tabs
         if clear_before_loading:
             self.sidebar_tabs.clear()
@@ -799,6 +954,22 @@ class GraphicInterface:
         host_name: str,
         stylesheets: list = [],
     ) -> dict:
+        """Build text used for statistics under the `stats` tab, and info under the `user` tab.
+
+        This functions needs Data-Lunch version and the name of the hosting machine to populate the info section.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+            df_stats (pd.DataFrame): dataframe with statistics.
+            user (str): username.
+            version (str): Data-Lunch version.
+            host_name (str): host name.
+            stylesheets (list, optional): Stylesheets to assign to the resulting HTML pane
+                (see `Panel docs <https://panel.holoviz.org/how_to/styling/apply_css.html>`__). Defaults to [].
+
+        Returns:
+            dict: _description_
+        """
         # Stats top text
         stats = pn.pane.HTML(
             f"""
@@ -892,6 +1063,16 @@ class GraphicInterface:
 
 # BACKEND INTERFACE CLASS ========================================================
 class BackendInterface:
+    """Class with widgets for the backend graphic interface.
+
+    All widgets are instantiated at class initialization.
+
+    Class methods handle specific operations that may be repeated multiple time after class instantiation.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+    """
+
     def __init__(
         self,
         config: DictConfig,
@@ -1202,7 +1383,13 @@ class BackendInterface:
 
     # UTILITY FUNCTIONS
     # MAIN SECTION
-    def reload_backend(self, config) -> None:
+    def reload_backend(self, config: DictConfig) -> None:
+        """Reload backend by updating user lists and privileges.
+        Read also flags from `flags` table.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+        """
         # Users and guests lists
         self.users_tabulator.value = auth.list_users_guests_and_privileges(
             config
@@ -1215,6 +1402,7 @@ class BackendInterface:
         self.flags_content.value = df_flags
 
     def exit_backend(self) -> None:
+        """Return to main homepage."""
         # Edit pathname to force exit
         pn.state.location.pathname = (
             pn.state.location.pathname.split("/")[0] + "/"
