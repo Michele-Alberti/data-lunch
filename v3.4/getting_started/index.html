@@ -1,0 +1,1511 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Michele Alberti">
+      
+      
+        <link rel="canonical" href="http://Michele-Alberti.github.io/data-lunch/v3.4/getting_started/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../reference/dlunch/">
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
+    
+    
+      
+        <title>Getting Started - Data-Lunch</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="dlunch" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getting-started" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Data-Lunch" class="md-header__button md-logo" aria-label="Data-Lunch" data-md-component="logo">
+      
+  <img src="../assets/logo-dark.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Data-Lunch
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Getting Started
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Michele-Alberti/data-lunch" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Michele-Alberti/data-lunch
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  About Us
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reference/dlunch/" class="md-tabs__link">
+          
+  
+  Documentation
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Data-Lunch" class="md-nav__button md-logo" aria-label="Data-Lunch" data-md-component="logo">
+      
+  <img src="../assets/logo-dark.png" alt="logo">
+
+    </a>
+    Data-Lunch
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Michele-Alberti/data-lunch" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Michele-Alberti/data-lunch
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About Us
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#development-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development environment setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development environment setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#miniconda" class="md-nav__link">
+    <span class="md-ellipsis">
+      Miniconda
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-the-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup the development environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      General
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-and-google-cloud-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker and Google Cloud Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tlsssl-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      TLS/SSL Certificate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encryption-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Encryption and Authorization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manually-install-the-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manually install the development environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manually-install-data-lunch-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manually install data-lunch CLI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-docker-compose-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the docker-compose system
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-a-single-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running a single container
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running locally
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-installations-before-contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional installations before contributing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional installations before contributing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-commit hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commitizen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commitizen
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-strategy-from-development-to-main-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Release strategy from development to main branch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#google-cloud-platform-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Platform utilities
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Documentation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/dlunch/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    dlunch
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            dlunch
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/__main__/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    __main__
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/auth/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    auth
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/cli/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cli
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/cloud/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cloud
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/conf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    conf
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/core/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    core
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/gui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gui
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/dlunch/scheduled_tasks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    scheduled_tasks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#development-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development environment setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development environment setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#miniconda" class="md-nav__link">
+    <span class="md-ellipsis">
+      Miniconda
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-the-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup the development environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      General
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-and-google-cloud-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker and Google Cloud Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tlsssl-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      TLS/SSL Certificate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encryption-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Encryption and Authorization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manually-install-the-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manually install the development environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manually-install-data-lunch-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manually install data-lunch CLI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-docker-compose-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the docker-compose system
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-a-single-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running a single container
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running locally
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-installations-before-contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional installations before contributing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional installations before contributing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-commit hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commitizen" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commitizen
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-strategy-from-development-to-main-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Release strategy from development to main branch
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#google-cloud-platform-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google Cloud Platform utilities
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="getting-started">Getting Started</h1>
+<p><a id="doc-start"></a></p>
+<h2 id="development-environment-setup">Development environment setup</h2>
+<p>The following steps will guide you through the installation procedure.</p>
+<h3 id="miniconda">Miniconda</h3>
+<p><a href="https://docs.conda.io/en/latest/">Conda</a> is required for creating the development environment (it is suggested to install <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>).</p>
+<h3 id="setup-the-development-environment">Setup the development environment</h3>
+<p>Use the setup script (<code>setup_dev_env.sh</code>) to install all the required development tools.</p>
+<p>Use <code>source</code> to properly launch the script.</p>
+<div class="highlight"><pre><span></span><code>source setup_dev_env.sh
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Important</p>
+<p>The setup script will take care of setting up the development environment for you.
+ The script installs:
+ - 3 environments (<code>data-lunch</code> for development, <code>ci-cd</code> for <em>pre-commit</em> and other utilities, <code>gc-sdk</code> for interacting with <em>Google Cloud Platform</em>)
+ - <em>pre-commit</em> hooks
+ - <code>data-lunch</code> command line</p>
+</div>
+<h3 id="environment-variables">Environment variables</h3>
+<p>The following environment variables are required for running the <em>web app</em>, the <em>makefile</em> or <em>utility scripts</em>.</p>
+<h4 id="general">General</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th style="text-align: center;">Type</th>
+<th style="text-align: center;">Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PANEL_APP</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">✔️</td>
+<td>app name, <em>data-lunch-app</em> by default (used by <code>makefile</code>)</td>
+</tr>
+<tr>
+<td><code>PANEL_ENV</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">✔️</td>
+<td>environment, e.g. <em>development</em>, <em>quality</em>, <em>production</em>, affects app configuration (<em>Hydra</em>) and build processes (<em>makefile</em>)</td>
+</tr>
+<tr>
+<td><code>PANEL_ARGS</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>additional arguments passed to <em>Hydra</em> (e.g. <code>panel/gui=major_release</code>) in <em>makefile</em> and <code>docker-compose</code> commands</td>
+</tr>
+<tr>
+<td><code>PORT</code></td>
+<td style="text-align: center;"><em>int</em></td>
+<td style="text-align: center;">✔️</td>
+<td>port used by the web app (or the container), default to <em>5000</em>; affects app configuration and build process (it is used by <em>makefile</em>, <em>Hydra</em> and <em>Docker</em>)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="docker-and-google-cloud-platform">Docker and Google Cloud Platform</h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following variables are mainly used during the building process or by external scripts.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th style="text-align: center;">Type</th>
+<th style="text-align: center;">Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DOCKER_USERNAME</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>your <em>Docker Hub</em> username, used by <code>makefile</code> and stats panel to extract container name</td>
+</tr>
+<tr>
+<td><code>IMAGE_VERSION</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Docker</em> image version, typically <code>stable</code> or <code>latest</code> (used by <em>makefile</em> and <code>docker-compose</code> commands)</td>
+</tr>
+<tr>
+<td><code>GCLOUD_PROJECT</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Google Cloud Platform</em> <code>project_id</code>, used by <code>makefile</code> for <em>GCP's CLI</em> authentication and for uploading the database to <em>gcp</em> storage, if active in web app configuration files (see panel.scheduled_tasks)</td>
+</tr>
+<tr>
+<td><code>GCLOUD_BUCKET</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Google Cloud Platform</em> <code>bucket</code>, used for uploading database to <em>gcp</em> storage, if active in web app configuration files (see panel.scheduled_tasks)</td>
+</tr>
+<tr>
+<td><code>MAIL_USER</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>email client user, used for sending emails containing the instance IP, e.g.<em>mywebappemail@email.com</em> (used only for <em>Google Cloud Platform</em>)</td>
+</tr>
+<tr>
+<td><code>MAIL_APP_PASSWORD</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>email client password used for sending emails containing the instance IP (used only for <em>Google Cloud Platform</em>)</td>
+</tr>
+<tr>
+<td><code>MAIL_RECIPIENTS</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>email recipients as string, separated by <code>,</code> (used for sending emails containing the instance IP when hosted on <em>Google Cloud Platform</em>)</td>
+</tr>
+<tr>
+<td><code>DUCKDNS_URL</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>URL</em> used in <code>compose_init.sh</code> to update dynamic address (see <em>Duck DNS's</em> instructions for details, used when hosted on <em>Google Cloud Platform</em>)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tlsssl-certificate">TLS/SSL Certificate</h4>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the command <code>make ssl-gen-certificate</code> to generate local SSL certificates.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th style="text-align: center;">Type</th>
+<th style="text-align: center;">Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CERT_EMAIL</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>email for registering <em>SSL certificates</em>, shared with the authority <em>Let's Encrypt</em> (via <code>certbot</code>); used by <code>docker-compose</code> commands</td>
+</tr>
+<tr>
+<td><code>DOMAIN</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td>domain name, e.g. <em>mywebapp.com</em>, used by <code>docker-compose</code> commands (<code>certbot</code>), in email generation (<code>scripts</code> folder) and to auto-generate SSL certificates</td>
+</tr>
+</tbody>
+</table>
+<h4 id="encryption-and-authorization">Encryption and Authorization</h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All variables used by <em>Postgresql</em> are not required if <code>db=sqlite</code> (default value).<br />
+ All variables used by <em>OAuth</em> are not required if <code>server=no_auth</code> (default value).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Important</p>
+<p><code>DATA_LUNCH_COOKIE_SECRET</code> and <code>DATA_LUNCH_OAUTH_ENC_KEY</code> are required even if <code>server=no_auth</code> is set.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th style="text-align: center;">Type</th>
+<th style="text-align: center;">Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DATA_LUNCH_COOKIE_SECRET</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">✔️</td>
+<td><em>Secret</em> used for securing the authentication cookie (use <code>make generate-secrets</code> to generate a valid secret)</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_OAUTH_ENC_KEY</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">✔️</td>
+<td><em>Encription key</em> used by the OAuth algorithm for encryption (use <code>make generate-secrets</code> to generate a valid secret)</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_OAUTH_KEY</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>OAuth key</em> used for configuring the OAuth provider (<em>GitHub</em>, <em>Azure</em>)</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_OAUTH_SECRET</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>OAuth secret</em> used for configuring the OAuth provider (<em>GitHub</em>, <em>Azure</em>)</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_OAUTH_REDIRECT_URI</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>OAuth redirect uri</em> used for configuring the OAuth provider (<em>GitHub</em>, <em>Azure</em>), do not set to use default value</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_OAUTH_TENANT_ID</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>OAuth tenant id</em> used for configuring the OAuth provider (<em>Azure</em>), do not set to use default value</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_DB_USER</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Postgresql</em> user, do not set to use default value</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_DB_PASSWORD</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Postgresql</em> password</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_DB_HOST</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Postgresql</em> host, do not set to use default value</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_DB_PORT</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Postgresql</em> port, do not set to use default value</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_DB_DATABASE</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Postgresql</em> database, do not set to use default value</td>
+</tr>
+<tr>
+<td><code>DATA_LUNCH_DB_SCHEMA</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">❌</td>
+<td><em>Postgresql</em> schema, do not set to use default value</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manually-install-the-development-environment">Manually install the development environment</h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+</div>
+<p>Use the terminal for navigating to the repository base directory.\
+Use the following command in your terminal to create an environment named <code>data-lunch</code> manually.<br />
+Otherwise use the <a href="#setup-the-development-environment">setup script</a> to activate the guided installing procedure.</p>
+<div class="highlight"><pre><span></span><code>conda env create -f environment.yml
+</code></pre></div>
+<p>Activate the new <em>Conda</em> environment with the following command.</p>
+<div class="highlight"><pre><span></span><code>conda activate data-lunch
+</code></pre></div>
+<h3 id="manually-install-data-lunch-cli">Manually install data-lunch CLI</h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+</div>
+<p>The CLI is distributed with setuptools instead of using Unix shebangs.<br />
+It is a very simple utility to initialize and delete the app database. There are different use cases:</p>
+<ul>
+<li>Create/delete the <em>sqlite</em> database used by the app</li>
+<li>Initialize/drop tables inside the <em>sqlite</em> database</li>
+</ul>
+<p>Use the following command for generating the CLI executable from the <code>setup.py</code> file, it will install your package locally.</p>
+<div class="highlight"><pre><span></span><code>pip install .
+</code></pre></div>
+<p>If you want to make some changes to the source code it is suggested to use the following option.</p>
+<div class="highlight"><pre><span></span><code>pip install --editable .
+</code></pre></div>
+<p>It will just link the package to the original location, basically meaning any changes to the original package would reflect directly in your environment.</p>
+<p>Now you can activate the <em>Conda</em> environment and access the <em>CLI</em> commands directly from the terminal (without using annoying <em>shebangs</em> or prepending <code>python</code> to run your <em>CLI</em> calls).</p>
+<p>Test that everything is working correctly with the following commands.</p>
+<div class="highlight"><pre><span></span><code>data-lunch --version
+data-lunch --help
+</code></pre></div>
+<h3 id="running-the-docker-compose-system">Running the docker-compose system</h3>
+<p>Since this app will be deployed with an hosting service a <em>Dockerfile</em> to build a container image is available.<br />
+The docker compose file (see <code>docker-compose.yaml</code>) deploys the web app container along with a <em>load balancer</em> (the <em>nginx</em> container)
+to improve the system scalability.</p>
+<p>Look inside the <code>makefile</code> to see the <code>docker</code> and <code>docker-compose</code> options.</p>
+<p>To build and run the dockerized system you have to install <a href="https://docs.docker.com/get-docker/">Docker</a>.<br />
+Call the following <code>make</code> command to start the build process.</p>
+<div class="highlight"><pre><span></span><code>make docker-up-init docker-up-build
+</code></pre></div>
+<p><code>up-init</code> initialize the <em>ssl certificate</em> based on the selected environment (as set in the environment variable <code>PANEL_ENV</code>, i.e. <em>development</em> or <em>production</em>).<br />
+Call only <code>make</code> (without arguments) to trigger the same command.<br />
+A missing or incomplete <em>ssl certificate folder</em> will result in an <code>nginx</code> container failure on start-up.</p>
+<p>Images are built and the two containers are started.  </p>
+<p>You can then access your web app at <code>http://localhost:PORT</code> (where <code>PORT</code> will match the value set through the environment variable).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also use <code>make docker-up</code> to spin up the containers if you do not need to re-build any image or initialize ssl certificate folders.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Important</p>
+<p>An additional container named <code>db</code> is started if <code>db=postgresql</code> is set</p>
+</div>
+<h3 id="running-a-single-container">Running a single container</h3>
+<p>It is possible to launch a single server by calling the following command.</p>
+<div class="highlight"><pre><span></span><code>make docker-build
+
+make docker-run
+</code></pre></div>
+<p>You can then access your web app at <code>http://localhost:5000</code> (if the deafult <code>PORT</code> is selected).</p>
+<h3 id="running-locally">Running locally</h3>
+<p>Launch a local server with default options by calling the following command.</p>
+<div class="highlight"><pre><span></span><code>python -m dlunch
+</code></pre></div>
+<p>Use <em>Hydra</em> arguments to alter the app behaviour.</p>
+<div class="highlight"><pre><span></span><code>python -m dlunch server=basic_auth
+</code></pre></div>
+<p>See <a href="https://hydra.cc/docs/intro/">Hydra's documentation</a> for additional details.</p>
+<h2 id="additional-installations-before-contributing">Additional installations before contributing</h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+</div>
+<p>Before contributing please create the <code>pre-commit</code> and <code>commitizen</code> environments.</p>
+<div class="highlight"><pre><span></span><code>cd requirements
+conda env create -f pre-commit.yml
+conda env create -f commitizen.yml
+</code></pre></div>
+<h3 id="pre-commit-hooks">Pre-commit hooks</h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+</div>
+<p>Then install the precommit hooks.</p>
+<div class="highlight"><pre><span></span><code>conda activate pre-commit
+pre-commit install
+pre-commit autoupdate
+</code></pre></div>
+<p>Optionally run hooks on all files.</p>
+<div class="highlight"><pre><span></span><code>pre-commit run --all-files
+</code></pre></div>
+<h3 id="commitizen">Commitizen</h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+</div>
+<p>The <em>Commitizen</em> hook checks that rules for <em>conventional commits</em> are respected in commits messages.
+Use the following command to enjoy <em>Commitizen's</em> interactive prompt.</p>
+<div class="highlight"><pre><span></span><code>conda activate commitizen
+cz commit
+</code></pre></div>
+<p><code>cz c</code> is a shorther alias for <code>cz commit</code>.</p>
+<h2 id="release-strategy-from-development-to-main-branch">Release strategy from <code>development</code> to <code>main</code> branch</h2>
+<div class="admonition danger">
+<p class="admonition-title">Caution</p>
+<p>This step is required only if the CI-CD pipeline on <em>GitHub</em> does not work.</p>
+</div>
+<p>In order to take advantage of <em>Commitizen</em> <code>bump</code> command follow this guideline.</p>
+<p>First check that you are on the correct branch.</p>
+<div class="highlight"><pre><span></span><code>git checkout main
+</code></pre></div>
+<p>Then start the merge process forcing it to stop before commit (<code>--no-commit</code>) and without using the <em>fast forward</em> strategy (<code>--no-ff</code>).</p>
+<div class="highlight"><pre><span></span><code>git merge development --no-commit --no-ff
+</code></pre></div>
+<p>Check that results match your expectations then commit (you can leave the default message).</p>
+<div class="highlight"><pre><span></span><code>git commit
+</code></pre></div>
+<p>Now <em>Commitizen</em> <code>bump</code> command will add an additional commit with updated versions to every file listed inside <code>pyproject.toml</code>.</p>
+<div class="highlight"><pre><span></span><code>cz bump --no-verify
+</code></pre></div>
+<p>You can now merge results of the release process back to the <code>development</code> branch.</p>
+<div class="highlight"><pre><span></span><code>git checkout development
+git merge main --no-ff
+</code></pre></div>
+<p>Use <em>"update files from last release"</em> or the default text as commit message.</p>
+<h2 id="google-cloud-platform-utilities">Google Cloud Platform utilities</h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+</div>
+<p>The makefile has two rules for conviniently setting up and removing authentication credentials for <em>Google Cloud Platform</em> command line interface: <code>gcp-config</code> and <code>gcp-revoke</code>.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  </body>
+</html>
