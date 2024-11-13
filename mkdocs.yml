@@ -12,7 +12,7 @@ edit_uri: ""
 # Navigation bar
 nav:
 - About Us: index.md
-- Getting Started: getting_started.md
+- getting_started.md
 - Documentation: reference/
 
 # THEME -----------------------------------------------------------------------
@@ -23,6 +23,10 @@ theme:
   favicon: assets/favicon.ico
   palette:
     scheme: dlunch
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
 
 # Custom colors
 extra_css:
