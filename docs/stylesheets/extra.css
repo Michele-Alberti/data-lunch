@@ -1,3 +1,27 @@
+/* Import a special font for the title */
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
+
+.md-logo img {
+    height: 2rem !important;
+}
+
+header span.md-ellipsis {
+    font-family: "Silkscreen", cursive;
+    font-size: 1.2rem !important;
+}
+
+nav .md-nav__title {
+    font-family: "Silkscreen", cursive;
+    font-size: .8rem !important;
+}
+
+@media screen and (min-width: 1220px) {
+    label .md-ellipsis {
+        font-family: "Silkscreen", cursive;
+        font-size: .8rem !important;
+    }
+}
+
 [data-md-color-scheme="dlunch"] {
     /* Primary color shades */
     --md-primary-fg-color:               #0372b5;
