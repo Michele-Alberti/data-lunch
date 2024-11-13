@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#data-lunch" class="md-skip">
+        <a href="#getting-started" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
   
 
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="Data-Lunch" class="md-header__button md-logo" aria-label="Data-Lunch" data-md-component="logo">
       
@@ -181,13 +181,76 @@
     
   </nav>
   
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  About Us
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reference/dlunch/" class="md-tabs__link">
+          
+  
+  Documentation
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
-        
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -195,14 +258,18 @@
           
             
               
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="Data-Lunch" class="md-nav__button md-logo" aria-label="Data-Lunch" data-md-component="logo">
       
@@ -299,83 +366,74 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-table-of-contents" class="md-nav__link">
+  <a href="#development-environment-setup" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Table of contents
+      Development environment setup
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-development-environment-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. Development environment setup
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Development environment setup">
+    <nav class="md-nav" aria-label="Development environment setup">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-miniconda" class="md-nav__link">
+  <a href="#miniconda" class="md-nav__link">
     <span class="md-ellipsis">
-      2.1. Miniconda
+      Miniconda
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-setup-the-development-environment" class="md-nav__link">
+  <a href="#setup-the-development-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      2.2. Setup the development environment
+      Setup the development environment
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#23-environment-variables" class="md-nav__link">
+  <a href="#environment-variables" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3. Environment variables
+      Environment variables
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2.3. Environment variables">
+    <nav class="md-nav" aria-label="Environment variables">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#231-general" class="md-nav__link">
+  <a href="#general" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.1. General
+      General
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#232-docker-and-google-cloud-platform" class="md-nav__link">
+  <a href="#docker-and-google-cloud-platform" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.2. Docker and Google Cloud Platform
+      Docker and Google Cloud Platform
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#233-tlsssl-certificate" class="md-nav__link">
+  <a href="#tlsssl-certificate" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.3. TLS/SSL Certificate
+      TLS/SSL Certificate
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#234-encryption-and-authorization" class="md-nav__link">
+  <a href="#encryption-and-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.4. Encryption and Authorization
+      Encryption and Authorization
     </span>
   </a>
   
@@ -387,45 +445,45 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#24-manually-install-the-development-environment" class="md-nav__link">
+  <a href="#manually-install-the-development-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      2.4. Manually install the development environment
+      Manually install the development environment
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#25-manually-install-data-lunch-cli" class="md-nav__link">
+  <a href="#manually-install-data-lunch-cli" class="md-nav__link">
     <span class="md-ellipsis">
-      2.5. Manually install data-lunch CLI
+      Manually install data-lunch CLI
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#26-running-the-docker-compose-system" class="md-nav__link">
+  <a href="#running-the-docker-compose-system" class="md-nav__link">
     <span class="md-ellipsis">
-      2.6. Running the docker-compose system
+      Running the docker-compose system
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#27-running-a-single-container" class="md-nav__link">
+  <a href="#running-a-single-container" class="md-nav__link">
     <span class="md-ellipsis">
-      2.7. Running a single container
+      Running a single container
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#28-running-locally" class="md-nav__link">
+  <a href="#running-locally" class="md-nav__link">
     <span class="md-ellipsis">
-      2.8. Running locally
+      Running locally
     </span>
   </a>
   
@@ -437,28 +495,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-additional-installations-before-contributing" class="md-nav__link">
+  <a href="#additional-installations-before-contributing" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Additional installations before contributing
+      Additional installations before contributing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Additional installations before contributing">
+    <nav class="md-nav" aria-label="Additional installations before contributing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-pre-commit-hooks" class="md-nav__link">
+  <a href="#pre-commit-hooks" class="md-nav__link">
     <span class="md-ellipsis">
-      3.1. Pre-commit hooks
+      Pre-commit hooks
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-commitizen" class="md-nav__link">
+  <a href="#commitizen" class="md-nav__link">
     <span class="md-ellipsis">
-      3.2. Commitizen
+      Commitizen
     </span>
   </a>
   
@@ -470,18 +528,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-release-strategy-from-development-to-main-branch" class="md-nav__link">
+  <a href="#release-strategy-from-development-to-main-branch" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Release strategy from development to main branch
+      Release strategy from development to main branch
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-google-cloud-platform-utilities" class="md-nav__link">
+  <a href="#google-cloud-platform-utilities" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Google Cloud Platform utilities
+      Google Cloud Platform utilities
     </span>
   </a>
   
@@ -503,6 +561,11 @@
   
     
     
+    
+      
+      
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -538,6 +601,11 @@
   
     
     
+    
+      
+      
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -785,6 +853,8 @@
             
             
               
+                
+              
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
@@ -804,83 +874,74 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-table-of-contents" class="md-nav__link">
+  <a href="#development-environment-setup" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Table of contents
+      Development environment setup
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-development-environment-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. Development environment setup
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Development environment setup">
+    <nav class="md-nav" aria-label="Development environment setup">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-miniconda" class="md-nav__link">
+  <a href="#miniconda" class="md-nav__link">
     <span class="md-ellipsis">
-      2.1. Miniconda
+      Miniconda
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-setup-the-development-environment" class="md-nav__link">
+  <a href="#setup-the-development-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      2.2. Setup the development environment
+      Setup the development environment
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#23-environment-variables" class="md-nav__link">
+  <a href="#environment-variables" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3. Environment variables
+      Environment variables
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2.3. Environment variables">
+    <nav class="md-nav" aria-label="Environment variables">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#231-general" class="md-nav__link">
+  <a href="#general" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.1. General
+      General
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#232-docker-and-google-cloud-platform" class="md-nav__link">
+  <a href="#docker-and-google-cloud-platform" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.2. Docker and Google Cloud Platform
+      Docker and Google Cloud Platform
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#233-tlsssl-certificate" class="md-nav__link">
+  <a href="#tlsssl-certificate" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.3. TLS/SSL Certificate
+      TLS/SSL Certificate
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#234-encryption-and-authorization" class="md-nav__link">
+  <a href="#encryption-and-authorization" class="md-nav__link">
     <span class="md-ellipsis">
-      2.3.4. Encryption and Authorization
+      Encryption and Authorization
     </span>
   </a>
   
@@ -892,45 +953,45 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#24-manually-install-the-development-environment" class="md-nav__link">
+  <a href="#manually-install-the-development-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      2.4. Manually install the development environment
+      Manually install the development environment
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#25-manually-install-data-lunch-cli" class="md-nav__link">
+  <a href="#manually-install-data-lunch-cli" class="md-nav__link">
     <span class="md-ellipsis">
-      2.5. Manually install data-lunch CLI
+      Manually install data-lunch CLI
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#26-running-the-docker-compose-system" class="md-nav__link">
+  <a href="#running-the-docker-compose-system" class="md-nav__link">
     <span class="md-ellipsis">
-      2.6. Running the docker-compose system
+      Running the docker-compose system
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#27-running-a-single-container" class="md-nav__link">
+  <a href="#running-a-single-container" class="md-nav__link">
     <span class="md-ellipsis">
-      2.7. Running a single container
+      Running a single container
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#28-running-locally" class="md-nav__link">
+  <a href="#running-locally" class="md-nav__link">
     <span class="md-ellipsis">
-      2.8. Running locally
+      Running locally
     </span>
   </a>
   
@@ -942,28 +1003,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-additional-installations-before-contributing" class="md-nav__link">
+  <a href="#additional-installations-before-contributing" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Additional installations before contributing
+      Additional installations before contributing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Additional installations before contributing">
+    <nav class="md-nav" aria-label="Additional installations before contributing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-pre-commit-hooks" class="md-nav__link">
+  <a href="#pre-commit-hooks" class="md-nav__link">
     <span class="md-ellipsis">
-      3.1. Pre-commit hooks
+      Pre-commit hooks
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-commitizen" class="md-nav__link">
+  <a href="#commitizen" class="md-nav__link">
     <span class="md-ellipsis">
-      3.2. Commitizen
+      Commitizen
     </span>
   </a>
   
@@ -975,18 +1036,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-release-strategy-from-development-to-main-branch" class="md-nav__link">
+  <a href="#release-strategy-from-development-to-main-branch" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Release strategy from development to main branch
+      Release strategy from development to main branch
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-google-cloud-platform-utilities" class="md-nav__link">
+  <a href="#google-cloud-platform-utilities" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Google Cloud Platform utilities
+      Google Cloud Platform utilities
     </span>
   </a>
   
@@ -1007,37 +1068,13 @@
                   
 
 
-<h1 id="data-lunch">Data Lunch <!-- omit in toc --></h1>
-<p>The ultimate web app for a well organized lunch.</p>
-<h2 id="1-table-of-contents">1. Table of contents</h2>
-<ul>
-<li><a href="#1-table-of-contents">1. Table of contents</a></li>
-<li><a href="#2-development-environment-setup">2. Development environment setup</a></li>
-<li><a href="#21-miniconda">2.1. Miniconda</a></li>
-<li><a href="#22-setup-the-development-environment">2.2. Setup the development environment</a></li>
-<li><a href="#23-environment-variables">2.3. Environment variables</a><ul>
-<li><a href="#231-general">2.3.1. General</a></li>
-<li><a href="#232-docker-and-google-cloud-platform">2.3.2. Docker and Google Cloud Platform</a></li>
-<li><a href="#233-tlsssl-certificate">2.3.3. TLS/SSL Certificate</a></li>
-<li><a href="#234-encryption-and-authorization">2.3.4. Encryption and Authorization</a></li>
-</ul>
-</li>
-<li><a href="#24-manually-install-the-development-environment">2.4. Manually install the development environment</a></li>
-<li><a href="#25-manually-install-data-lunch-cli">2.5. Manually install data-lunch CLI</a></li>
-<li><a href="#26-running-the-docker-compose-system">2.6. Running the docker-compose system</a></li>
-<li><a href="#27-running-a-single-container">2.7. Running a single container</a></li>
-<li><a href="#28-running-locally">2.8. Running locally</a></li>
-<li><a href="#3-additional-installations-before-contributing">3. Additional installations before contributing</a></li>
-<li><a href="#31-pre-commit-hooks">3.1. Pre-commit hooks</a></li>
-<li><a href="#32-commitizen">3.2. Commitizen</a></li>
-<li><a href="#4-release-strategy-from-development-to-main-branch">4. Release strategy from <code>development</code> to <code>main</code> branch</a></li>
-<li><a href="#5-google-cloud-platform-utilities">5. Google Cloud Platform utilities</a></li>
-</ul>
-<h2 id="2-development-environment-setup">2. Development environment setup</h2>
+<h1 id="getting-started">Getting Started</h1>
+<p><a id="doc-start"></a></p>
+<h2 id="development-environment-setup">Development environment setup</h2>
 <p>The following steps will guide you through the installation procedure.</p>
-<h3 id="21-miniconda">2.1. Miniconda</h3>
+<h3 id="miniconda">Miniconda</h3>
 <p><a href="https://docs.conda.io/en/latest/">Conda</a> is required for creating the development environment (it is suggested to install <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>).</p>
-<h3 id="22-setup-the-development-environment">2.2. Setup the development environment</h3>
+<h3 id="setup-the-development-environment">Setup the development environment</h3>
 <p>Use the setup script (<code>setup_dev_env.sh</code>) to install all the required development tools.</p>
 <p>Use <code>source</code> to properly launch the script.</p>
 <div class="highlight"><pre><span></span><code>source setup_dev_env.sh
@@ -1050,9 +1087,9 @@
  - <em>pre-commit</em> hooks
  - <code>data-lunch</code> command line</p>
 </div>
-<h3 id="23-environment-variables">2.3. Environment variables</h3>
+<h3 id="environment-variables">Environment variables</h3>
 <p>The following environment variables are required for running the <em>web app</em>, the <em>makefile</em> or <em>utility scripts</em>.</p>
-<h4 id="231-general">2.3.1. General</h4>
+<h4 id="general">General</h4>
 <table>
 <thead>
 <tr>
@@ -1089,7 +1126,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="232-docker-and-google-cloud-platform">2.3.2. Docker and Google Cloud Platform</h4>
+<h4 id="docker-and-google-cloud-platform">Docker and Google Cloud Platform</h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The following variables are mainly used during the building process or by external scripts.</p>
@@ -1154,7 +1191,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="233-tlsssl-certificate">2.3.3. TLS/SSL Certificate</h4>
+<h4 id="tlsssl-certificate">TLS/SSL Certificate</h4>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Use the command <code>make ssl-gen-certificate</code> to generate local SSL certificates.</p>
@@ -1183,7 +1220,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="234-encryption-and-authorization">2.3.4. Encryption and Authorization</h4>
+<h4 id="encryption-and-authorization">Encryption and Authorization</h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>All variables used by <em>Postgresql</em> are not required if <code>db=sqlite</code> (default value).<br />
@@ -1277,23 +1314,23 @@
 </tr>
 </tbody>
 </table>
-<h3 id="24-manually-install-the-development-environment">2.4. Manually install the development environment</h3>
+<h3 id="manually-install-the-development-environment">Manually install the development environment</h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#22-setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
 </div>
 <p>Use the terminal for navigating to the repository base directory.\
 Use the following command in your terminal to create an environment named <code>data-lunch</code> manually.<br />
-Otherwise use the <a href="#22-setup-the-development-environment">setup script</a> to activate the guided installing procedure.</p>
+Otherwise use the <a href="#setup-the-development-environment">setup script</a> to activate the guided installing procedure.</p>
 <div class="highlight"><pre><span></span><code>conda env create -f environment.yml
 </code></pre></div>
 <p>Activate the new <em>Conda</em> environment with the following command.</p>
 <div class="highlight"><pre><span></span><code>conda activate data-lunch
 </code></pre></div>
-<h3 id="25-manually-install-data-lunch-cli">2.5. Manually install data-lunch CLI</h3>
+<h3 id="manually-install-data-lunch-cli">Manually install data-lunch CLI</h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#22-setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
 </div>
 <p>The CLI is distributed with setuptools instead of using Unix shebangs.<br />
 It is a very simple utility to initialize and delete the app database. There are different use cases:</p>
@@ -1313,7 +1350,7 @@ It is a very simple utility to initialize and delete the app database. There are
 <div class="highlight"><pre><span></span><code>data-lunch --version
 data-lunch --help
 </code></pre></div>
-<h3 id="26-running-the-docker-compose-system">2.6. Running the docker-compose system</h3>
+<h3 id="running-the-docker-compose-system">Running the docker-compose system</h3>
 <p>Since this app will be deployed with an hosting service a <em>Dockerfile</em> to build a container image is available.<br />
 The docker compose file (see <code>docker-compose.yaml</code>) deploys the web app container along with a <em>load balancer</em> (the <em>nginx</em> container)
 to improve the system scalability.</p>
@@ -1335,14 +1372,14 @@ A missing or incomplete <em>ssl certificate folder</em> will result in an <code>
 <p class="admonition-title">Important</p>
 <p>An additional container named <code>db</code> is started if <code>db=postgresql</code> is set</p>
 </div>
-<h3 id="27-running-a-single-container">2.7. Running a single container</h3>
+<h3 id="running-a-single-container">Running a single container</h3>
 <p>It is possible to launch a single server by calling the following command.</p>
 <div class="highlight"><pre><span></span><code>make docker-build
 
 make docker-run
 </code></pre></div>
 <p>You can then access your web app at <code>http://localhost:5000</code> (if the deafult <code>PORT</code> is selected).</p>
-<h3 id="28-running-locally">2.8. Running locally</h3>
+<h3 id="running-locally">Running locally</h3>
 <p>Launch a local server with default options by calling the following command.</p>
 <div class="highlight"><pre><span></span><code>python -m dlunch
 </code></pre></div>
@@ -1350,20 +1387,20 @@ make docker-run
 <div class="highlight"><pre><span></span><code>python -m dlunch server=basic_auth
 </code></pre></div>
 <p>See <a href="https://hydra.cc/docs/intro/">Hydra's documentation</a> for additional details.</p>
-<h2 id="3-additional-installations-before-contributing">3. Additional installations before contributing</h2>
+<h2 id="additional-installations-before-contributing">Additional installations before contributing</h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#22-setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
 </div>
 <p>Before contributing please create the <code>pre-commit</code> and <code>commitizen</code> environments.</p>
 <div class="highlight"><pre><span></span><code>cd requirements
 conda env create -f pre-commit.yml
 conda env create -f commitizen.yml
 </code></pre></div>
-<h3 id="31-pre-commit-hooks">3.1. Pre-commit hooks</h3>
+<h3 id="pre-commit-hooks">Pre-commit hooks</h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#22-setup-the-development-environment">setup script</a> is used.</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
 </div>
 <p>Then install the precommit hooks.</p>
 <div class="highlight"><pre><span></span><code>conda activate pre-commit
@@ -1373,10 +1410,10 @@ pre-commit autoupdate
 <p>Optionally run hooks on all files.</p>
 <div class="highlight"><pre><span></span><code>pre-commit run --all-files
 </code></pre></div>
-<h3 id="32-commitizen">3.2. Commitizen</h3>
+<h3 id="commitizen">Commitizen</h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#22-setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
 </div>
 <p>The <em>Commitizen</em> hook checks that rules for <em>conventional commits</em> are respected in commits messages.
 Use the following command to enjoy <em>Commitizen's</em> interactive prompt.</p>
@@ -1384,7 +1421,7 @@ Use the following command to enjoy <em>Commitizen's</em> interactive prompt.</p>
 cz commit
 </code></pre></div>
 <p><code>cz c</code> is a shorther alias for <code>cz commit</code>.</p>
-<h2 id="4-release-strategy-from-development-to-main-branch">4. Release strategy from <code>development</code> to <code>main</code> branch</h2>
+<h2 id="release-strategy-from-development-to-main-branch">Release strategy from <code>development</code> to <code>main</code> branch</h2>
 <div class="admonition danger">
 <p class="admonition-title">Caution</p>
 <p>This step is required only if the CI-CD pipeline on <em>GitHub</em> does not work.</p>
@@ -1407,10 +1444,10 @@ cz commit
 git merge main --no-ff
 </code></pre></div>
 <p>Use <em>"update files from last release"</em> or the default text as commit message.</p>
-<h2 id="5-google-cloud-platform-utilities">5. Google Cloud Platform utilities</h2>
+<h2 id="google-cloud-platform-utilities">Google Cloud Platform utilities</h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#22-setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
+<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
 </div>
 <p>The makefile has two rules for conviniently setting up and removing authentication credentials for <em>Google Cloud Platform</em> command line interface: <code>gcp-config</code> and <code>gcp-revoke</code>.</p>
 
@@ -1420,8 +1457,13 @@ git merge main --no-ff
 
 
 
+  
+  
 
 
+
+
+  
 
 
 
@@ -1459,7 +1501,7 @@ git merge main --no-ff
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
