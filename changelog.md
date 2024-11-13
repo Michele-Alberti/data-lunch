@@ -1,3 +1,13 @@
+## v3.4.0 (2024-11-13)
+
+### Feat
+
+- **generate_getting_started.py**: remove text before doc-start anchor, add front matter and title in README.md
+
+### Refactor
+
+- **__version__**: move dlunch __version__ from __init__.py to core.py
+
 ## v3.3.0 (2024-07-17)
 
 ### Feat
