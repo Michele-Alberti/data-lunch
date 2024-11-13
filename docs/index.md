@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 # Welcome to Data-Lunch documentation!
 
 >**Data-Lunch:**
