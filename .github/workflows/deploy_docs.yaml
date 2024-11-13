@@ -57,9 +57,9 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           ALIAS=stable
-          echo "version: $VERSION"
+          echo "version: "${{ env.version }}"
           echo "alias: $ALIAS"
-          mike deploy --push --update-aliases "$VERSION" "$ALIAS"
+          mike deploy --push --update-aliases "${{ env.version }}" "$ALIAS"
       - name: Update default (stable)
         if: ${{ env.alias }} == 'stable'
         run: mike set-default --push stable
