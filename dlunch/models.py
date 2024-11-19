@@ -964,13 +964,13 @@ def create_exclusive_session(config: DictConfig) -> Session:
 
     # Alter begin statement
     @event.listens_for(engine, "connect")
-    def do_connect(dbapi_connection, connection_record):
+    def _do_connect(dbapi_connection, connection_record):
         # disable pysqlite's emitting of the BEGIN statement entirely.
         # also stops it from emitting COMMIT before any DDL.
         dbapi_connection.isolation_level = None
 
     @event.listens_for(engine, "begin")
-    def do_begin(conn):
+    def _do_begin(conn):
         # Emit exclusive BEGIN
         conn.exec_driver_sql("BEGIN EXCLUSIVE")
 
@@ -1003,18 +1003,18 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
             )
         ),
     )
-    def create_database_with_retries(config: DictConfig) -> None:
+    def _create_database_with_retries(config: DictConfig) -> None:
         engine = create_engine(config)
         Data.metadata.create_all(engine)
 
     # Create tables
     log.debug(f"attempt database creation: {config.db.attempt_creation}")
     if config.db.attempt_creation:
-        create_database_with_retries(config)
+        _create_database_with_retries(config)
 
         # Retries stats
         log.debug(
-            f"create database attempts: {create_database_with_retries.retry.statistics}"
+            f"create database attempts: {_create_database_with_retries.retry.statistics}"
         )
 
     # If requested add users for basic auth (admin and guest)

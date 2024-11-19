@@ -15,6 +15,8 @@ for a group of people (wether they are friends or teammates).
 
 It started as a small personal project and it quickly became an unrepleaceable companion for me and my colleagues.
 
+[Getting Started :material-fuel:](getting_started.md){ .md-button .md-button--primary }
+
 ## More info
 
 !!! warning "Work in Progress"

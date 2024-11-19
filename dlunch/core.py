@@ -1,3 +1,11 @@
+"""Module that defines main functions used to manage Data-Lunch operations.
+
+!!! Note
+
+    Could be improved with classes.
+
+"""
+
 import cryptography.fernet
 import panel as pn
 import pandas as pd
@@ -1102,7 +1110,7 @@ def df_list_by_lunch_time(
 
         # The following function prepare the dataframe before saving it into
         # the dictionary that will be returned
-        def clean_up_table(
+        def _clean_up_table(
             config: DictConfig, df_in: pd.DataFrame, df_complete: pd.DataFrame
         ):
             df = df_in.copy()
@@ -1147,13 +1155,15 @@ def df_list_by_lunch_time(
         # Clean and add resulting dataframes to dict
         # RESTAURANT LUNCH
         if not df_users_restaurant.empty:
-            df_users_restaurant = clean_up_table(
+            df_users_restaurant = _clean_up_table(
                 config, df_users_restaurant, df
             )
             df_dict[time] = df_users_restaurant
         # TAKEAWAY
         if not df_users_takeaways.empty:
-            df_users_takeaways = clean_up_table(config, df_users_takeaways, df)
+            df_users_takeaways = _clean_up_table(
+                config, df_users_takeaways, df
+            )
             df_dict[f"{time} {config.panel.gui.takeaway_id}"] = (
                 df_users_takeaways
             )
