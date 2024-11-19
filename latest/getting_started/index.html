@@ -66,6 +66,8 @@
   
     
     
+      
+    
     
     
     
@@ -125,7 +127,33 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="dlunch" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -1068,13 +1096,13 @@
                   
 
 
-<h1 id="getting-started">Getting Started</h1>
+<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
 <p><a id="doc-start"></a></p>
-<h2 id="development-environment-setup">Development environment setup</h2>
+<h2 id="development-environment-setup">Development environment setup<a class="headerlink" href="#development-environment-setup" title="Permanent link">&para;</a></h2>
 <p>The following steps will guide you through the installation procedure.</p>
-<h3 id="miniconda">Miniconda</h3>
+<h3 id="miniconda">Miniconda<a class="headerlink" href="#miniconda" title="Permanent link">&para;</a></h3>
 <p><a href="https://docs.conda.io/en/latest/">Conda</a> is required for creating the development environment (it is suggested to install <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>).</p>
-<h3 id="setup-the-development-environment">Setup the development environment</h3>
+<h3 id="setup-the-development-environment">Setup the development environment<a class="headerlink" href="#setup-the-development-environment" title="Permanent link">&para;</a></h3>
 <p>Use the setup script (<code>setup_dev_env.sh</code>) to install all the required development tools.</p>
 <p>Use <code>source</code> to properly launch the script.</p>
 <div class="highlight"><pre><span></span><code>source setup_dev_env.sh
@@ -1087,9 +1115,9 @@
  - <em>pre-commit</em> hooks
  - <code>data-lunch</code> command line</p>
 </div>
-<h3 id="environment-variables">Environment variables</h3>
+<h3 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h3>
 <p>The following environment variables are required for running the <em>web app</em>, the <em>makefile</em> or <em>utility scripts</em>.</p>
-<h4 id="general">General</h4>
+<h4 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -1126,7 +1154,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="docker-and-google-cloud-platform">Docker and Google Cloud Platform</h4>
+<h4 id="docker-and-google-cloud-platform">Docker and Google Cloud Platform<a class="headerlink" href="#docker-and-google-cloud-platform" title="Permanent link">&para;</a></h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The following variables are mainly used during the building process or by external scripts.</p>
@@ -1191,7 +1219,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="tlsssl-certificate">TLS/SSL Certificate</h4>
+<h4 id="tlsssl-certificate">TLS/SSL Certificate<a class="headerlink" href="#tlsssl-certificate" title="Permanent link">&para;</a></h4>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Use the command <code>make ssl-gen-certificate</code> to generate local SSL certificates.</p>
@@ -1220,7 +1248,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="encryption-and-authorization">Encryption and Authorization</h4>
+<h4 id="encryption-and-authorization">Encryption and Authorization<a class="headerlink" href="#encryption-and-authorization" title="Permanent link">&para;</a></h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>All variables used by <em>Postgresql</em> are not required if <code>db=sqlite</code> (default value).<br />
@@ -1314,7 +1342,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="manually-install-the-development-environment">Manually install the development environment</h3>
+<h3 id="manually-install-the-development-environment">Manually install the development environment<a class="headerlink" href="#manually-install-the-development-environment" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
@@ -1327,7 +1355,7 @@ Otherwise use the <a href="#setup-the-development-environment">setup script</a> 
 <p>Activate the new <em>Conda</em> environment with the following command.</p>
 <div class="highlight"><pre><span></span><code>conda activate data-lunch
 </code></pre></div>
-<h3 id="manually-install-data-lunch-cli">Manually install data-lunch CLI</h3>
+<h3 id="manually-install-data-lunch-cli">Manually install data-lunch CLI<a class="headerlink" href="#manually-install-data-lunch-cli" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
@@ -1350,7 +1378,7 @@ It is a very simple utility to initialize and delete the app database. There are
 <div class="highlight"><pre><span></span><code>data-lunch --version
 data-lunch --help
 </code></pre></div>
-<h3 id="running-the-docker-compose-system">Running the docker-compose system</h3>
+<h3 id="running-the-docker-compose-system">Running the docker-compose system<a class="headerlink" href="#running-the-docker-compose-system" title="Permanent link">&para;</a></h3>
 <p>Since this app will be deployed with an hosting service a <em>Dockerfile</em> to build a container image is available.<br />
 The docker compose file (see <code>docker-compose.yaml</code>) deploys the web app container along with a <em>load balancer</em> (the <em>nginx</em> container)
 to improve the system scalability.</p>
@@ -1372,14 +1400,14 @@ A missing or incomplete <em>ssl certificate folder</em> will result in an <code>
 <p class="admonition-title">Important</p>
 <p>An additional container named <code>db</code> is started if <code>db=postgresql</code> is set</p>
 </div>
-<h3 id="running-a-single-container">Running a single container</h3>
+<h3 id="running-a-single-container">Running a single container<a class="headerlink" href="#running-a-single-container" title="Permanent link">&para;</a></h3>
 <p>It is possible to launch a single server by calling the following command.</p>
 <div class="highlight"><pre><span></span><code>make docker-build
 
 make docker-run
 </code></pre></div>
 <p>You can then access your web app at <code>http://localhost:5000</code> (if the deafult <code>PORT</code> is selected).</p>
-<h3 id="running-locally">Running locally</h3>
+<h3 id="running-locally">Running locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h3>
 <p>Launch a local server with default options by calling the following command.</p>
 <div class="highlight"><pre><span></span><code>python -m dlunch
 </code></pre></div>
@@ -1387,7 +1415,7 @@ make docker-run
 <div class="highlight"><pre><span></span><code>python -m dlunch server=basic_auth
 </code></pre></div>
 <p>See <a href="https://hydra.cc/docs/intro/">Hydra's documentation</a> for additional details.</p>
-<h2 id="additional-installations-before-contributing">Additional installations before contributing</h2>
+<h2 id="additional-installations-before-contributing">Additional installations before contributing<a class="headerlink" href="#additional-installations-before-contributing" title="Permanent link">&para;</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
@@ -1397,7 +1425,7 @@ make docker-run
 conda env create -f pre-commit.yml
 conda env create -f commitizen.yml
 </code></pre></div>
-<h3 id="pre-commit-hooks">Pre-commit hooks</h3>
+<h3 id="pre-commit-hooks">Pre-commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
@@ -1410,7 +1438,7 @@ pre-commit autoupdate
 <p>Optionally run hooks on all files.</p>
 <div class="highlight"><pre><span></span><code>pre-commit run --all-files
 </code></pre></div>
-<h3 id="commitizen">Commitizen</h3>
+<h3 id="commitizen">Commitizen<a class="headerlink" href="#commitizen" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
@@ -1421,7 +1449,7 @@ Use the following command to enjoy <em>Commitizen's</em> interactive prompt.</p>
 cz commit
 </code></pre></div>
 <p><code>cz c</code> is a shorther alias for <code>cz commit</code>.</p>
-<h2 id="release-strategy-from-development-to-main-branch">Release strategy from <code>development</code> to <code>main</code> branch</h2>
+<h2 id="release-strategy-from-development-to-main-branch">Release strategy from <code>development</code> to <code>main</code> branch<a class="headerlink" href="#release-strategy-from-development-to-main-branch" title="Permanent link">&para;</a></h2>
 <div class="admonition danger">
 <p class="admonition-title">Caution</p>
 <p>This step is required only if the CI-CD pipeline on <em>GitHub</em> does not work.</p>
@@ -1444,7 +1472,7 @@ cz commit
 git merge main --no-ff
 </code></pre></div>
 <p>Use <em>"update files from last release"</em> or the default text as commit message.</p>
-<h2 id="google-cloud-platform-utilities">Google Cloud Platform utilities</h2>
+<h2 id="google-cloud-platform-utilities">Google Cloud Platform utilities<a class="headerlink" href="#google-cloud-platform-utilities" title="Permanent link">&para;</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
@@ -1475,6 +1503,12 @@ git merge main --no-ff
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -1501,7 +1535,7 @@ git merge main --no-ff
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "toc.follow"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>

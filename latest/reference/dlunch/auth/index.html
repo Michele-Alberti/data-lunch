@@ -66,6 +66,8 @@
   
     
     
+      
+    
     
     
     
@@ -125,7 +127,33 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="dlunch" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -1869,7 +1897,7 @@
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
-</h3>
+<a href="#dlunch.auth.log" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">log</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="logging.Logger" href="https://docs.python.org/3/library/logging.html#logging.Logger">Logger</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="logging.getLogger" href="https://docs.python.org/3/library/logging.html#logging.getLogger">getLogger</a></span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 </code></pre></div>
 
@@ -1892,7 +1920,7 @@
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
-</h3>
+<a href="#dlunch.auth.pwd_context" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">pwd_context</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="passlib.context.CryptContext" href="https://passlib.readthedocs.io/en/stable/lib/passlib.context.html#passlib.context.CryptContext">CryptContext</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="passlib.context.CryptContext" href="https://passlib.readthedocs.io/en/stable/lib/passlib.context.html#passlib.context.CryptContext">CryptContext</a></span><span class="p">(</span>
     <span class="n"><span title="passlib.context.CryptContext(schemes)">schemes</span></span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pbkdf2_sha256&quot;</span><span class="p">],</span> <span class="n"><span title="passlib.context.CryptContext(deprecated)">deprecated</span></span><span class="o">=</span><span class="s2">&quot;auto&quot;</span>
 <span class="p">)</span>
@@ -1914,7 +1942,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">DataLunchLoginHandler</span>
 
 
-</h3>
+<a href="#dlunch.auth.DataLunchLoginHandler" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2167,7 +2195,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">check_permission</span>
 
 
-</h4>
+<a href="#dlunch.auth.DataLunchLoginHandler.check_permission" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_permission</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -2306,7 +2334,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">get</span>
 
 
-</h4>
+<a href="#dlunch.auth.DataLunchLoginHandler.get" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2344,7 +2372,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">post</span>
 
 
-</h4>
+<a href="#dlunch.auth.DataLunchLoginHandler.post" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">post</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2392,7 +2420,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">set_current_user</span>
 
 
-</h4>
+<a href="#dlunch.auth.DataLunchLoginHandler.set_current_user" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">set_current_user</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span>
 </code></pre></div>
 
@@ -2502,7 +2530,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">DataLunchProvider</span>
 
 
-</h3>
+<a href="#dlunch.auth.DataLunchProvider" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -2788,7 +2816,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.DataLunchProvider.config" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">config</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.DataLunchProvider.config" href="#dlunch.auth.DataLunchProvider.config">config</a></span>
 </code></pre></div>
 
@@ -2809,7 +2837,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.DataLunchProvider.login_handler" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">login_handler</span>
 </code></pre></div>
 
@@ -2832,7 +2860,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.DataLunchProvider.login_url" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">login_url</span>
 </code></pre></div>
 
@@ -2852,7 +2880,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-</h4>
+<a href="#dlunch.auth.DataLunchProvider.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span>
     <span class="nf">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span>
     <span class="n">login_template</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2909,7 +2937,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">PasswordEncrypt</span>
 
 
-</h3>
+<a href="#dlunch.auth.PasswordEncrypt" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3262,7 +3290,7 @@ encrypted.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.encrypted_password" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">encrypted_password</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordEncrypt.encrypted_password" href="#dlunch.auth.PasswordEncrypt.encrypted_password">encrypted_password</a></span>
 </code></pre></div>
 
@@ -3282,7 +3310,7 @@ encrypted.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__eq__</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.__eq__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__eq__</span><span class="p">(</span><span class="nf">candidate</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -3392,7 +3420,7 @@ encrypted.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">encrypted_password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3428,7 +3456,7 @@ encrypted.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -3487,7 +3515,7 @@ encrypted.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">decrypt</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.decrypt" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">decrypt</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -3562,7 +3590,7 @@ encrypted.</p>
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.encrypt" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">encrypt</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -3676,7 +3704,7 @@ encrypted.</p>
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.PasswordEncrypt.from_str" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_str</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Self" href="https://docs.python.org/3/library/typing.html#typing.Self">Self</a></span>
 </code></pre></div>
 
@@ -3783,7 +3811,7 @@ encrypted.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">PasswordHash</span>
 
 
-</h3>
+<a href="#dlunch.auth.PasswordHash" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -4164,7 +4192,7 @@ hashed.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.hashed_password" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">hashed_password</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordHash.hashed_password" href="#dlunch.auth.PasswordHash.hashed_password">hashed_password</a></span>
 </code></pre></div>
 
@@ -4184,7 +4212,7 @@ hashed.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__eq__</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.__eq__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__eq__</span><span class="p">(</span><span class="nf">candidate</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -4294,7 +4322,7 @@ hashed.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__init__</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">hashed_password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -4330,7 +4358,7 @@ hashed.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -4393,7 +4421,7 @@ hashed.</p>
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.from_str" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_str</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Self" href="https://docs.python.org/3/library/typing.html#typing.Self">Self</a></span>
 </code></pre></div>
 
@@ -4495,7 +4523,7 @@ hashed.</p>
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.hash" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">hash</span><span class="p">(</span><span class="nf">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -4593,7 +4621,7 @@ hashed.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">verify</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.verify" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">verify</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -4696,7 +4724,7 @@ hashed.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">verify_and_update</span>
 
 
-</h4>
+<a href="#dlunch.auth.PasswordHash.verify_and_update" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">verify_and_update</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
@@ -4825,7 +4853,7 @@ new_hash: new hash to replace the one generated with an old algorithm.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">add_privileged_user</span>
 
 
-</h3>
+<a href="#dlunch.auth.add_privileged_user" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">add_privileged_user</span><span class="p">(</span>
     <span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">is_admin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
@@ -4965,7 +4993,7 @@ Set to <code>True</code> if the new user has admin privileges.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">add_user_hashed_password</span>
 
 
-</h3>
+<a href="#dlunch.auth.add_user_hashed_password" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">add_user_hashed_password</span><span class="p">(</span>
     <span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
@@ -5125,7 +5153,7 @@ Set to <code>True</code> if the new user has admin privileges.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">authorize</span>
 
 
-</h3>
+<a href="#dlunch.auth.authorize" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">authorize</span><span class="p">(</span>
     <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span>
     <span class="n">user_info</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">,</span>
@@ -5348,7 +5376,7 @@ Defaults to <code>False</code>.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">force_logout</span>
 
 
-</h3>
+<a href="#dlunch.auth.force_logout" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">force_logout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -5384,7 +5412,7 @@ Defaults to <code>False</code>.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">generate_password</span>
 
 
-</h3>
+<a href="#dlunch.auth.generate_password" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">generate_password</span><span class="p">(</span>
     <span class="n">alphabet</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">special_chars</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -5575,7 +5603,7 @@ Defaults to 12.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">get_hash_from_user</span>
 
 
-</h3>
+<a href="#dlunch.auth.get_hash_from_user" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_hash_from_user</span><span class="p">(</span>
     <span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordHash" href="#dlunch.auth.PasswordHash">PasswordHash</a></span> <span class="o">|</span> <span class="kc">None</span>
@@ -5715,7 +5743,7 @@ Defaults to 12.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">is_admin</span>
 
 
-</h3>
+<a href="#dlunch.auth.is_admin" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_admin</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -5865,7 +5893,7 @@ Defaults to 12.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">is_auth_active</span>
 
 
-</h3>
+<a href="#dlunch.auth.is_auth_active" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -5974,7 +6002,7 @@ Return <code>False</code> otherwise.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">is_basic_auth_active</span>
 
 
-</h3>
+<a href="#dlunch.auth.is_basic_auth_active" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_basic_auth_active</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
 </code></pre></div>
 
@@ -6081,7 +6109,7 @@ Return <code>False</code> otherwise.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">is_guest</span>
 
 
-</h3>
+<a href="#dlunch.auth.is_guest" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_guest</span><span class="p">(</span>
     <span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span>
@@ -6281,7 +6309,7 @@ Defaults to True.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">list_users</span>
 
 
-</h3>
+<a href="#dlunch.auth.list_users" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">list_users</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span>
 </code></pre></div>
 
@@ -6401,7 +6429,7 @@ Defaults to True.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">list_users_guests_and_privileges</span>
 
 
-</h3>
+<a href="#dlunch.auth.list_users_guests_and_privileges" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">list_users_guests_and_privileges</span><span class="p">(</span>
     <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
@@ -6556,7 +6584,7 @@ but it is available in <code>credentials</code> table.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">open_backend</span>
 
 
-</h3>
+<a href="#dlunch.auth.open_backend" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">open_backend</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -6592,7 +6620,7 @@ but it is available in <code>credentials</code> table.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">pn_user</span>
 
 
-</h3>
+<a href="#dlunch.auth.pn_user" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">pn_user</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -6713,7 +6741,7 @@ but it is available in <code>credentials</code> table.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">remove_user</span>
 
 
-</h3>
+<a href="#dlunch.auth.remove_user" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">remove_user</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span>
 </code></pre></div>
 
@@ -6877,7 +6905,7 @@ with deleted rows from each table.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">set_app_auth_and_encryption</span>
 
 
-</h3>
+<a href="#dlunch.auth.set_app_auth_and_encryption" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">set_app_auth_and_encryption</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -7043,6 +7071,12 @@ with deleted rows from each table.</p>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -7069,7 +7103,7 @@ with deleted rows from each table.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "toc.follow"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.83f73b43.min.js"></script>

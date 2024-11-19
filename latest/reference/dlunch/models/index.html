@@ -66,6 +66,8 @@
   
     
     
+      
+    
     
     
     
@@ -125,7 +127,33 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="dlunch" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -2638,7 +2666,7 @@
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
-</h3>
+<a href="#dlunch.models.Data" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">Data</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.orm.DeclarativeMeta">DeclarativeMeta</span></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.declarative_base" href="https://docs.sqlalchemy.org/orm/mapping_api.html#sqlalchemy.orm.declarative_base">declarative_base</a></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.orm.declarative_base(metadata)">metadata</span></span><span class="o">=</span><span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.metadata_obj" href="#dlunch.models.metadata_obj">metadata_obj</a></span>
 <span class="p">)</span>
@@ -2663,7 +2691,7 @@
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
-</h3>
+<a href="#dlunch.models.SCHEMA" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">SCHEMA</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="n"><span title="os.environ.get">get</span></span><span class="p">(</span><span class="s1">&#39;DATA_LUNCH_DB_SCHEMA&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2686,7 +2714,7 @@
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
-</h3>
+<a href="#dlunch.models.log" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">log</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="logging.Logger" href="https://docs.python.org/3/library/logging.html#logging.Logger">Logger</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="logging.getLogger" href="https://docs.python.org/3/library/logging.html#logging.getLogger">getLogger</a></span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2709,7 +2737,7 @@
       <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
   </span>
 
-</h3>
+<a href="#dlunch.models.metadata_obj" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">metadata_obj</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.MetaData">MetaData</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.MetaData">MetaData</span></span><span class="p">(</span><span class="n"><span title="sqlalchemy.MetaData(schema)">schema</span></span><span class="o">=</span><span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.SCHEMA" href="#dlunch.models.SCHEMA">SCHEMA</a></span><span class="p">)</span>
 </code></pre></div>
 
@@ -2729,7 +2757,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Credentials</span>
 
 
-</h3>
+<a href="#dlunch.models.Credentials" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3082,7 +3110,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Credentials.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;credentials&#39;</span>
 </code></pre></div>
 
@@ -3106,7 +3134,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Credentials.password_encrypted" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">password_encrypted</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.Encrypted" href="#dlunch.models.Encrypted">Encrypted</a></span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.Column(unique)">unique</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -3137,7 +3165,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Credentials.password_hash" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">password_hash</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.Password" href="#dlunch.models.Password">Password</a></span><span class="p">(</span><span class="mi">150</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(unique)">unique</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
@@ -3163,7 +3191,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Credentials.user" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">user</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.Column(primary_key)">primary_key</span></span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -3187,7 +3215,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.Credentials.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -3250,7 +3278,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Credentials.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -3372,7 +3400,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Credentials.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -3493,7 +3521,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Encrypted</span>
 
 
-</h3>
+<a href="#dlunch.models.Encrypted" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -3763,7 +3791,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Encrypted.impl" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">impl</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.String">String</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.String">String</span></span>
 </code></pre></div>
 
@@ -3783,7 +3811,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">process_bind_param</span>
 
 
-</h4>
+<a href="#dlunch.models.Encrypted.process_bind_param" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">process_bind_param</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordEncrypt" href="../auth/#dlunch.auth.PasswordEncrypt">PasswordEncrypt</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dialect</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span>
@@ -3911,7 +3939,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">process_result_value</span>
 
 
-</h4>
+<a href="#dlunch.models.Encrypted.process_result_value" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">process_result_value</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dialect</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordEncrypt" href="../auth/#dlunch.auth.PasswordEncrypt">PasswordEncrypt</a></span> <span class="o">|</span> <span class="kc">None</span>
@@ -4033,7 +4061,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">validator</span>
 
 
-</h4>
+<a href="#dlunch.models.Encrypted.validator" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">validator</span><span class="p">(</span>
     <span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordEncrypt" href="../auth/#dlunch.auth.PasswordEncrypt">PasswordEncrypt</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordEncrypt" href="../auth/#dlunch.auth.PasswordEncrypt">PasswordEncrypt</a></span> <span class="o">|</span> <span class="kc">None</span>
@@ -4144,7 +4172,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Flags</span>
 
 
-</h3>
+<a href="#dlunch.models.Flags" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -4463,7 +4491,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Flags.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;flags&#39;</span>
 </code></pre></div>
 
@@ -4487,7 +4515,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Flags.id" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">id</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">50</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.Column(primary_key)">primary_key</span></span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -4516,7 +4544,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Flags.value" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">value</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span><span class="n"><span title="sqlalchemy.Boolean">Boolean</span></span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
@@ -4536,7 +4564,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.Flags.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -4599,7 +4627,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Flags.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -4721,7 +4749,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Flags.clear_guest_override" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear_guest_override</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -4847,7 +4875,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Flags.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -4968,7 +4996,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Menu</span>
 
 
-</h3>
+<a href="#dlunch.models.Menu" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -5243,7 +5271,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Menu.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;menu&#39;</span>
 </code></pre></div>
 
@@ -5267,7 +5295,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Menu.id" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">id</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Integer">Integer</span></span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Identity">Identity</span></span><span class="p">(</span><span class="n"><span title="sqlalchemy.Identity(start)">start</span></span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Identity(cycle)">cycle</span></span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(primary_key)">primary_key</span></span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
@@ -5293,7 +5321,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Menu.item" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">item</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">250</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(unique)">unique</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
@@ -5319,7 +5347,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Menu.orders" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">orders</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.orm.DeclarativeMeta">DeclarativeMeta</span></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.relationship" href="https://docs.sqlalchemy.org/orm/relationship_api.html#sqlalchemy.orm.relationship">relationship</a></span><span class="p">(</span>
     <span class="s2">&quot;Orders&quot;</span><span class="p">,</span>
     <span class="n"><span title="sqlalchemy.orm.relationship(back_populates)">back_populates</span></span><span class="o">=</span><span class="s2">&quot;menu_item&quot;</span><span class="p">,</span>
@@ -5344,7 +5372,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.Menu.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -5407,7 +5435,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Menu.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -5529,7 +5557,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Menu.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -5650,7 +5678,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Orders</span>
 
 
-</h3>
+<a href="#dlunch.models.Orders" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -5982,7 +6010,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;orders&#39;</span>
 </code></pre></div>
 
@@ -6006,7 +6034,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.id" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">id</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Integer">Integer</span></span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Identity">Identity</span></span><span class="p">(</span><span class="n"><span title="sqlalchemy.Identity(start)">start</span></span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Identity(cycle)">cycle</span></span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(primary_key)">primary_key</span></span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
@@ -6032,7 +6060,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.menu_item" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">menu_item</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.orm.DeclarativeMeta">DeclarativeMeta</span></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.relationship" href="https://docs.sqlalchemy.org/orm/relationship_api.html#sqlalchemy.orm.relationship">relationship</a></span><span class="p">(</span>
     <span class="s2">&quot;Menu&quot;</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.orm.relationship(back_populates)">back_populates</span></span><span class="o">=</span><span class="s2">&quot;orders&quot;</span>
 <span class="p">)</span>
@@ -6058,7 +6086,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.menu_item_id" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">menu_item_id</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Integer">Integer</span></span><span class="p">,</span>
     <span class="n"><span title="sqlalchemy.ForeignKey">ForeignKey</span></span><span class="p">(</span><span class="s2">&quot;menu.id&quot;</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.ForeignKey(ondelete)">ondelete</span></span><span class="o">=</span><span class="s2">&quot;CASCADE&quot;</span><span class="p">),</span>
@@ -6086,7 +6114,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.note" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">note</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">300</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(unique)">unique</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
@@ -6112,7 +6140,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.user" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">user</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.ForeignKey">ForeignKey</span></span><span class="p">(</span><span class="s2">&quot;users.id&quot;</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.ForeignKey(ondelete)">ondelete</span></span><span class="o">=</span><span class="s2">&quot;CASCADE&quot;</span><span class="p">),</span>
@@ -6141,7 +6169,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.user_record" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">user_record</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.orm.DeclarativeMeta">DeclarativeMeta</span></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.relationship" href="https://docs.sqlalchemy.org/orm/relationship_api.html#sqlalchemy.orm.relationship">relationship</a></span><span class="p">(</span>
     <span class="s2">&quot;Users&quot;</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.orm.relationship(back_populates)">back_populates</span></span><span class="o">=</span><span class="s2">&quot;orders&quot;</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.orm.relationship(uselist)">uselist</span></span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
@@ -6163,7 +6191,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.Orders.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -6226,7 +6254,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -6348,7 +6376,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Orders.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -6469,7 +6497,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Password</span>
 
 
-</h3>
+<a href="#dlunch.models.Password" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -6731,7 +6759,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Password.impl" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">impl</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.String">String</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.String">String</span></span>
 </code></pre></div>
 
@@ -6751,7 +6779,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">process_bind_param</span>
 
 
-</h4>
+<a href="#dlunch.models.Password.process_bind_param" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">process_bind_param</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordHash" href="../auth/#dlunch.auth.PasswordHash">PasswordHash</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dialect</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
@@ -6871,7 +6899,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">process_result_value</span>
 
 
-</h4>
+<a href="#dlunch.models.Password.process_result_value" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">process_result_value</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dialect</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordHash" href="../auth/#dlunch.auth.PasswordHash">PasswordHash</a></span> <span class="o">|</span> <span class="kc">None</span>
@@ -6993,7 +7021,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">validator</span>
 
 
-</h4>
+<a href="#dlunch.models.Password.validator" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">validator</span><span class="p">(</span>
     <span class="n">password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordHash" href="../auth/#dlunch.auth.PasswordHash">PasswordHash</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.PasswordHash" href="../auth/#dlunch.auth.PasswordHash">PasswordHash</a></span> <span class="o">|</span> <span class="kc">None</span>
@@ -7104,7 +7132,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">PrivilegedUsers</span>
 
 
-</h3>
+<a href="#dlunch.models.PrivilegedUsers" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -7372,7 +7400,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.PrivilegedUsers.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;privileged_users&#39;</span>
 </code></pre></div>
 
@@ -7396,7 +7424,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.PrivilegedUsers.admin" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">admin</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Boolean">Boolean</span></span><span class="p">,</span>
     <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -7425,7 +7453,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.PrivilegedUsers.user" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">user</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.Column(primary_key)">primary_key</span></span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -7449,7 +7477,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.PrivilegedUsers.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -7512,7 +7540,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.PrivilegedUsers.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -7634,7 +7662,7 @@
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.PrivilegedUsers.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -7755,7 +7783,7 @@
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Stats</span>
 
 
-</h3>
+<a href="#dlunch.models.Stats" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -8077,7 +8105,7 @@
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.__table_args__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__table_args__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.PrimaryKeyConstraint">PrimaryKeyConstraint</span></span><span class="p">(</span>
     <span class="s2">&quot;date&quot;</span><span class="p">,</span>
     <span class="s2">&quot;guest&quot;</span><span class="p">,</span>
@@ -8107,7 +8135,7 @@ primary key is available only with <strong>table_args</strong>).</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;stats&#39;</span>
 </code></pre></div>
 
@@ -8131,7 +8159,7 @@ primary key is available only with <strong>table_args</strong>).</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.date" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">date</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Date">Date</span></span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(server_default)">server_default</span></span><span class="o">=</span><span class="n"><span title="sqlalchemy.sql.func.current_date">current_date</span></span><span class="p">()</span>
 <span class="p">)</span>
@@ -8157,7 +8185,7 @@ primary key is available only with <strong>table_args</strong>).</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.guest" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">guest</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -8188,7 +8216,7 @@ primary key is available only with <strong>table_args</strong>).</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.hungry_people" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">hungry_people</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Integer">Integer</span></span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(default)">default</span></span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(server_default)">server_default</span></span><span class="o">=</span><span class="s2">&quot;0&quot;</span>
 <span class="p">)</span>
@@ -8211,7 +8239,7 @@ different kind of guests are identified by the value in guest column.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.Stats.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -8274,7 +8302,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -8396,7 +8424,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Stats.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -8517,7 +8545,7 @@ different kind of guests are identified by the value in guest column.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">Users</span>
 
 
-</h3>
+<a href="#dlunch.models.Users" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
@@ -8840,7 +8868,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.__tablename__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">__tablename__</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s1">&#39;users&#39;</span>
 </code></pre></div>
 
@@ -8864,7 +8892,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.guest" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">guest</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
     <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -8893,7 +8921,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.id" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">id</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(primary_key)">primary_key</span></span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
@@ -8919,7 +8947,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.lunch_time" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">lunch_time</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.String">String</span></span><span class="p">(</span><span class="mi">7</span><span class="p">),</span> <span class="n"><span title="sqlalchemy.Column(index)">index</span></span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
@@ -8945,7 +8973,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.orders" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">orders</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.orm.DeclarativeMeta">DeclarativeMeta</span></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.relationship" href="https://docs.sqlalchemy.org/orm/relationship_api.html#sqlalchemy.orm.relationship">relationship</a></span><span class="p">(</span>
     <span class="s2">&quot;Orders&quot;</span><span class="p">,</span>
     <span class="n"><span title="sqlalchemy.orm.relationship(back_populates)">back_populates</span></span><span class="o">=</span><span class="s2">&quot;user_record&quot;</span><span class="p">,</span>
@@ -8974,7 +9002,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.takeaway" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">takeaway</span><span class="p">:</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span> <span class="o">=</span> <span class="n"><span title="sqlalchemy.Column">Column</span></span><span class="p">(</span>
     <span class="n"><span title="sqlalchemy.Boolean">Boolean</span></span><span class="p">,</span>
     <span class="n"><span title="sqlalchemy.Column(nullable)">nullable</span></span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -8999,7 +9027,7 @@ different kind of guests are identified by the value in guest column.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-</h4>
+<a href="#dlunch.models.Users.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nf"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
 </code></pre></div>
 
@@ -9062,7 +9090,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.clear" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">clear</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span>
 </code></pre></div>
 
@@ -9184,7 +9212,7 @@ different kind of guests are identified by the value in guest column.</p>
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-</h4>
+<a href="#dlunch.models.Users.read_as_df" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">read_as_df</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="pandas.DataFrame" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></span>
 </code></pre></div>
 
@@ -9305,7 +9333,7 @@ different kind of guests are identified by the value in guest column.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">create_database</span>
 
 
-</h3>
+<a href="#dlunch.models.create_database" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_database</span><span class="p">(</span>
     <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="n">add_basic_auth_users</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
@@ -9458,18 +9486,18 @@ Defaults to False.</p>
             <span class="p">)</span>
         <span class="p">),</span>
     <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">create_database_with_retries</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_create_database_with_retries</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="n">Data</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
 
     <span class="c1"># Create tables</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attempt database creation: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">attempt_creation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">attempt_creation</span><span class="p">:</span>
-        <span class="n">create_database_with_retries</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">_create_database_with_retries</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
         <span class="c1"># Retries stats</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;create database attempts: </span><span class="si">{</span><span class="n">create_database_with_retries</span><span class="o">.</span><span class="n">retry</span><span class="o">.</span><span class="n">statistics</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;create database attempts: </span><span class="si">{</span><span class="n">_create_database_with_retries</span><span class="o">.</span><span class="n">retry</span><span class="o">.</span><span class="n">statistics</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># If requested add users for basic auth (admin and guest)</span>
@@ -9516,7 +9544,7 @@ Defaults to False.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">create_engine</span>
 
 
-</h3>
+<a href="#dlunch.models.create_engine" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_engine</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.engine.Engine" href="https://docs.sqlalchemy.org/core/connections.html#sqlalchemy.engine.Engine">Engine</a></span>
 </code></pre></div>
 
@@ -9632,7 +9660,7 @@ Defaults to False.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">create_exclusive_session</span>
 
 
-</h3>
+<a href="#dlunch.models.create_exclusive_session" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_exclusive_session</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.Session" href="https://docs.sqlalchemy.org/orm/session_api.html#sqlalchemy.orm.Session">Session</a></span>
 </code></pre></div>
 
@@ -9753,13 +9781,13 @@ race conditions).</p>
 
     <span class="c1"># Alter begin statement</span>
     <span class="nd">@event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">&quot;connect&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">do_connect</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">,</span> <span class="n">connection_record</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_do_connect</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">,</span> <span class="n">connection_record</span><span class="p">):</span>
         <span class="c1"># disable pysqlite&#39;s emitting of the BEGIN statement entirely.</span>
         <span class="c1"># also stops it from emitting COMMIT before any DDL.</span>
         <span class="n">dbapi_connection</span><span class="o">.</span><span class="n">isolation_level</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">&quot;begin&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">do_begin</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_do_begin</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
         <span class="c1"># Emit exclusive BEGIN</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">exec_driver_sql</span><span class="p">(</span><span class="s2">&quot;BEGIN EXCLUSIVE&quot;</span><span class="p">)</span>
 
@@ -9779,7 +9807,7 @@ race conditions).</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">create_session</span>
 
 
-</h3>
+<a href="#dlunch.models.create_session" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">create_session</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.Session" href="https://docs.sqlalchemy.org/orm/session_api.html#sqlalchemy.orm.Session">Session</a></span>
 </code></pre></div>
 
@@ -9881,7 +9909,7 @@ race conditions).</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">get_db_dialect</span>
 
 
-</h3>
+<a href="#dlunch.models.get_db_dialect" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_db_dialect</span><span class="p">(</span>
     <span class="n">db_obj</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.Session" href="https://docs.sqlalchemy.org/orm/session_api.html#sqlalchemy.orm.Session">Session</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" title="sqlite3.Connection" href="https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection">Connection</a></span> <span class="o">|</span> <span class="n"><span title="psycopg.Connection">Connection</span></span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
@@ -10035,7 +10063,7 @@ If a session is passed, the database type is set based on an internal map (see <
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">get_flag</span>
 
 
-</h3>
+<a href="#dlunch.models.get_flag" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_flag</span><span class="p">(</span>
     <span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span>
     <span class="nb">id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
@@ -10192,7 +10220,7 @@ Optionally select the values to return if the flag is missing (default to None).
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">session_add_with_upsert</span>
 
 
-</h3>
+<a href="#dlunch.models.session_add_with_upsert" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">session_add_with_upsert</span><span class="p">(</span>
     <span class="n">session</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="sqlalchemy.orm.Session" href="https://docs.sqlalchemy.org/orm/session_api.html#sqlalchemy.orm.Session">Session</a></span><span class="p">,</span>
     <span class="n">constraint</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
@@ -10344,7 +10372,7 @@ a simple session add otherwise.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">set_flag</span>
 
 
-</h3>
+<a href="#dlunch.models.set_flag" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">set_flag</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -10471,7 +10499,7 @@ a simple session add otherwise.</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">set_sqlite_pragma</span>
 
 
-</h3>
+<a href="#dlunch.models.set_sqlite_pragma" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">set_sqlite_pragma</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">,</span> <span class="n">connection_record</span><span class="p">)</span>
 </code></pre></div>
 
@@ -10584,6 +10612,12 @@ a simple session add otherwise.</p>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -10610,7 +10644,7 @@ a simple session add otherwise.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.top", "toc.follow"], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "stable", "provider": "mike"}}</script>
     
     
       <script src="../../../assets/javascripts/bundle.83f73b43.min.js"></script>
