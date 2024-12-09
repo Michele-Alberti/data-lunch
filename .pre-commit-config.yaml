@@ -9,12 +9,12 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.30.1
+    rev: v4.1.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.8.0
+    rev: 0.8.1
     hooks:
       - id: nbstripout
 default_install_hook_types: [pre-commit, commit-msg]
