@@ -11,7 +11,7 @@ static_dirs:
   images: ${package_path}/static/images
   css: ${package_path}/static/css
 compress_response: true
-cookie_secret: ${oc.env:DATA_LUNCH_COOKIE_SECRET} # Secure cookies are required (this vakue can't be null)
+cookie_secret: ${oc.env:DATA_LUNCH_COOKIE_SECRET} # Secure cookies are required (this value can't be null)
 enable_xsrf_cookies: true
 liveness: health
 keep_alive_milliseconds: 29000 # Default 37000
