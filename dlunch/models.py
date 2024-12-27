@@ -257,15 +257,13 @@ class Encrypted(TypeDecorator):
 class Menu(Data):
     """Table with menu items."""
 
-    __tablename__: str = "menu"
+    __tablename__ = "menu"
     """Name of the table."""
-    id: Column = Column(
-        Integer, Identity(start=1, cycle=True), primary_key=True
-    )
+    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
     """Menu item ID."""
-    item: Column = Column(String(250), unique=False, nullable=False)
+    item = Column(String(250), unique=False, nullable=False)
     """Item name."""
-    orders: DeclarativeMeta = relationship(
+    orders = relationship(
         "Orders",
         back_populates="menu_item",
         cascade="all, delete-orphan",
@@ -326,32 +324,28 @@ class Menu(Data):
 class Orders(Data):
     """Table with items that belongs to an order."""
 
-    __tablename__: str = "orders"
+    __tablename__ = "orders"
     """Name of the table."""
-    id: Column = Column(
-        Integer, Identity(start=1, cycle=True), primary_key=True
-    )
+    id = Column(Integer, Identity(start=1, cycle=True), primary_key=True)
     """Order ID."""
-    user: Column = Column(
+    user = Column(
         String(100),
         ForeignKey("users.id", ondelete="CASCADE"),
         index=True,
         nullable=False,
     )
     """User that placed the order."""
-    user_record: DeclarativeMeta = relationship(
-        "Users", back_populates="orders", uselist=False
-    )
+    user_record = relationship("Users", back_populates="orders", uselist=False)
     """User connected to this order."""
-    menu_item_id: Column = Column(
+    menu_item_id = Column(
         Integer,
         ForeignKey("menu.id", ondelete="CASCADE"),
         nullable=False,
     )
     """ID of the menu item included in the order."""
-    menu_item: DeclarativeMeta = relationship("Menu", back_populates="orders")
+    menu_item = relationship("Menu", back_populates="orders")
     """Menu items connected to each order (see `menu` table)."""
-    note: Column = Column(String(300), unique=False, nullable=True)
+    note = Column(String(300), unique=False, nullable=True)
     """Note field attached to the order."""
 
     @classmethod
@@ -407,28 +401,28 @@ class Orders(Data):
 class Users(Data):
     """Table with users that placed an order."""
 
-    __tablename__: str = "users"
+    __tablename__ = "users"
     """Name of the table."""
-    id: Column = Column(
+    id = Column(
         String(100),
         primary_key=True,
         nullable=False,
     )
     """User ID."""
-    guest: Column = Column(
+    guest = Column(
         String(20),
         nullable=False,
         default="NotAGuest",
         server_default="NotAGuest",
     )
     """Guest flag (true if guest)."""
-    lunch_time: Column = Column(String(7), index=True, nullable=False)
+    lunch_time = Column(String(7), index=True, nullable=False)
     """User selected lunch time."""
-    takeaway: Column = Column(
+    takeaway = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
     """Takeaway flag (true if takeaway)."""
-    orders: DeclarativeMeta = relationship(
+    orders = relationship(
         "Orders",
         back_populates="user_record",
         cascade="all, delete-orphan",
@@ -491,22 +485,22 @@ class Stats(Data):
 
     # Primary key handled with __table_args__ because ON CONFLICT for composite
     # primary key is available only with __table_args__
-    __tablename__: str = "stats"
+    __tablename__ = "stats"
     """Name of the table."""
-    __table_args__: tuple = (
+    __table_args__ = (
         PrimaryKeyConstraint(
             "date", "guest", name="stats_pkey", sqlite_on_conflict="REPLACE"
         ),
     )
     """Table arguments, used to create primary key (ON CONFLICT options for composite
     primary key is available only with __table_args__)."""
-    date: Column = Column(
+    date = Column(
         Date,
         nullable=False,
         server_default=func.current_date(),
     )
     """Day to which the statistics refers to."""
-    guest: Column = Column(
+    guest = Column(
         String(20),
         nullable=True,
         default="NotAGuest",
@@ -516,7 +510,7 @@ class Stats(Data):
     (see config key `panel.guest_types`).
     'NotAGuest' is the value used for locals.
     """
-    hungry_people: Column = Column(
+    hungry_people = Column(
         Integer, nullable=False, default=0, server_default="0"
     )
     """Number of people that ate in a certain day.
@@ -579,16 +573,16 @@ class Flags(Data):
     'No more orders' flag and guest override flags are stored here.
     """
 
-    __tablename__: str = "flags"
+    __tablename__ = "flags"
     """Name of the table."""
-    id: Column = Column(
+    id = Column(
         String(50),
         primary_key=True,
         nullable=False,
         sqlite_on_conflict_primary_key="REPLACE",
     )
     """Flag ID (name)."""
-    value: Column = Column(Boolean, nullable=False)
+    value = Column(Boolean, nullable=False)
     """Flag value."""
 
     @classmethod
@@ -673,15 +667,15 @@ class PrivilegedUsers(Data):
     (see config key `auth.authorize_guest_users` and `basic_auth.guest_user`)
     """
 
-    __tablename__: str = "privileged_users"
+    __tablename__ = "privileged_users"
     """Name of the table."""
-    user: Column = Column(
+    user = Column(
         String(100),
         primary_key=True,
         sqlite_on_conflict_primary_key="REPLACE",
     )
     """User name."""
-    admin: Column = Column(
+    admin = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
     """Admin flag (true if admin)."""
@@ -739,17 +733,17 @@ class PrivilegedUsers(Data):
 class Credentials(Data):
     """Table with users credentials, used only if basic authentication is active."""
 
-    __tablename__: str = "credentials"
+    __tablename__ = "credentials"
     """Name of the table."""
-    user: Column = Column(
+    user = Column(
         String(100),
         primary_key=True,
         sqlite_on_conflict_primary_key="REPLACE",
     )
     """Username."""
-    password_hash: Column = Column(Password(150), unique=False, nullable=False)
+    password_hash = Column(Password(150), unique=False, nullable=False)
     """Hashed password."""
-    password_encrypted: Column = Column(
+    password_encrypted = Column(
         Encrypted(150),
         unique=False,
         nullable=True,
