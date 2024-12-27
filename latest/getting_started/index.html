@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="The ultimate web app for a well organized lunch">
+      
       
         <meta name="author" content="Michele Alberti">
       
@@ -53,6 +55,8 @@
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
       <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../stylesheets/hero.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -225,7 +229,7 @@
   
     
   
-  About Us
+  Home
 
       </a>
     </li>
@@ -266,6 +270,23 @@
         </a>
       </li>
     
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../developers/" class="md-tabs__link">
+        
+  
+    
+  
+  Developers
+
+      </a>
+    </li>
   
 
       
@@ -332,7 +353,7 @@
         
   
   <span class="md-ellipsis">
-    About Us
+    Home
   </span>
   
 
@@ -394,32 +415,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#development-environment-setup" class="md-nav__link">
+  <a href="#introduction" class="md-nav__link">
     <span class="md-ellipsis">
-      Development environment setup
+      Introduction
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Development environment setup">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#miniconda" class="md-nav__link">
-    <span class="md-ellipsis">
-      Miniconda
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setup-the-development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Setup the development environment
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#environment-variables" class="md-nav__link">
@@ -428,90 +449,12 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Environment variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#general" class="md-nav__link">
-    <span class="md-ellipsis">
-      General
-    </span>
-  </a>
-  
 </li>
         
           <li class="md-nav__item">
-  <a href="#docker-and-google-cloud-platform" class="md-nav__link">
+  <a href="#launch-command" class="md-nav__link">
     <span class="md-ellipsis">
-      Docker and Google Cloud Platform
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tlsssl-certificate" class="md-nav__link">
-    <span class="md-ellipsis">
-      TLS/SSL Certificate
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encryption-and-authorization" class="md-nav__link">
-    <span class="md-ellipsis">
-      Encryption and Authorization
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manually-install-the-development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Manually install the development environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manually-install-data-lunch-cli" class="md-nav__link">
-    <span class="md-ellipsis">
-      Manually install data-lunch CLI
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-the-docker-compose-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running the docker-compose system
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-a-single-container" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running a single container
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-locally" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running locally
+      Launch command
     </span>
   </a>
   
@@ -523,51 +466,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#additional-installations-before-contributing" class="md-nav__link">
+  <a href="#customization" class="md-nav__link">
     <span class="md-ellipsis">
-      Additional installations before contributing
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Additional installations before contributing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pre-commit-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Pre-commit hooks
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#commitizen" class="md-nav__link">
-    <span class="md-ellipsis">
-      Commitizen
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#release-strategy-from-development-to-main-branch" class="md-nav__link">
-    <span class="md-ellipsis">
-      Release strategy from development to main branch
+      Customization
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#google-cloud-platform-utilities" class="md-nav__link">
+  <a href="#docker" class="md-nav__link">
     <span class="md-ellipsis">
-      Google Cloud Platform utilities
+      Docker
     </span>
   </a>
   
@@ -873,6 +783,26 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -902,32 +832,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#development-environment-setup" class="md-nav__link">
+  <a href="#introduction" class="md-nav__link">
     <span class="md-ellipsis">
-      Development environment setup
+      Introduction
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Development environment setup">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#miniconda" class="md-nav__link">
-    <span class="md-ellipsis">
-      Miniconda
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setup-the-development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Setup the development environment
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#environment-variables" class="md-nav__link">
@@ -936,90 +866,12 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Environment variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#general" class="md-nav__link">
-    <span class="md-ellipsis">
-      General
-    </span>
-  </a>
-  
 </li>
         
           <li class="md-nav__item">
-  <a href="#docker-and-google-cloud-platform" class="md-nav__link">
+  <a href="#launch-command" class="md-nav__link">
     <span class="md-ellipsis">
-      Docker and Google Cloud Platform
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tlsssl-certificate" class="md-nav__link">
-    <span class="md-ellipsis">
-      TLS/SSL Certificate
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#encryption-and-authorization" class="md-nav__link">
-    <span class="md-ellipsis">
-      Encryption and Authorization
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manually-install-the-development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Manually install the development environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manually-install-data-lunch-cli" class="md-nav__link">
-    <span class="md-ellipsis">
-      Manually install data-lunch CLI
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-the-docker-compose-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running the docker-compose system
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-a-single-container" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running a single container
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-locally" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running locally
+      Launch command
     </span>
   </a>
   
@@ -1031,51 +883,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#additional-installations-before-contributing" class="md-nav__link">
+  <a href="#customization" class="md-nav__link">
     <span class="md-ellipsis">
-      Additional installations before contributing
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Additional installations before contributing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pre-commit-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Pre-commit hooks
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#commitizen" class="md-nav__link">
-    <span class="md-ellipsis">
-      Commitizen
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#release-strategy-from-development-to-main-branch" class="md-nav__link">
-    <span class="md-ellipsis">
-      Release strategy from development to main branch
+      Customization
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#google-cloud-platform-utilities" class="md-nav__link">
+  <a href="#docker" class="md-nav__link">
     <span class="md-ellipsis">
-      Google Cloud Platform utilities
+      Docker
     </span>
   </a>
   
@@ -1098,166 +917,40 @@
 
 <h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
 <p><a id="doc-start"></a></p>
-<h2 id="development-environment-setup">Development environment setup<a class="headerlink" href="#development-environment-setup" title="Permanent link">&para;</a></h2>
-<p>The following steps will guide you through the installation procedure.</p>
-<h3 id="miniconda">Miniconda<a class="headerlink" href="#miniconda" title="Permanent link">&para;</a></h3>
-<p><a href="https://docs.conda.io/en/latest/">Conda</a> is required for creating the development environment (it is suggested to install <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a>).</p>
-<h3 id="setup-the-development-environment">Setup the development environment<a class="headerlink" href="#setup-the-development-environment" title="Permanent link">&para;</a></h3>
-<p>Use the setup script (<code>setup_dev_env.sh</code>) to install all the required development tools.</p>
-<p>Use <code>source</code> to properly launch the script.</p>
-<div class="highlight"><pre><span></span><code>source setup_dev_env.sh
-</code></pre></div>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p><em>Data-Lunch</em> is a web app to help people managing lunch orders.<br />
+The interface make possible to upload a menu as an Excel file or as an image. The menu is copied inside the app and people are then able to place orders at preset lunch times.<br />
+Users can flag an order as a takeway one, and, if something change, they can move an order to another lunch time (or change its takeaway status).</p>
+<p>The systems handle <em>guests</em> users by giving them a limited ability to interact with the app (they can in fact just place an order).</p>
+<p>Once all order are placed it is possible to stop new orders from being placed and download an Excel files with every order, grouped by lunch time and takeaway status.</p>
+<p>The idea behind this app is to simplify data collection at lunch time, so that a single person can book a restaurant and place orders for a group of people (friends, colleagues, etc.).</p>
 <div class="admonition warning">
 <p class="admonition-title">Important</p>
-<p>The setup script will take care of setting up the development environment for you.
- The script installs:
- - 3 environments (<code>data-lunch</code> for development, <code>ci-cd</code> for <em>pre-commit</em> and other utilities, <code>gc-sdk</code> for interacting with <em>Google Cloud Platform</em>)
- - <em>pre-commit</em> hooks
- - <code>data-lunch</code> command line</p>
+<p>This section is a work in progress, the app has a lot of configurations, not yet described in this documentation.<br />
+ Authentication and guest management are just examples of what is missing from this documentation. </p>
 </div>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>Install commitizen using <code>pip</code>:</p>
+<div class="highlight"><pre><span></span><code> pip install dlunch
+</code></pre></div>
+<p>For the program to work properly you need the following system dipendencies:</p>
+<ul>
+<li><a href="https://www.sqlite.org/">SQLite</a>: used if you set the database to <code>sqlite</code>.</li>
+<li><a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a>: used to convert images with menu to text.</li>
+</ul>
+<p>If you need help on how to install those system preferences on linux (<em>Debian</em>) you can check the file <code>docker/web/Dockerfile.web</code>.<br />
+It shows how to install them with <code>apt</code>.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<p>Before starting you need the following environment variables to avoid errors on <em>Data-Lunch</em> startup.</p>
 <h3 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h3>
-<p>The following environment variables are required for running the <em>web app</em>, the <em>makefile</em> or <em>utility scripts</em>.</p>
-<h4 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h4>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th style="text-align: center;">Type</th>
-<th style="text-align: center;">Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>PANEL_APP</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">✔️</td>
-<td>app name, <em>data-lunch-app</em> by default (used by <code>makefile</code>)</td>
-</tr>
-<tr>
-<td><code>PANEL_ENV</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">✔️</td>
-<td>environment, e.g. <em>development</em>, <em>quality</em>, <em>production</em>, affects app configuration (<em>Hydra</em>) and build processes (<em>makefile</em>)</td>
-</tr>
-<tr>
-<td><code>PANEL_ARGS</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>additional arguments passed to <em>Hydra</em> (e.g. <code>panel/gui=major_release</code>) in <em>makefile</em> and <code>docker-compose</code> commands</td>
-</tr>
-<tr>
-<td><code>PORT</code></td>
-<td style="text-align: center;"><em>int</em></td>
-<td style="text-align: center;">✔️</td>
-<td>port used by the web app (or the container), default to <em>5000</em>; affects app configuration and build process (it is used by <em>makefile</em>, <em>Hydra</em> and <em>Docker</em>)</td>
-</tr>
-</tbody>
-</table>
-<h4 id="docker-and-google-cloud-platform">Docker and Google Cloud Platform<a class="headerlink" href="#docker-and-google-cloud-platform" title="Permanent link">&para;</a></h4>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The following variables are mainly used during the building process or by external scripts.</p>
-</div>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th style="text-align: center;">Type</th>
-<th style="text-align: center;">Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>DOCKER_USERNAME</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>your <em>Docker Hub</em> username, used by <code>makefile</code> and stats panel to extract container name</td>
-</tr>
-<tr>
-<td><code>IMAGE_VERSION</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Docker</em> image version, typically <code>stable</code> or <code>latest</code> (used by <em>makefile</em> and <code>docker-compose</code> commands)</td>
-</tr>
-<tr>
-<td><code>GCLOUD_PROJECT</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Google Cloud Platform</em> <code>project_id</code>, used by <code>makefile</code> for <em>GCP's CLI</em> authentication and for uploading the database to <em>gcp</em> storage, if active in web app configuration files (see panel.scheduled_tasks)</td>
-</tr>
-<tr>
-<td><code>GCLOUD_BUCKET</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Google Cloud Platform</em> <code>bucket</code>, used for uploading database to <em>gcp</em> storage, if active in web app configuration files (see panel.scheduled_tasks)</td>
-</tr>
-<tr>
-<td><code>MAIL_USER</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>email client user, used for sending emails containing the instance IP, e.g.<em>mywebappemail@email.com</em> (used only for <em>Google Cloud Platform</em>)</td>
-</tr>
-<tr>
-<td><code>MAIL_APP_PASSWORD</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>email client password used for sending emails containing the instance IP (used only for <em>Google Cloud Platform</em>)</td>
-</tr>
-<tr>
-<td><code>MAIL_RECIPIENTS</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>email recipients as string, separated by <code>,</code> (used for sending emails containing the instance IP when hosted on <em>Google Cloud Platform</em>)</td>
-</tr>
-<tr>
-<td><code>DUCKDNS_URL</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>URL</em> used in <code>compose_init.sh</code> to update dynamic address (see <em>Duck DNS's</em> instructions for details, used when hosted on <em>Google Cloud Platform</em>)</td>
-</tr>
-</tbody>
-</table>
-<h4 id="tlsssl-certificate">TLS/SSL Certificate<a class="headerlink" href="#tlsssl-certificate" title="Permanent link">&para;</a></h4>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Use the command <code>make ssl-gen-certificate</code> to generate local SSL certificates.</p>
-</div>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th style="text-align: center;">Type</th>
-<th style="text-align: center;">Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>CERT_EMAIL</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>email for registering <em>SSL certificates</em>, shared with the authority <em>Let's Encrypt</em> (via <code>certbot</code>); used by <code>docker-compose</code> commands</td>
-</tr>
-<tr>
-<td><code>DOMAIN</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td>domain name, e.g. <em>mywebapp.com</em>, used by <code>docker-compose</code> commands (<code>certbot</code>), in email generation (<code>scripts</code> folder) and to auto-generate SSL certificates</td>
-</tr>
-</tbody>
-</table>
-<h4 id="encryption-and-authorization">Encryption and Authorization<a class="headerlink" href="#encryption-and-authorization" title="Permanent link">&para;</a></h4>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>All variables used by <em>Postgresql</em> are not required if <code>db=sqlite</code> (default value).<br />
- All variables used by <em>OAuth</em> are not required if <code>server=no_auth</code> (default value).</p>
-</div>
 <div class="admonition warning">
 <p class="admonition-title">Important</p>
 <p><code>DATA_LUNCH_COOKIE_SECRET</code> and <code>DATA_LUNCH_OAUTH_ENC_KEY</code> are required even if <code>server=no_auth</code> is set.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the command <code>data-lunch utils generate-secrets</code> to generate a valid secret.</p>
+</div>
 <table>
 <thead>
 <tr>
@@ -1269,215 +962,48 @@
 </thead>
 <tbody>
 <tr>
+<td><code>PANEL_ENV</code></td>
+<td style="text-align: center;"><em>str</em></td>
+<td style="text-align: center;">✔️</td>
+<td>Environment, e.g. <em>development</em>, <em>quality</em>, <em>production</em>, affects app configuration (<em>Hydra</em>)</td>
+</tr>
+<tr>
+<td><code>PORT</code></td>
+<td style="text-align: center;"><em>int</em></td>
+<td style="text-align: center;">❌</td>
+<td>Port used by the web app (or the container), default to <em>5000</em>; affects app configuration (it is used by <em>Hydra</em>)</td>
+</tr>
+<tr>
 <td><code>DATA_LUNCH_COOKIE_SECRET</code></td>
 <td style="text-align: center;"><em>str</em></td>
 <td style="text-align: center;">✔️</td>
-<td><em>Secret</em> used for securing the authentication cookie (use <code>make generate-secrets</code> to generate a valid secret)</td>
+<td><em>Secret</em> used for securing the authentication cookie (use <code>data-lunch utils generate-secrets</code> to generate a valid secret); leave it as an empty variable if no authentication is set</td>
 </tr>
 <tr>
 <td><code>DATA_LUNCH_OAUTH_ENC_KEY</code></td>
 <td style="text-align: center;"><em>str</em></td>
 <td style="text-align: center;">✔️</td>
-<td><em>Encription key</em> used by the OAuth algorithm for encryption (use <code>make generate-secrets</code> to generate a valid secret)</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_OAUTH_KEY</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>OAuth key</em> used for configuring the OAuth provider (<em>GitHub</em>, <em>Azure</em>)</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_OAUTH_SECRET</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>OAuth secret</em> used for configuring the OAuth provider (<em>GitHub</em>, <em>Azure</em>)</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_OAUTH_REDIRECT_URI</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>OAuth redirect uri</em> used for configuring the OAuth provider (<em>GitHub</em>, <em>Azure</em>), do not set to use default value</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_OAUTH_TENANT_ID</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>OAuth tenant id</em> used for configuring the OAuth provider (<em>Azure</em>), do not set to use default value</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_DB_USER</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Postgresql</em> user, do not set to use default value</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_DB_PASSWORD</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Postgresql</em> password</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_DB_HOST</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Postgresql</em> host, do not set to use default value</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_DB_PORT</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Postgresql</em> port, do not set to use default value</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_DB_DATABASE</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Postgresql</em> database, do not set to use default value</td>
-</tr>
-<tr>
-<td><code>DATA_LUNCH_DB_SCHEMA</code></td>
-<td style="text-align: center;"><em>str</em></td>
-<td style="text-align: center;">❌</td>
-<td><em>Postgresql</em> schema, do not set to use default value</td>
+<td><em>Encription key</em> used by the OAuth algorithm for encryption (use <code>data-lunch utils generate-secrets</code> to generate a valid secret); leave it as an empty variable if no authentication is set</td>
 </tr>
 </tbody>
 </table>
-<h3 id="manually-install-the-development-environment">Manually install the development environment<a class="headerlink" href="#manually-install-the-development-environment" title="Permanent link">&para;</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
-</div>
-<p>Use the terminal for navigating to the repository base directory.\
-Use the following command in your terminal to create an environment named <code>data-lunch</code> manually.<br />
-Otherwise use the <a href="#setup-the-development-environment">setup script</a> to activate the guided installing procedure.</p>
-<div class="highlight"><pre><span></span><code>conda env create -f environment.yml
-</code></pre></div>
-<p>Activate the new <em>Conda</em> environment with the following command.</p>
-<div class="highlight"><pre><span></span><code>conda activate data-lunch
-</code></pre></div>
-<h3 id="manually-install-data-lunch-cli">Manually install data-lunch CLI<a class="headerlink" href="#manually-install-data-lunch-cli" title="Permanent link">&para;</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
-</div>
-<p>The CLI is distributed with setuptools instead of using Unix shebangs.<br />
-It is a very simple utility to initialize and delete the app database. There are different use cases:</p>
-<ul>
-<li>Create/delete the <em>sqlite</em> database used by the app</li>
-<li>Initialize/drop tables inside the <em>sqlite</em> database</li>
-</ul>
-<p>Use the following command for generating the CLI executable from the <code>setup.py</code> file, it will install your package locally.</p>
-<div class="highlight"><pre><span></span><code>pip install .
-</code></pre></div>
-<p>If you want to make some changes to the source code it is suggested to use the following option.</p>
-<div class="highlight"><pre><span></span><code>pip install --editable .
-</code></pre></div>
-<p>It will just link the package to the original location, basically meaning any changes to the original package would reflect directly in your environment.</p>
-<p>Now you can activate the <em>Conda</em> environment and access the <em>CLI</em> commands directly from the terminal (without using annoying <em>shebangs</em> or prepending <code>python</code> to run your <em>CLI</em> calls).</p>
-<p>Test that everything is working correctly with the following commands.</p>
-<div class="highlight"><pre><span></span><code>data-lunch --version
-data-lunch --help
-</code></pre></div>
-<h3 id="running-the-docker-compose-system">Running the docker-compose system<a class="headerlink" href="#running-the-docker-compose-system" title="Permanent link">&para;</a></h3>
-<p>Since this app will be deployed with an hosting service a <em>Dockerfile</em> to build a container image is available.<br />
-The docker compose file (see <code>docker-compose.yaml</code>) deploys the web app container along with a <em>load balancer</em> (the <em>nginx</em> container)
-to improve the system scalability.</p>
-<p>Look inside the <code>makefile</code> to see the <code>docker</code> and <code>docker-compose</code> options.</p>
-<p>To build and run the dockerized system you have to install <a href="https://docs.docker.com/get-docker/">Docker</a>.<br />
-Call the following <code>make</code> command to start the build process.</p>
-<div class="highlight"><pre><span></span><code>make docker-up-init docker-up-build
-</code></pre></div>
-<p><code>up-init</code> initialize the <em>ssl certificate</em> based on the selected environment (as set in the environment variable <code>PANEL_ENV</code>, i.e. <em>development</em> or <em>production</em>).<br />
-Call only <code>make</code> (without arguments) to trigger the same command.<br />
-A missing or incomplete <em>ssl certificate folder</em> will result in an <code>nginx</code> container failure on start-up.</p>
-<p>Images are built and the two containers are started.  </p>
-<p>You can then access your web app at <code>http://localhost:PORT</code> (where <code>PORT</code> will match the value set through the environment variable).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can also use <code>make docker-up</code> to spin up the containers if you do not need to re-build any image or initialize ssl certificate folders.</p>
+<p>The following variables are just a small part of the total. See <a class="autorefs autorefs-internal" href="../developers/#environment-variables">here</a> for more details.</p>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Important</p>
-<p>An additional container named <code>db</code> is started if <code>db=postgresql</code> is set</p>
-</div>
-<h3 id="running-a-single-container">Running a single container<a class="headerlink" href="#running-a-single-container" title="Permanent link">&para;</a></h3>
-<p>It is possible to launch a single server by calling the following command.</p>
-<div class="highlight"><pre><span></span><code>make docker-build
-
-make docker-run
-</code></pre></div>
-<p>You can then access your web app at <code>http://localhost:5000</code> (if the deafult <code>PORT</code> is selected).</p>
-<h3 id="running-locally">Running locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h3>
-<p>Launch a local server with default options by calling the following command.</p>
+<h3 id="launch-command">Launch command<a class="headerlink" href="#launch-command" title="Permanent link">&para;</a></h3>
+<p>Use the following command to start the server with default configuration (<em>SQLite</em> database, no authentication):</p>
 <div class="highlight"><pre><span></span><code>python -m dlunch
 </code></pre></div>
-<p>Use <em>Hydra</em> arguments to alter the app behaviour.</p>
-<div class="highlight"><pre><span></span><code>python -m dlunch server=basic_auth
+<p>Connect to localhost:5000 (if the default port is used) to see the web app.</p>
+<h2 id="customization">Customization<a class="headerlink" href="#customization" title="Permanent link">&para;</a></h2>
+<p><em>Data-Lunch</em> configurations explout <a href="https://hydra.cc/docs/intro/">Hydra</a> versatility.
+It is possible to alter default configurations by using <em>Hydra's overrides</em>, for example</p>
+<div class="highlight"><pre><span></span><code>python -m dlunch panel/gui=major_release
 </code></pre></div>
-<p>See <a href="https://hydra.cc/docs/intro/">Hydra's documentation</a> for additional details.</p>
-<h2 id="additional-installations-before-contributing">Additional installations before contributing<a class="headerlink" href="#additional-installations-before-contributing" title="Permanent link">&para;</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
-</div>
-<p>Before contributing please create the <code>pre-commit</code> and <code>commitizen</code> environments.</p>
-<div class="highlight"><pre><span></span><code>cd requirements
-conda env create -f pre-commit.yml
-conda env create -f commitizen.yml
-</code></pre></div>
-<h3 id="pre-commit-hooks">Pre-commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permanent link">&para;</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
-</div>
-<p>Then install the precommit hooks.</p>
-<div class="highlight"><pre><span></span><code>conda activate pre-commit
-pre-commit install
-pre-commit autoupdate
-</code></pre></div>
-<p>Optionally run hooks on all files.</p>
-<div class="highlight"><pre><span></span><code>pre-commit run --all-files
-</code></pre></div>
-<h3 id="commitizen">Commitizen<a class="headerlink" href="#commitizen" title="Permanent link">&para;</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
-</div>
-<p>The <em>Commitizen</em> hook checks that rules for <em>conventional commits</em> are respected in commits messages.
-Use the following command to enjoy <em>Commitizen's</em> interactive prompt.</p>
-<div class="highlight"><pre><span></span><code>conda activate commitizen
-cz commit
-</code></pre></div>
-<p><code>cz c</code> is a shorther alias for <code>cz commit</code>.</p>
-<h2 id="release-strategy-from-development-to-main-branch">Release strategy from <code>development</code> to <code>main</code> branch<a class="headerlink" href="#release-strategy-from-development-to-main-branch" title="Permanent link">&para;</a></h2>
-<div class="admonition danger">
-<p class="admonition-title">Caution</p>
-<p>This step is required only if the CI-CD pipeline on <em>GitHub</em> does not work.</p>
-</div>
-<p>In order to take advantage of <em>Commitizen</em> <code>bump</code> command follow this guideline.</p>
-<p>First check that you are on the correct branch.</p>
-<div class="highlight"><pre><span></span><code>git checkout main
-</code></pre></div>
-<p>Then start the merge process forcing it to stop before commit (<code>--no-commit</code>) and without using the <em>fast forward</em> strategy (<code>--no-ff</code>).</p>
-<div class="highlight"><pre><span></span><code>git merge development --no-commit --no-ff
-</code></pre></div>
-<p>Check that results match your expectations then commit (you can leave the default message).</p>
-<div class="highlight"><pre><span></span><code>git commit
-</code></pre></div>
-<p>Now <em>Commitizen</em> <code>bump</code> command will add an additional commit with updated versions to every file listed inside <code>pyproject.toml</code>.</p>
-<div class="highlight"><pre><span></span><code>cz bump --no-verify
-</code></pre></div>
-<p>You can now merge results of the release process back to the <code>development</code> branch.</p>
-<div class="highlight"><pre><span></span><code>git checkout development
-git merge main --no-ff
-</code></pre></div>
-<p>Use <em>"update files from last release"</em> or the default text as commit message.</p>
-<h2 id="google-cloud-platform-utilities">Google Cloud Platform utilities<a class="headerlink" href="#google-cloud-platform-utilities" title="Permanent link">&para;</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This step is not required if the <a href="#setup-the-development-environment">setup script</a> (<code>setup_dev_env.sh</code>) is used.</p>
-</div>
-<p>The makefile has two rules for conviniently setting up and removing authentication credentials for <em>Google Cloud Platform</em> command line interface: <code>gcp-config</code> and <code>gcp-revoke</code>.</p>
+<p>will alter some graphic elements to show a release banner.</p>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
+<p>A <em>Docker</em> image with Data-Lunch is available <a href="https://hub.docker.com/r/michelealberti/data-lunch-app">here</a>.</p>
 
 
 
