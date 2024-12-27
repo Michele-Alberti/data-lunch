@@ -62,6 +62,12 @@ help:
 	@echo -e " ${WHITE}  clean-folders       :${NC} cleans all folders nb checkpoints, pycache & pytest folders"
 	@echo -e " ${WHITE}  clean-docker        :${NC} cleans docker containers and images"
 	@echo -e " ${WHITE}  clean               :${NC} runs clean-notebooks, clean-docker, clean-folders, clean-k8s"
+	@echo -e " ${YELLOW}DOCS -------------------------------------------------------------------------------------------${NC}"
+	@echo -e " ${WHITE}  mkdocs-build        :${NC} build docs with mkdocs command"
+	@echo -e " ${WHITE}  mkdocs-serve        :${NC} run mkdocs test server"
+	@echo -e " ${WHITE}  mike-serve          :${NC} run mike test server"
+	@echo -e " ${WHITE}  docs                :${NC} build docs with selected default command"
+	@echo -e " ${WHITE}  docs-serve          :${NC} run default test server"
 	@echo -e " ${YELLOW}MISC -------------------------------------------------------------------------------------------${NC}"
 	@echo -e " ${WHITE}  interrogate         :${NC} runs interrogate to check code quality"
 	@echo -e " ${WHITE}  package-build       :${NC} build python package"
@@ -275,6 +281,8 @@ clean-docker:
 	docker system prune -f
 	@echo -e "${GREEN}done${NC}"
 
+clean: clean-docker clean-folders
+
 # Docs rules ------------------------------------------------------------------
 mkdocs-build:
 	@echo -e "${YELLOW}build html docs pages${NC}"
@@ -406,5 +414,3 @@ create-users-credentials:
 		-e DOMAIN=${DOMAIN} \
 		${IMAGEFULLNAME} /bin/sh -c "python /app/scripts/create_users_from_list.py ${PANEL_ARGS}"
 	@echo -e "${GREEN}done${NC}"
-
-clean: clean-docker clean-folders
