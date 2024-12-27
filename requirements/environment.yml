@@ -9,28 +9,28 @@ dependencies:
   - sqlite=3.45.3
   # Package dependencies
   - setuptools=70.3.0
-  - click=8.1.7
+  - click=8.1.8
   - cryptography=43.0.1
   - ipykernel=6.29.5
-  - ipywidgets=8.1.3
-  - openpyxl=3.1.4
-  - pandas=2.2.2
+  - ipywidgets=8.1.5
+  - openpyxl=3.1.5
+  - pandas=2.2.3
   - passlib=1.7.4
   - tenacity=8.5.0
-  - tqdm=4.66.4
-  - panel=1.4.4
-  - sqlalchemy=2.0.31
-  - psycopg=3.2.1
+  - tqdm=4.67.1
+  - panel=1.5.5
+  - sqlalchemy=2.0.36
+  - psycopg=3.2.3
   - hydra-core=1.3.2
-  - google-cloud-storage=2.17.0
-  - pytesseract=0.3.10
+  - google-cloud-storage=2.19.0
+  - pytesseract=0.3.13
   # Developer
-  - jupyterlab=4.3.0
+  - jupyterlab=4.3.4
   # Documentation
   - mkdocs=1.6.1 
   - mkdocstrings=0.27.0
   - mkdocstrings-python=1.12.2
-  - mkdocs-material=9.5.44
+  - mkdocs-material=9.5.49
   - mkdocs-gen-files=0.4.0
   - mkdocs-literate-nav=0.6.1
   - mike=2.1.2
