@@ -10,6 +10,7 @@ import click
 import pkg_resources
 from hydra import compose, initialize
 import pandas as pd
+import subprocess
 
 # Import database object
 from .models import create_database, create_engine, SCHEMA, Data, metadata_obj
@@ -353,6 +354,44 @@ def load_table(
     except Exception as e:
         # Generic error
         click.secho("Cannot load table", fg="red")
+        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
+
+
+@cli.group()
+@click.pass_obj
+def utils(obj):
+    """Utility commands."""
+
+
+@utils.command("generate-secrets")
+@click.pass_obj
+def generate_secrets(obj):
+    """Generate secrets for DATA_LUNCH_COOKIE_SECRET and DATA_LUNCH_OAUTH_ENC_KEY env variables."""
+
+    try:
+        click.secho("Print secrets\n", fg="yellow")
+        result_secret = subprocess.run(
+            ["panel", "secret"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        click.secho(
+            f"COOKIE SECRET:\n{result_secret.stdout.decode('utf-8')}",
+            fg="cyan",
+        )
+        result_encription = subprocess.run(
+            ["panel", "oauth-secret"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        click.secho(
+            f"ENCRIPTION KEY:\n{result_encription.stdout.decode('utf-8')}",
+            fg="cyan",
+        )
+        click.secho("Done", fg="green")
+    except Exception as e:
+        # Generic error
+        click.secho("Cannot generate secrets", fg="red")
         click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
 
 
