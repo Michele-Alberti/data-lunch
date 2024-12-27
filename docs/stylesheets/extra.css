@@ -1,10 +1,12 @@
 /* Import a special font for the title */
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@700&display=swap');
 
+/* Adjust logo */
 .md-logo img {
     height: 2rem !important;
 }
 
+/* Adjust page title font fot desktop and mobile screens */
 header span.md-ellipsis {
     font-family: "Silkscreen", cursive;
     font-size: 1.2rem !important;
@@ -21,6 +23,8 @@ nav .md-nav__title {
         font-size: .8rem !important;
     }
 }
+
+/* Change profile colors */
 
 [data-md-color-scheme="dlunch"] {
     /* Primary color shades */

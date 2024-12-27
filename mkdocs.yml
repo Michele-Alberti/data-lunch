@@ -3,6 +3,8 @@
 site_name: Data-Lunch
 site_url: "http://Michele-Alberti.github.io/data-lunch/"
 site_author: Michele Alberti
+site_description: >-
+  The ultimate web app for a well organized lunch
 
 # Repository
 repo_name: Michele-Alberti/data-lunch
@@ -11,9 +13,10 @@ edit_uri: ""
 
 # Navigation bar
 nav:
-- About Us: index.md
+- Home: index.md
 - getting_started.md
 - Documentation: reference/
+- Developers: developers.md
 
 # THEME -----------------------------------------------------------------------
 # Theme
@@ -38,10 +41,12 @@ theme:
     - navigation.sections
     - navigation.top
     - toc.follow
+  custom_dir: docs/overrides
 
 # Custom colors
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/hero.css
 
 # PLUGINS AND MARKDOWN EXTENSIONS ---------------------------------------------
 # Docs versioning (mike)
