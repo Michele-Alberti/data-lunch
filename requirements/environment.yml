@@ -8,6 +8,7 @@ dependencies:
   - pip=24.3.1
   # External binaries
   - sqlite=3.45.3
+  - tesseract=5.2.0
   # Package dependencies
   - setuptools=70.3.0
   - click=8.1.8
