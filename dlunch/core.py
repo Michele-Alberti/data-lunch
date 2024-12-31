@@ -48,15 +48,13 @@ class Waiter:
     Args:
         config (DictConfig| None): Hydra configuration object. Defaults to None.
 
-    Attributes:
-        config (DictConfig| None): Hydra configuration object. None if unset.
-
     Raise:
         ValueError: when calling (unmangled) methods, if the configuration is not set.
     """
 
     def __init__(self, config: DictConfig | None = None):
-        self.config = None
+        self.config: DictConfig | None = None
+        """Hydra configuration object"""
 
         # Define decorator to raise an error if the configuration is not set
         def _common_decorator(func):

@@ -156,9 +156,6 @@ class DataLunchProvider(OAuthProvider):
 
     It is used only if basic authentication is selected in Data-Lunch configuration options.
 
-    Attributes:
-        config (DictConfig): Hydra configuration dictionary.
-
     Args:
         config (DictConfig): Hydra configuration dictionary.
         login_template (str | None, optional): path to login template. Defaults to None.
@@ -172,20 +169,21 @@ class DataLunchProvider(OAuthProvider):
         logout_template: str | None = None,
     ) -> None:
         # Set Hydra config info
-        self.config = config
+        self.config: DictConfig = config
+        """Hydra configuration dictionary."""
 
         super().__init__(
             login_template=login_template, logout_template=logout_template
         )
 
     @property
-    def login_url(self):
-        """str: Login url (`/login`)."""
+    def login_url(self) -> str:
+        """Login url (`/login`)."""
         return "/login"
 
     @property
-    def login_handler(self):
-        """DataLunchLoginHandler: Data-Lunch custom login handler."""
+    def login_handler(self) -> DataLunchLoginHandler:
+        """Data-Lunch custom login handler."""
         # Set basic template
         DataLunchLoginHandler._login_template = self._login_template
         # Set Hydra config info
@@ -212,8 +210,8 @@ class PasswordHash:
             len(hashed_password) <= 150
         ), "hash should have less than 150 chars."
         # Attributes
-        self.hashed_password = hashed_password
-        """str: Password hash."""
+        self.hashed_password: str = hashed_password
+        """Password hash."""
 
     def __eq__(self, candidate: str) -> bool:
         """Hashes the candidate string and compares it to the stored hash.
@@ -323,8 +321,8 @@ class PasswordEncrypt:
             len(encrypted_password) <= 150
         ), "encrypted string should have less than 150 chars."
         # Attributes
-        self.encrypted_password = encrypted_password
-        """str: encrypted password."""
+        self.encrypted_password: str = encrypted_password
+        """Encrypted password."""
 
     def __eq__(self, candidate: str) -> bool:
         """Decrypt the candidate string and compares it to the stored encrypted value.
