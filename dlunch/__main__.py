@@ -21,6 +21,7 @@ log: logging.Logger = logging.getLogger(__name__)
 log.debug("set extensions")
 pn.extension(
     "tabulator",
+    notifications=True,
 )
 
 
