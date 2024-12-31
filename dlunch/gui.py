@@ -821,7 +821,7 @@ class GraphicInterface:
         )
         # Submit password button callback
         self.submit_password_button.on_click(
-            lambda e: core.submit_password(gi=self, config=config)
+            lambda e: auth.submit_password(gi=self, config=config)
         )
 
     # UTILITY FUNCTIONS
@@ -1304,10 +1304,10 @@ class BackendInterface:
         # CALLBACKS
         # Submit password button callback
         def submit_password_button_callback(self, config):
-            success = core.backend_submit_password(
+            success = auth.backend_submit_password(
                 gi=self,
-                is_admin=self.password_widget.object.admin,
-                is_guest=self.password_widget.object.guest,
+                user_is_admin=self.password_widget.object.admin,
+                user_is_guest=self.password_widget.object.guest,
                 config=config,
             )
             if success:

@@ -1,26 +1,37 @@
 """Module with classes and functions used for authentication and password handling."""
 
+# The __future__ import is necessary to avoid circular imports, it make all
+# the type hints in this file to be interpreted as strings
+from __future__ import annotations
+
 import logging
 import json
-from omegaconf import DictConfig
-from omegaconf.errors import ConfigAttributeError
-from passlib.context import CryptContext
-from passlib.utils import saslprep
 import pandas as pd
 import panel as pn
-from panel.auth import OAuthProvider
-from panel.util import base64url_encode
 import re
 import secrets
 import string
+import tornado
+
+from omegaconf import DictConfig
+from omegaconf.errors import ConfigAttributeError
+from panel.auth import OAuthProvider
+from panel.util import base64url_encode
+from passlib.context import CryptContext
+from passlib.utils import saslprep
 from sqlalchemy.sql import true as sql_true
 from sqlalchemy import select, delete
-from typing import Self
-import tornado
+from time import sleep
 from tornado.web import RequestHandler
+from typing import Self, TYPE_CHECKING
 
-# Database
+# Package imports
 from . import models
+
+# Import used only for type checking, that have problems with circular imports
+# TYPE_CHECKING is False at runtime (thus the import is not executed)
+if TYPE_CHECKING:
+    from . import gui
 
 
 # LOGGER ----------------------------------------------------------------------
@@ -851,3 +862,152 @@ def generate_password(
             break
 
     return password
+
+
+def submit_password(gi: gui.GraphicInterface, config: DictConfig) -> bool:
+    """Same as backend_submit_password with an additional check on old
+    password.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
+
+    Returns:
+        bool: true if successful, false otherwise.
+    """
+    # Get user's password hash
+    password_hash = get_hash_from_user(pn_user(config), config=config)
+    # Get username, updated updated at each key press
+    old_password_key_press = gi.password_widget._widgets[
+        "old_password"
+    ].value_input
+    # Check if old password is correct
+    if password_hash == old_password_key_press:
+        # Check if new password match repeat password
+        return backend_submit_password(
+            gi=gi, config=config, user=pn_user(config), logout_on_success=True
+        )
+    else:
+        pn.state.notifications.error(
+            "Incorrect old password!",
+            duration=config.panel.notifications.duration,
+        )
+
+    return False
+
+
+def backend_submit_password(
+    gi: gui.GraphicInterface | gui.BackendInterface,
+    config: DictConfig,
+    user: str = None,
+    user_is_guest: bool | None = None,
+    user_is_admin: bool | None = None,
+    logout_on_success: bool = False,
+) -> bool:
+    """Submit password to database from backend but used also from frontend as
+    part of `submit_password` function.
+
+    When used for backend `is_guest` and `is_admin` are selected from a widget.
+    When called from frontend they are `None` and the function read them from
+    database using the user input.
+
+    Args:
+        gi (gui.GraphicInterface | gui.BackendInterface): graphic interface object (used to interact with Panel widgets).
+        config (DictConfig): Hydra configuration dictionary.
+        user (str, optional): username. Defaults to None.
+        user_is_guest (bool | None, optional): guest flag (true if guest). Defaults to None.
+        user_is_admin (bool | None, optional): admin flag (true if admin). Defaults to None.
+        logout_on_success (bool, optional): set to true to force logout once the new password is set. Defaults to False.
+
+    Returns:
+        bool: true if successful, false otherwise.
+    """
+    # Check if user is passed, otherwise check if backend widget
+    # (password_widget.object.user) is available
+    if not user:
+        username = gi.password_widget._widgets["user"].value_input
+    else:
+        username = user
+    # Get all passwords, updated at each key press
+    new_password_key_press = gi.password_widget._widgets[
+        "new_password"
+    ].value_input
+    repeat_new_password_key_press = gi.password_widget._widgets[
+        "repeat_new_password"
+    ].value_input
+    # Check if new password match repeat password
+    if username:
+        if new_password_key_press == repeat_new_password_key_press:
+            # Check if new password is valid with regex
+            if re.fullmatch(
+                config.basic_auth.psw_regex,
+                new_password_key_press,
+            ):
+                # If is_guest and is_admin are None (not passed) use the ones
+                # already set for the user
+                if user_is_guest is None:
+                    user_is_guest = is_guest(user=user, config=config)
+                if user_is_admin is None:
+                    user_is_admin = is_admin(user=user, config=config)
+                # First remove user from both 'privileged_users' and
+                # 'credentials' tables.
+                deleted_data = remove_user(user=username, config=config)
+                if (deleted_data["privileged_users_deleted"] > 0) or (
+                    deleted_data["credentials_deleted"] > 0
+                ):
+                    pn.state.notifications.success(
+                        f"Removed old data for<br>'{username}'<br>auth: {deleted_data['privileged_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
+                        duration=config.panel.notifications.duration,
+                    )
+                else:
+                    pn.state.notifications.warning(
+                        f"Creating new user<br>'{username}' does not exist",
+                        duration=config.panel.notifications.duration,
+                    )
+                # Add a privileged users only if guest option is not active
+                if not user_is_guest:
+                    add_privileged_user(
+                        user=username,
+                        is_admin=user_is_admin,
+                        config=config,
+                    )
+                # Green light: update the password!
+                add_user_hashed_password(
+                    user=username,
+                    password=new_password_key_press,
+                    config=config,
+                )
+
+                # Logout if requested
+                if logout_on_success:
+                    pn.state.notifications.success(
+                        "Password updated<br>Logging out",
+                        duration=config.panel.notifications.duration,
+                    )
+                    sleep(4)
+                    force_logout()
+                else:
+                    pn.state.notifications.success(
+                        "Password updated",
+                        duration=config.panel.notifications.duration,
+                    )
+                return True
+
+            else:
+                pn.state.notifications.error(
+                    "Password requirements not satisfied<br>Check again!",
+                    duration=config.panel.notifications.duration,
+                )
+
+        else:
+            pn.state.notifications.error(
+                "Passwords are different!",
+                duration=config.panel.notifications.duration,
+            )
+    else:
+        pn.state.notifications.error(
+            "Missing user!",
+            duration=config.panel.notifications.duration,
+        )
+
+    return False
