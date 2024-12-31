@@ -3843,23 +3843,23 @@
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendAddPrivilegedUser</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendAddPrivilegedUser</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Param class used inside the backend to create the widget add new users to the `privileged_user` table.&quot;&quot;&quot;</span>
 
     <span class="n">user</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">String</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;user to add&quot;</span><span class="p">)</span>
@@ -3981,13 +3981,13 @@
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;String representation of this object.</span>
 
 <span class="sd">    Returns:</span>
@@ -4299,11 +4299,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1065</span>
-<span class="normal">1066</span>
-<span class="normal">1067</span>
-<span class="normal">1068</span>
-<span class="normal">1069</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1069</span>
 <span class="normal">1070</span>
 <span class="normal">1071</span>
 <span class="normal">1072</span>
@@ -4644,7 +4640,11 @@
 <span class="normal">1407</span>
 <span class="normal">1408</span>
 <span class="normal">1409</span>
-<span class="normal">1410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendInterface</span><span class="p">:</span>
+<span class="normal">1410</span>
+<span class="normal">1411</span>
+<span class="normal">1412</span>
+<span class="normal">1413</span>
+<span class="normal">1414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendInterface</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class with widgets for the backend graphic interface.</span>
 
 <span class="sd">    All widgets are instantiated at class initialization.</span>
@@ -4886,10 +4886,10 @@
         <span class="c1"># CALLBACKS</span>
         <span class="c1"># Submit password button callback</span>
         <span class="k">def</span> <span class="nf">submit_password_button_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-            <span class="n">success</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">backend_submit_password</span><span class="p">(</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">backend_submit_password</span><span class="p">(</span>
                 <span class="n">gi</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-                <span class="n">is_admin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">admin</span><span class="p">,</span>
-                <span class="n">is_guest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">guest</span><span class="p">,</span>
+                <span class="n">user_is_admin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">admin</span><span class="p">,</span>
+                <span class="n">user_is_guest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">guest</span><span class="p">,</span>
                 <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
@@ -5504,11 +5504,7 @@
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1076</span>
-<span class="normal">1077</span>
-<span class="normal">1078</span>
-<span class="normal">1079</span>
-<span class="normal">1080</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1080</span>
 <span class="normal">1081</span>
 <span class="normal">1082</span>
 <span class="normal">1083</span>
@@ -5810,7 +5806,11 @@
 <span class="normal">1379</span>
 <span class="normal">1380</span>
 <span class="normal">1381</span>
-<span class="normal">1382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">1382</span>
+<span class="normal">1383</span>
+<span class="normal">1384</span>
+<span class="normal">1385</span>
+<span class="normal">1386</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
 <span class="p">):</span>
@@ -6041,10 +6041,10 @@
     <span class="c1"># CALLBACKS</span>
     <span class="c1"># Submit password button callback</span>
     <span class="k">def</span> <span class="nf">submit_password_button_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-        <span class="n">success</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">backend_submit_password</span><span class="p">(</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">backend_submit_password</span><span class="p">(</span>
             <span class="n">gi</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">is_admin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">admin</span><span class="p">,</span>
-            <span class="n">is_guest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">guest</span><span class="p">,</span>
+            <span class="n">user_is_admin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">admin</span><span class="p">,</span>
+            <span class="n">user_is_guest</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password_widget</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">guest</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
@@ -6140,13 +6140,13 @@
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1404</span>
-<span class="normal">1405</span>
-<span class="normal">1406</span>
-<span class="normal">1407</span>
-<span class="normal">1408</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1408</span>
 <span class="normal">1409</span>
-<span class="normal">1410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">exit_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1410</span>
+<span class="normal">1411</span>
+<span class="normal">1412</span>
+<span class="normal">1413</span>
+<span class="normal">1414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">exit_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return to main homepage.&quot;&quot;&quot;</span>
     <span class="c1"># Edit pathname to force exit</span>
     <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">pathname</span> <span class="o">=</span> <span class="p">(</span>
@@ -6208,11 +6208,7 @@ Read also flags from <code>flags</code> table.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1386</span>
-<span class="normal">1387</span>
-<span class="normal">1388</span>
-<span class="normal">1389</span>
-<span class="normal">1390</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1390</span>
 <span class="normal">1391</span>
 <span class="normal">1392</span>
 <span class="normal">1393</span>
@@ -6224,7 +6220,11 @@ Read also flags from <code>flags</code> table.</p>
 <span class="normal">1399</span>
 <span class="normal">1400</span>
 <span class="normal">1401</span>
-<span class="normal">1402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reload_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1402</span>
+<span class="normal">1403</span>
+<span class="normal">1404</span>
+<span class="normal">1405</span>
+<span class="normal">1406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reload_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reload backend by updating user lists and privileges.</span>
 <span class="sd">    Read also flags from `flags` table.</span>
 
@@ -6376,16 +6376,7 @@ Read also flags from <code>flags</code> table.</p>
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
@@ -6410,7 +6401,16 @@ Read also flags from <code>flags</code> table.</p>
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendPasswordRenewer</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendPasswordRenewer</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Param class used inside the backend to create the widget that collect info to renew users password.</span>
 
 <span class="sd">    It has more options compared to the standard `PasswordRenewer`.</span>
@@ -6629,13 +6629,13 @@ Read also flags from <code>flags</code> table.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;String representation of this object.</span>
 
 <span class="sd">    Returns:</span>
@@ -6732,21 +6732,21 @@ Read also flags from <code>flags</code> table.</p>
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
-<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendUserEraser</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BackendUserEraser</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Param class used inside the backend to create the widget that delete users.</span>
 
 <span class="sd">    Users are deleted from both `credentials` and `privileged_user` tables.&quot;&quot;&quot;</span>
@@ -6840,13 +6840,13 @@ Read also flags from <code>flags</code> table.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;String representation of this object.</span>
 
 <span class="sd">    Returns:</span>
@@ -6907,6 +6907,22 @@ Read also flags from <code>flags</code> table.</p>
             <td>
               <div class="doc-md-description">
                 <p>Hydra configuration dictionary.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>waiter</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter" href="../core/#dlunch.core.Waiter">Waiter</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Waiter object with methods to handle user requests.</p>
               </div>
             </td>
             <td>
@@ -7493,16 +7509,7 @@ Defaults to empty string (<code>""</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 247</span>
-<span class="normal"> 248</span>
-<span class="normal"> 249</span>
-<span class="normal"> 250</span>
-<span class="normal"> 251</span>
-<span class="normal"> 252</span>
-<span class="normal"> 253</span>
-<span class="normal"> 254</span>
-<span class="normal"> 255</span>
-<span class="normal"> 256</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 256</span>
 <span class="normal"> 257</span>
 <span class="normal"> 258</span>
 <span class="normal"> 259</span>
@@ -8307,7 +8314,11 @@ Defaults to empty string (<code>""</code>).</p>
 <span class="normal">1058</span>
 <span class="normal">1059</span>
 <span class="normal">1060</span>
-<span class="normal">1061</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GraphicInterface</span><span class="p">:</span>
+<span class="normal">1061</span>
+<span class="normal">1062</span>
+<span class="normal">1063</span>
+<span class="normal">1064</span>
+<span class="normal">1065</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GraphicInterface</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class with widgets for the main graphic interface.</span>
 
 <span class="sd">    All widgets are instantiated at class initialization.</span>
@@ -8316,6 +8327,7 @@ Defaults to empty string (<code>""</code>).</p>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config (DictConfig): Hydra configuration dictionary.</span>
+<span class="sd">        waiter (core.Waiter): Waiter object with methods to handle user requests.</span>
 <span class="sd">        app (pn.Template): App panel template (see `Panel docs &lt;https://panel.holoviz.org/how_to/templates/index.html&gt;`__).</span>
 <span class="sd">        person (Person): Object with user data and preferences for the lunch order.</span>
 <span class="sd">        guest_password (str, optional): guest password to show in password tab. Used only if basic authentication is active.</span>
@@ -8326,6 +8338,7 @@ Defaults to empty string (<code>""</code>).</p>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
+        <span class="n">waiter</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">Waiter</span><span class="p">,</span>
         <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
         <span class="n">person</span><span class="p">:</span> <span class="n">Person</span><span class="p">,</span>
         <span class="n">guest_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -8418,9 +8431,8 @@ Defaults to empty string (<code>""</code>).</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">guest_override_alert</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">toggle</span>
             <span class="c1"># Simply reload the menu when the toggle button value changes</span>
             <span class="k">if</span> <span class="n">reload</span><span class="p">:</span>
-                <span class="n">core</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
+                <span class="n">waiter</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
                     <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">config</span><span class="p">,</span>
                     <span class="bp">self</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -8645,9 +8657,8 @@ Defaults to empty string (<code>""</code>).</p>
 
             <span class="c1"># Simply reload the menu when the toggle button value changes</span>
             <span class="k">if</span> <span class="n">reload</span><span class="p">:</span>
-                <span class="n">core</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
+                <span class="n">waiter</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
                     <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">config</span><span class="p">,</span>
                     <span class="bp">self</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -8656,17 +8667,15 @@ Defaults to empty string (<code>""</code>).</p>
 
         <span class="c1"># Refresh button callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">refresh_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
                 <span class="n">e</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="c1"># Send order button callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_order_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span>
                 <span class="n">e</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="n">app</span><span class="p">,</span>
                 <span class="n">person</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
@@ -8674,18 +8683,16 @@ Defaults to empty string (<code>""</code>).</p>
         <span class="p">)</span>
         <span class="c1"># Delete order button callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delete_order_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">delete_order</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">delete_order</span><span class="p">(</span>
                 <span class="n">e</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="n">app</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="c1"># Change order time button callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">change_order_time_takeaway_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">change_order_time_takeaway</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">change_order_time_takeaway</span><span class="p">(</span>
                 <span class="n">e</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="n">person</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
@@ -8797,7 +8804,7 @@ Defaults to empty string (<code>""</code>).</p>
         <span class="p">)</span>
         <span class="c1"># Download button and callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">download_button</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">FileDownload</span><span class="p">(</span>
-            <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">download_dataframe</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span>
+            <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">download_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
             <span class="n">filename</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">file_name</span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">,</span>
             <span class="n">sizing_mode</span><span class="o">=</span><span class="s2">&quot;stretch_width&quot;</span><span class="p">,</span>
             <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">,</span>
@@ -8875,16 +8882,15 @@ Defaults to empty string (<code>""</code>).</p>
         <span class="c1"># CALLBACKS</span>
         <span class="c1"># Build menu button callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_menu_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">build_menu</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">build_menu</span><span class="p">(</span>
                 <span class="n">e</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="n">app</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="c1"># Submit password button callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">submit_password_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">submit_password</span><span class="p">(</span><span class="n">gi</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+            <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">auth</span><span class="o">.</span><span class="n">submit_password</span><span class="p">(</span><span class="n">gi</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="c1"># UTILITY FUNCTIONS</span>
@@ -9343,7 +9349,7 @@ Defaults to empty string (<code>""</code>).</p>
 
 <a href="#dlunch.gui.GraphicInterface.download_button" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">download_button</span> <span class="o">=</span> <span class="n"><span title="panel.widgets.FileDownload">FileDownload</span></span><span class="p">(</span>
-    <span class="n"><span title="panel.widgets.FileDownload(callback)">callback</span></span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.core.download_dataframe" href="../core/#dlunch.core.download_dataframe">download_dataframe</a></span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">self</span><span class="p">),</span>
+    <span class="n"><span title="panel.widgets.FileDownload(callback)">callback</span></span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n"><span title="dlunch.waiter.download_dataframe">download_dataframe</span></span><span class="p">(</span><span class="n">self</span><span class="p">),</span>
     <span class="n"><span title="panel.widgets.FileDownload(filename)">filename</span></span><span class="o">=</span><span class="n"><span title="config.panel.file_name">file_name</span></span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">,</span>
     <span class="n"><span title="panel.widgets.FileDownload(sizing_mode)">sizing_mode</span></span><span class="o">=</span><span class="s2">&quot;stretch_width&quot;</span><span class="p">,</span>
     <span class="n"><span title="panel.widgets.FileDownload(icon)">icon</span></span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">,</span>
@@ -10323,6 +10329,7 @@ Defaults to empty string (<code>""</code>).</p>
 <a href="#dlunch.gui.GraphicInterface.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span>
     <span class="nf">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">,</span>
+    <span class="n">waiter</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.core.Waiter" href="../core/#dlunch.core.Waiter">Waiter</a></span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n"><span title="panel.Template">Template</span></span><span class="p">,</span>
     <span class="n">person</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.gui.Person" href="#dlunch.gui.Person">Person</a></span><span class="p">,</span>
     <span class="n">guest_password</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -10333,17 +10340,7 @@ Defaults to empty string (<code>""</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
@@ -10895,9 +10892,14 @@ Defaults to empty string (<code>""</code>).</p>
 <span class="normal">822</span>
 <span class="normal">823</span>
 <span class="normal">824</span>
-<span class="normal">825</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
+    <span class="n">waiter</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">Waiter</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
     <span class="n">person</span><span class="p">:</span> <span class="n">Person</span><span class="p">,</span>
     <span class="n">guest_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -10990,9 +10992,8 @@ Defaults to empty string (<code>""</code>).</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">guest_override_alert</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">toggle</span>
         <span class="c1"># Simply reload the menu when the toggle button value changes</span>
         <span class="k">if</span> <span class="n">reload</span><span class="p">:</span>
-            <span class="n">core</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
+            <span class="n">waiter</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -11217,9 +11218,8 @@ Defaults to empty string (<code>""</code>).</p>
 
         <span class="c1"># Simply reload the menu when the toggle button value changes</span>
         <span class="k">if</span> <span class="n">reload</span><span class="p">:</span>
-            <span class="n">core</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
+            <span class="n">waiter</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
                 <span class="kc">None</span><span class="p">,</span>
-                <span class="n">config</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -11228,17 +11228,15 @@ Defaults to empty string (<code>""</code>).</p>
 
     <span class="c1"># Refresh button callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">refresh_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
             <span class="n">e</span><span class="p">,</span>
-            <span class="n">config</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="c1"># Send order button callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">send_order_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span>
             <span class="n">e</span><span class="p">,</span>
-            <span class="n">config</span><span class="p">,</span>
             <span class="n">app</span><span class="p">,</span>
             <span class="n">person</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -11246,18 +11244,16 @@ Defaults to empty string (<code>""</code>).</p>
     <span class="p">)</span>
     <span class="c1"># Delete order button callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">delete_order_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">delete_order</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">delete_order</span><span class="p">(</span>
             <span class="n">e</span><span class="p">,</span>
-            <span class="n">config</span><span class="p">,</span>
             <span class="n">app</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="c1"># Change order time button callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">change_order_time_takeaway_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">change_order_time_takeaway</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">change_order_time_takeaway</span><span class="p">(</span>
             <span class="n">e</span><span class="p">,</span>
-            <span class="n">config</span><span class="p">,</span>
             <span class="n">person</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span>
@@ -11369,7 +11365,7 @@ Defaults to empty string (<code>""</code>).</p>
     <span class="p">)</span>
     <span class="c1"># Download button and callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">download_button</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">FileDownload</span><span class="p">(</span>
-        <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">download_dataframe</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span>
+        <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">download_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
         <span class="n">filename</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">file_name</span> <span class="o">+</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">,</span>
         <span class="n">sizing_mode</span><span class="o">=</span><span class="s2">&quot;stretch_width&quot;</span><span class="p">,</span>
         <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">,</span>
@@ -11447,16 +11443,15 @@ Defaults to empty string (<code>""</code>).</p>
     <span class="c1"># CALLBACKS</span>
     <span class="c1"># Build menu button callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">build_menu_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">build_menu</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">waiter</span><span class="o">.</span><span class="n">build_menu</span><span class="p">(</span>
             <span class="n">e</span><span class="p">,</span>
-            <span class="n">config</span><span class="p">,</span>
             <span class="n">app</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="c1"># Submit password button callback</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">submit_password_button</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">submit_password</span><span class="p">(</span><span class="n">gi</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">auth</span><span class="o">.</span><span class="n">submit_password</span><span class="p">(</span><span class="n">gi</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -11590,11 +11585,7 @@ Defaults to empty dictionary (<code>{}</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">829</span>
-<span class="normal">830</span>
-<span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">833</span>
 <span class="normal">834</span>
 <span class="normal">835</span>
 <span class="normal">836</span>
@@ -11627,7 +11618,11 @@ Defaults to empty dictionary (<code>{}</code>).</p>
 <span class="normal">863</span>
 <span class="normal">864</span>
 <span class="normal">865</span>
-<span class="normal">866</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_order_table</span><span class="p">(</span>
+<span class="normal">866</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_order_table</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
     <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -11831,11 +11826,7 @@ Defaults to empty dictionary (<code>{}</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 948</span>
-<span class="normal"> 949</span>
-<span class="normal"> 950</span>
-<span class="normal"> 951</span>
-<span class="normal"> 952</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 952</span>
 <span class="normal"> 953</span>
 <span class="normal"> 954</span>
 <span class="normal"> 955</span>
@@ -11944,7 +11935,11 @@ Defaults to empty dictionary (<code>{}</code>).</p>
 <span class="normal">1058</span>
 <span class="normal">1059</span>
 <span class="normal">1060</span>
-<span class="normal">1061</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_stats_and_info_text</span><span class="p">(</span>
+<span class="normal">1061</span>
+<span class="normal">1062</span>
+<span class="normal">1063</span>
+<span class="normal">1064</span>
+<span class="normal">1065</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_stats_and_info_text</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
     <span class="n">df_stats</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -12279,11 +12274,7 @@ Defaults to " &#10006; ".</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">868</span>
-<span class="normal">869</span>
-<span class="normal">870</span>
-<span class="normal">871</span>
-<span class="normal">872</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">872</span>
 <span class="normal">873</span>
 <span class="normal">874</span>
 <span class="normal">875</span>
@@ -12328,7 +12319,11 @@ Defaults to " &#10006; ".</p>
 <span class="normal">914</span>
 <span class="normal">915</span>
 <span class="normal">916</span>
-<span class="normal">917</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_time_label</span><span class="p">(</span>
+<span class="normal">917</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_time_label</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">time</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">diners_n</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -12452,11 +12447,7 @@ Use the default value during normal operation to avoid tabs duplication.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">920</span>
-<span class="normal">921</span>
-<span class="normal">922</span>
-<span class="normal">923</span>
-<span class="normal">924</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">924</span>
 <span class="normal">925</span>
 <span class="normal">926</span>
 <span class="normal">927</span>
@@ -12478,7 +12469,11 @@ Use the default value during normal operation to avoid tabs duplication.</p>
 <span class="normal">943</span>
 <span class="normal">944</span>
 <span class="normal">945</span>
-<span class="normal">946</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_sidebar_tabs</span><span class="p">(</span>
+<span class="normal">946</span>
+<span class="normal">947</span>
+<span class="normal">948</span>
+<span class="normal">949</span>
+<span class="normal">950</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_sidebar_tabs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">clear_before_loading</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Append tabs to the app template sidebar.</span>
@@ -12617,16 +12612,7 @@ Use the default value during normal operation to avoid tabs duplication.</p>
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
@@ -12635,7 +12621,16 @@ Use the default value during normal operation to avoid tabs duplication.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PasswordRenewer</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PasswordRenewer</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Param class used to create the widget that collect info to renew users password.</span>
 
 <span class="sd">    This widget is used only if basic authentication is active.&quot;&quot;&quot;</span>
@@ -12781,13 +12776,13 @@ Use the default value during normal operation to avoid tabs duplication.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;String representation of this object.</span>
 
 <span class="sd">    Returns:</span>
@@ -12927,52 +12922,52 @@ Check <code>panel.lunch_times_options</code> and <code>panel.guest_types</code> 
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/gui.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">Parameterized</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Param class that define user data and lunch preferences for its order.</span>
 
 <span class="sd">    `username` is automatically set for privileged users. It&#39;s left empty for guest users.</span>
@@ -13150,20 +13145,20 @@ Check <code>panel.lunch_times_options</code> and <code>panel.guest_types</code> 
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">OmegaConf</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">OmegaConf</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
     <span class="c1"># Set lunch times from config</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">lunch_time</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">lunch_times_options</span>
@@ -13223,13 +13218,13 @@ Check <code>panel.lunch_times_options</code> and <code>panel.guest_types</code> 
 
             <details class="quote">
               <summary>Source code in <code>dlunch/gui.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;String representation of this object.</span>
 
 <span class="sd">    Returns:</span>
