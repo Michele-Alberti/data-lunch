@@ -7,6 +7,7 @@ import logging
 import datetime as dt
 from omegaconf import DictConfig
 
+from . import auth
 from . import core
 from . import cloud
 from . import models
@@ -60,7 +61,7 @@ def reset_guest_user_password(config: DictConfig) -> callable:
             config=config, id="reset_guest_user_password", value=True
         )
         # Reset password
-        core.set_guest_user_password(config)
+        auth.set_guest_user_password(config)
 
     return scheduled_function
 

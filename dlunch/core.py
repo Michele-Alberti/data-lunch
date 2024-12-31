@@ -6,7 +6,6 @@
 
 """
 
-import cryptography.fernet
 import panel as pn
 import pandas as pd
 import param
@@ -115,90 +114,6 @@ def clean_tables(config: DictConfig) -> None:
     # Clean cache
     pn.state.clear_caches()
     log.info("cache cleaned")
-
-
-def set_guest_user_password(config: DictConfig) -> str:
-    """If guest user is active return a password, otherwise return an empty string.
-
-    This function always returns an empty string if basic authentication is not active.
-
-    Guest user and basic authentication are handled through configuration files.
-
-    If the flag `reset_guest_user_password` is set to `True` the password is created
-    and uploaded to database. Otherwise the existing password is queried from database
-    `credentials` table.
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-
-    Returns:
-        str: guest user password or empty string if basic authentication is not active.
-    """
-    # Check if basic auth is active
-    if auth.is_basic_auth_active(config=config):
-        # If active basic_auth.guest_user is true if guest user is active
-        is_guest_user_active = config.basic_auth.guest_user
-        log.debug("guest user flag is {is_guest_user_active}")
-    else:
-        # Otherwise the guest user feature is not applicable
-        is_guest_user_active = False
-        log.debug("guest user not applicable")
-
-    # Set the guest password variable
-    if is_guest_user_active:
-        # If flag for resetting the password does not exist use the default
-        # value
-        if (
-            models.get_flag(config=config, id="reset_guest_user_password")
-            is None
-        ):
-            models.set_flag(
-                config=config,
-                id="reset_guest_user_password",
-                value=config.basic_auth.default_reset_guest_user_password_flag,
-            )
-        # Generate a random password only if requested (check on flag)
-        # otherwise load from pickle
-        if models.get_flag(config=config, id="reset_guest_user_password"):
-            # Turn off reset user password (in order to reset it only once)
-            # This statement also acquire a lock on database (so it is
-            # called first)
-            models.set_flag(
-                config=config,
-                id="reset_guest_user_password",
-                value=False,
-            )
-            # Create password
-            guest_password = auth.generate_password(
-                special_chars=config.basic_auth.psw_special_chars,
-                length=config.basic_auth.generated_psw_length,
-            )
-            # Add hashed password to database
-            auth.add_user_hashed_password(
-                "guest", guest_password, config=config
-            )
-        else:
-            # Load from database
-            session = models.create_session(config)
-            with session:
-                try:
-                    guest_password = session.get(
-                        models.Credentials, "guest"
-                    ).password_encrypted.decrypt()
-                except cryptography.fernet.InvalidToken:
-                    # Notify exception and suggest to reset guest user password
-                    guest_password = ""
-                    log.warning(
-                        "Unable to decrypt 'guest' user password because an invalid token has been detected: reset password from backend"
-                    )
-                    pn.state.notifications.warning(
-                        "Unable to decrypt 'guest' user password<br>Invalid token detected: reset password from backend",
-                        duration=config.panel.notifications.duration,
-                    )
-    else:
-        guest_password = ""
-
-    return guest_password
 
 
 def build_menu(

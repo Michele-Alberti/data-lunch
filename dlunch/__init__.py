@@ -47,7 +47,7 @@ def create_app(config: DictConfig) -> pn.Template:
     log.info("initialize support variables")
     # Generate a random password only if requested (check on flag)
     log.debug("config guest user")
-    guest_password = core.set_guest_user_password(config)
+    guest_password = auth.set_guest_user_password(config)
 
     log.info("instantiate app")
 
