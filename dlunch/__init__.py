@@ -23,6 +23,9 @@ OmegaConf.register_new_resolver(
     "pkg_path", lambda pkg: str(importlib.resources.files(pkg))
 )
 
+# APP WAITER ------------------------------------------------------------------
+# Create the waiter instance
+waiter = core.Waiter()
 
 # APP FACTORY FUNCTION --------------------------------------------------------
 
@@ -91,7 +94,13 @@ def create_app(config: DictConfig) -> pn.Template:
     # Create person instance, widget and column
     log.debug("instantiate person class and graphic graphic interface")
     person = gui.Person(config, name="User")
-    gi = gui.GraphicInterface(config, app, person, guest_password)
+    gi = gui.GraphicInterface(
+        config=config,
+        waiter=waiter,
+        app=app,
+        person=person,
+        guest_password=guest_password,
+    )
 
     # DASHBOARD
     # Build dashboard (the header object is used if defined)
@@ -123,9 +132,8 @@ def create_app(config: DictConfig) -> pn.Template:
         ),
         reload=False,
     )
-    core.reload_menu(
+    waiter.reload_menu(
         None,
-        config,
         gi,
     )
 

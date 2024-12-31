@@ -12,13 +12,13 @@ from hydra import compose, initialize
 import pandas as pd
 import subprocess
 
-# Import database object
+# Database imports
 from .models import create_database, create_engine, SCHEMA, Data, metadata_obj
 
-# Import functions from core
-from .core import clean_tables as clean_tables_func
+# Waiter Imports
+from . import waiter
 
-# Auth
+# Auth imports
 from . import auth
 
 # Version
@@ -48,6 +48,9 @@ def cli(ctx, hydra_overrides: tuple | None):
     )
     config = compose(config_name="config", overrides=hydra_overrides)
     ctx.obj = {"config": config}
+
+    # Set waiter config
+    waiter.set_config(config)
 
     # Auth encryption
     auth.set_app_auth_and_encryption(config)
@@ -127,7 +130,8 @@ def credentials(obj):
 )
 @click.pass_obj
 def add_user_credential(obj, user, password, is_admin, is_guest):
-    """Add users credentials to credentials table (used by basic authentication)."""
+    """Add users credentials to credentials table (used by basic authentication)
+    and to privileged users (if not guest)."""
 
     # Add a privileged users only if guest option is not active
     if not is_guest:
@@ -214,7 +218,7 @@ def clean_tables(obj):
 
     # Drop table
     try:
-        clean_tables_func(obj["config"])
+        waiter.clean_tables()
         click.secho("done", fg="green")
     except Exception as e:
         # Generic error
@@ -375,8 +379,9 @@ def generate_secrets(obj):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
+        click.secho("COOKIE SECRET:", fg="yellow")
         click.secho(
-            f"COOKIE SECRET:\n{result_secret.stdout.decode('utf-8')}",
+            f"{result_secret.stdout.decode('utf-8')}",
             fg="cyan",
         )
         result_encription = subprocess.run(
@@ -384,8 +389,9 @@ def generate_secrets(obj):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
+        click.secho("ENCRIPTION KEY:", fg="yellow")
         click.secho(
-            f"ENCRIPTION KEY:\n{result_encription.stdout.decode('utf-8')}",
+            f"{result_encription.stdout.decode('utf-8')}",
             fg="cyan",
         )
         click.secho("Done", fg="green")

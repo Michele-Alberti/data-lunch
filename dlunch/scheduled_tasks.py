@@ -8,9 +8,9 @@ import datetime as dt
 from omegaconf import DictConfig
 
 from . import auth
-from . import core
 from . import cloud
 from . import models
+from . import waiter
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -36,9 +36,9 @@ def clean_files_db(config: DictConfig) -> callable:
         """Clean menu, orders, users and flags tables. Delete also local files."""
         log.info(f"clean task (files and db) executed at {dt.datetime.now()}")
         # Delete files
-        core.delete_files(config)
+        waiter.delete_files()
         # Clean tables
-        core.clean_tables(config)
+        waiter.clean_tables()
 
     return scheduled_function
 

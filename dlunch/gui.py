@@ -2,26 +2,35 @@
 
 Classes that uses `param` are then used to create Panel widget directly (see `Panel docs <https://panel.holoviz.org/how_to/param/uis.html>`__)."""
 
+# The __future__ import is necessary to avoid circular imports, it make all
+# the type hints in this file to be interpreted as strings
+from __future__ import annotations
+
 import datetime
-from hydra.utils import instantiate
 import jinja2
 import logging
-from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
 import param
 import pathlib
 
+from hydra.utils import instantiate
+from omegaconf import DictConfig, OmegaConf
+from typing import TYPE_CHECKING
+
 # Database imports
 from . import models
-
-# Core imports
-from . import core
 
 # Auth
 from . import auth
 from .auth import pn_user
+
+# Import used only for type checking, that have problems with circular imports
+# TYPE_CHECKING is False at runtime (thus the import is not executed)
+if TYPE_CHECKING:
+    from . import core
+
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -253,6 +262,7 @@ class GraphicInterface:
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
+        waiter (core.Waiter): Waiter object with methods to handle user requests.
         app (pn.Template): App panel template (see `Panel docs <https://panel.holoviz.org/how_to/templates/index.html>`__).
         person (Person): Object with user data and preferences for the lunch order.
         guest_password (str, optional): guest password to show in password tab. Used only if basic authentication is active.
@@ -263,6 +273,7 @@ class GraphicInterface:
     def __init__(
         self,
         config: DictConfig,
+        waiter: core.Waiter,
         app: pn.Template,
         person: Person,
         guest_password: str = "",
@@ -355,9 +366,8 @@ class GraphicInterface:
             self.guest_override_alert.visible = toggle
             # Simply reload the menu when the toggle button value changes
             if reload:
-                core.reload_menu(
+                waiter.reload_menu(
                     None,
-                    config,
                     self,
                 )
 
@@ -582,9 +592,8 @@ class GraphicInterface:
 
             # Simply reload the menu when the toggle button value changes
             if reload:
-                core.reload_menu(
+                waiter.reload_menu(
                     None,
-                    config,
                     self,
                 )
 
@@ -593,17 +602,15 @@ class GraphicInterface:
 
         # Refresh button callback
         self.refresh_button.on_click(
-            lambda e: core.reload_menu(
+            lambda e: waiter.reload_menu(
                 e,
-                config,
                 self,
             )
         )
         # Send order button callback
         self.send_order_button.on_click(
-            lambda e: core.send_order(
+            lambda e: waiter.send_order(
                 e,
-                config,
                 app,
                 person,
                 self,
@@ -611,18 +618,16 @@ class GraphicInterface:
         )
         # Delete order button callback
         self.delete_order_button.on_click(
-            lambda e: core.delete_order(
+            lambda e: waiter.delete_order(
                 e,
-                config,
                 app,
                 self,
             )
         )
         # Change order time button callback
         self.change_order_time_takeaway_button.on_click(
-            lambda e: core.change_order_time_takeaway(
+            lambda e: waiter.change_order_time_takeaway(
                 e,
-                config,
                 person,
                 self,
             )
@@ -734,7 +739,7 @@ class GraphicInterface:
         )
         # Download button and callback
         self.download_button = pn.widgets.FileDownload(
-            callback=lambda: core.download_dataframe(config, self),
+            callback=lambda: waiter.download_dataframe(self),
             filename=config.panel.file_name + ".xlsx",
             sizing_mode="stretch_width",
             icon="download",
@@ -812,9 +817,8 @@ class GraphicInterface:
         # CALLBACKS
         # Build menu button callback
         self.build_menu_button.on_click(
-            lambda e: core.build_menu(
+            lambda e: waiter.build_menu(
                 e,
-                config,
                 app,
                 self,
             )

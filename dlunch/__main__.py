@@ -4,12 +4,13 @@ import datetime as dt
 import hydra
 import logging
 import panel as pn
+
 from collections.abc import Callable
-from omegaconf import DictConfig, OmegaConf
-from omegaconf.errors import ConfigAttributeError
+from omegaconf import DictConfig
+
 from . import auth
-from . import create_app, create_backend
 from . import models
+from . import create_app, create_backend, waiter
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -36,13 +37,10 @@ def run_app(config: DictConfig) -> None:
     Args:
         config (DictConfig): hydra configuration object.
     """
-    # Starting scheduled cleaning
-    if config.panel.scheduled_tasks:
-        for task in config.panel.scheduled_tasks:
-            schedule_task(
-                **task.kwargs,
-                callable=hydra.utils.instantiate(task.callable, config),
-            )
+
+    # Configure waiter
+    log.info("set waiter config")
+    waiter.set_config(config)
 
     # Set auth configurations
     log.info("set auth config and encryption")
@@ -78,8 +76,17 @@ def run_app(config: DictConfig) -> None:
             add_basic_auth_users=auth.is_basic_auth_active(config=config),
         )
 
+    # Starting scheduled tasks
+    if config.panel.scheduled_tasks:
+        log.info("starting scheduled tasks")
+        for task in config.panel.scheduled_tasks:
+            schedule_task(
+                **task.kwargs,
+                callable=hydra.utils.instantiate(task.callable, config),
+            )
+
     # Call the app factory function
-    log.info("calling app factory function")
+    log.info("set config for app factory function")
     # Pass the create_app and create_backend function as a lambda function to
     # ensure that each invocation has a dedicated state variable (users'
     # selections are not shared between instances)
