@@ -1040,13 +1040,59 @@ class Waiter:
                     )
                 ).all()
             ]
-        # Read dataframe (including notes)
+        # Read orders dataframe (including notes)
         df = pd.read_sql_query(
             self.config.db.orders_query.format(
                 schema=self.config.db.get("schema", models.SCHEMA)
             ),
             engine,
         )
+
+        # The following function prepare the dataframe before saving it into
+        # the dictionary that will be returned
+        def _clean_up_table(
+            config: DictConfig,
+            df_in: pd.DataFrame,
+            df_complete: pd.DataFrame,
+        ):
+            df = df_in.copy()
+            # Group notes per menu item by concat users notes
+            # Use value counts to keep track of how many time a note is repeated
+            df_notes = (
+                df_complete[
+                    (df_complete.lunch_time == time)
+                    & (df_complete.note != "")
+                    & (df_complete.user.isin(df.columns))
+                ]
+                .drop(columns=["user", "lunch_time"])
+                .value_counts()
+                .reset_index(level="note")
+            )
+            df_notes.note = (
+                df_notes["count"]
+                .astype(str)
+                .str.cat(df_notes.note, sep=config.panel.gui.note_sep.count)
+            )
+            df_notes = df_notes.drop(columns="count")
+            df_notes = (
+                df_notes.groupby("item")["note"]
+                .apply(config.panel.gui.note_sep.element.join)
+                .to_frame()
+            )
+            # Add columns of totals
+            df[config.panel.gui.total_column_name] = df.sum(axis=1)
+            # Drop unused rows if requested
+            if config.panel.drop_unused_menu_items:
+                df = df[df[config.panel.gui.total_column_name] > 0]
+            # Add notes
+            df = df.join(df_notes)
+            df = df.rename(columns={"note": config.panel.gui.note_column_name})
+            # Change NaNs to '-'
+            df = df.fillna("-")
+            # Avoid mixed types (float and notes str)
+            df = df.astype(object)
+
+            return df
 
         # Build a dict of dataframes, one for each lunch time
         df_dict = {}
@@ -1071,56 +1117,6 @@ class Waiter:
             df_users_takeaways = df_users.loc[
                 :, [c for c in df_users.columns if c in takeaway_list]
             ]
-
-            # The following function prepare the dataframe before saving it into
-            # the dictionary that will be returned
-            def _clean_up_table(
-                config: DictConfig,
-                df_in: pd.DataFrame,
-                df_complete: pd.DataFrame,
-            ):
-                df = df_in.copy()
-                # Group notes per menu item by concat users notes
-                # Use value counts to keep track of how many time a note is repeated
-                df_notes = (
-                    df_complete[
-                        (df_complete.lunch_time == time)
-                        & (df_complete.note != "")
-                        & (df_complete.user.isin(df.columns))
-                    ]
-                    .drop(columns=["user", "lunch_time"])
-                    .value_counts()
-                    .reset_index(level="note")
-                )
-                df_notes.note = (
-                    df_notes["count"]
-                    .astype(str)
-                    .str.cat(
-                        df_notes.note, sep=config.panel.gui.note_sep.count
-                    )
-                )
-                df_notes = df_notes.drop(columns="count")
-                df_notes = (
-                    df_notes.groupby("item")["note"]
-                    .apply(config.panel.gui.note_sep.element.join)
-                    .to_frame()
-                )
-                # Add columns of totals
-                df[config.panel.gui.total_column_name] = df.sum(axis=1)
-                # Drop unused rows if requested
-                if config.panel.drop_unused_menu_items:
-                    df = df[df[config.panel.gui.total_column_name] > 0]
-                # Add notes
-                df = df.join(df_notes)
-                df = df.rename(
-                    columns={"note": config.panel.gui.note_column_name}
-                )
-                # Change NaNs to '-'
-                df = df.fillna("-")
-                # Avoid mixed types (float and notes str)
-                df = df.astype(object)
-
-                return df
 
             # Clean and add resulting dataframes to dict
             # RESTAURANT LUNCH
