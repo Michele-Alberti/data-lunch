@@ -1031,6 +1031,9 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
                     password="admin",
                     config=config,
                 )
+                log.warning(
+                    "admin user created, remember to change the default password"
+                )
             # Check if guest exists
             if (
                 session.get(Credentials, "guest") is None
@@ -1041,6 +1044,9 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
                     user="guest",
                     password="guest",
                     config=config,
+                )
+                log.warning(
+                    "guest user created, remember to change the default password"
                 )
 
 
