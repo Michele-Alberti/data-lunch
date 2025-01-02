@@ -822,24 +822,6 @@ def is_admin(user: str, config: DictConfig) -> bool:
     return is_admin
 
 
-def open_backend() -> None:
-    """Redirect the browser to the backend endpoint"""
-    # Edit pathname to open backend
-    pn.state.location.pathname = (
-        pn.state.location.pathname.split("/")[0] + "/backend"
-    )
-    pn.state.location.reload = True
-
-
-def force_logout() -> None:
-    """Redirect the browser to the logout endpoint"""
-    # Edit pathname to force logout
-    pn.state.location.pathname = (
-        pn.state.location.pathname.split("/")[0] + "/logout"
-    )
-    pn.state.location.reload = True
-
-
 def generate_password(
     alphabet: str | None = None,
     special_chars: str | None = "",
@@ -1083,7 +1065,7 @@ def backend_submit_password(
                         duration=config.panel.notifications.duration,
                     )
                     sleep(4)
-                    force_logout()
+                    gi.force_logout()
                 else:
                     pn.state.notifications.success(
                         "Password updated",

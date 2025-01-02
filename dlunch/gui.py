@@ -344,7 +344,7 @@ class GraphicInterface:
 
         # CALLBACKS
         # Backend callback
-        self.backend_button.on_click(lambda e: auth.open_backend())
+        self.backend_button.on_click(lambda e: self.open_backend())
 
         # Guest override callback
         @pn.depends(self.toggle_guest_override_button, watch=True)
@@ -375,7 +375,7 @@ class GraphicInterface:
         self.reload_on_guest_override = reload_on_guest_override_callback
 
         # Logout callback
-        self.logout_button.on_click(lambda e: auth.force_logout())
+        self.logout_button.on_click(lambda e: self.force_logout())
 
         # MAIN SECTION --------------------------------------------------------
         # Elements required for build the main section of the web app
@@ -828,7 +828,20 @@ class GraphicInterface:
             lambda e: auth.submit_password(gi=self, config=config)
         )
 
-    # UTILITY FUNCTIONS
+    # UTILITY METHODS ---------------------------------------------------------
+    # NAVBAR
+    def open_backend(self) -> None:
+        """Redirect the browser to the backend endpoint"""
+        # Edit pathname to open backend
+        pn.state.location.pathname = (
+            pn.state.location.pathname.split("/")[0] + "/backend"
+        )
+        pn.state.location.reload = True
+
+    def force_logout(self) -> None:
+        """Redirect the browser to the logout endpoint"""
+        _force_logout()
+
     # MAIN SECTION
     def build_order_table(
         self,
@@ -1065,7 +1078,7 @@ class GraphicInterface:
         return {"stats": stats, "info": other_info}
 
 
-# BACKEND INTERFACE CLASS ========================================================
+# BACKEND INTERFACE CLASS =====================================================
 class BackendInterface:
     """Class with widgets for the backend graphic interface.
 
@@ -1385,7 +1398,20 @@ class BackendInterface:
             lambda e: clear_flags_button_callback(self)
         )
 
-    # UTILITY FUNCTIONS
+    # UTILITY METHODS ---------------------------------------------------------
+    # NAVBAR
+    def force_logout(self) -> None:
+        """Redirect the browser to the logout endpoint"""
+        _force_logout()
+
+    def exit_backend(self) -> None:
+        """Return to main homepage."""
+        # Edit pathname to force exit
+        pn.state.location.pathname = (
+            pn.state.location.pathname.split("/")[0] + "/"
+        )
+        pn.state.location.reload = True
+
     # MAIN SECTION
     def reload_backend(self, config: DictConfig) -> None:
         """Reload backend by updating user lists and privileges.
@@ -1405,10 +1431,12 @@ class BackendInterface:
         )
         self.flags_content.value = df_flags
 
-    def exit_backend(self) -> None:
-        """Return to main homepage."""
-        # Edit pathname to force exit
-        pn.state.location.pathname = (
-            pn.state.location.pathname.split("/")[0] + "/"
-        )
-        pn.state.location.reload = True
+
+# UTILITY FUNCTIONS ===========================================================
+def _force_logout() -> None:
+    """Redirect the browser to the logout endpoint"""
+    # Edit pathname to force logout
+    pn.state.location.pathname = (
+        pn.state.location.pathname.split("/")[0] + "/logout"
+    )
+    pn.state.location.reload = True
