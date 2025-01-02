@@ -59,18 +59,46 @@ def cli(ctx, hydra_overrides: tuple | None):
 @cli.group()
 @click.pass_obj
 def users(obj):
-    """Manage privileged users and admin privileges."""
+    """Manage privileged users and their group."""
 
 
 @users.command("list")
+@click.option(
+    "--privileged-only",
+    "list_only_privileged_users",
+    is_flag=True,
+    help="list only privileged users (without group)",
+)
 @click.pass_obj
-def list_users_name(obj):
-    """List users."""
+def list_users(obj, list_only_privileged_users):
+    """List users and privileges."""
 
-    # Clear action
-    usernames = auth.list_users(config=obj["config"])
-    click.secho("USERS:")
-    click.secho("\n".join(usernames), fg="yellow")
+    # Define padding function
+    def _left_justify(df):
+        df = df.astype(str).str.strip()
+        return df.str.ljust(df.str.len().max())
+
+    # Auth settings
+    auth_type = auth.auth_type(config=obj["config"]) or "not active"
+    click.secho("AUTH SETTINGS", fg="yellow", bold=True)
+    click.secho(f"authentication: {auth_type}\n")
+
+    # List user
+    click.secho("USERS", fg="yellow", bold=True)
+    if list_only_privileged_users:
+        users = auth.list_privileged_users(config=obj["config"])
+        click.secho("user", fg="cyan")
+        click.secho("\n".join(users))
+    else:
+        df_users = auth.list_users_guests_and_privileges(config=obj["config"])
+        df_users = (
+            df_users.reset_index()
+            .apply(_left_justify)
+            .to_string(index=False, justify="left")
+        )
+        click.secho(df_users.split("\n")[0], fg="cyan")
+        click.secho("\n".join(df_users.split("\n")[1:]))
+
     click.secho("\nDone", fg="green")
 
 
@@ -373,13 +401,12 @@ def generate_secrets(obj):
     """Generate secrets for DATA_LUNCH_COOKIE_SECRET and DATA_LUNCH_OAUTH_ENC_KEY env variables."""
 
     try:
-        click.secho("Print secrets\n", fg="yellow")
         result_secret = subprocess.run(
             ["panel", "secret"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        click.secho("COOKIE SECRET:", fg="yellow")
+        click.secho("\nCOOKIE SECRET:", fg="yellow", bold=True)
         click.secho(
             f"{result_secret.stdout.decode('utf-8')}",
             fg="cyan",
@@ -389,7 +416,7 @@ def generate_secrets(obj):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        click.secho("ENCRIPTION KEY:", fg="yellow")
+        click.secho("ENCRIPTION KEY:", fg="yellow", bold=True)
         click.secho(
             f"{result_encription.stdout.decode('utf-8')}",
             fg="cyan",

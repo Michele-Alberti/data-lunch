@@ -423,7 +423,7 @@ def pn_user(config: DictConfig) -> str:
 
 
 def is_basic_auth_active(config: DictConfig) -> bool:
-    """Check config object and return `True` if basic authentication is active.
+    """Check configuration object and return `True` if basic authentication is active.
     Return `False` otherwise.
 
     Args:
@@ -440,7 +440,7 @@ def is_basic_auth_active(config: DictConfig) -> bool:
 
 
 def is_auth_active(config: DictConfig) -> bool:
-    """Check configuration dictionary and return `True` if basic authentication or OAuth is active.
+    """Check configuration object and return `True` if basic authentication or OAuth is active.
     Return `False` otherwise.
 
     Args:
@@ -452,9 +452,30 @@ def is_auth_active(config: DictConfig) -> bool:
 
     # Check if a valid auth key exists
     auth_provider = is_basic_auth_active(config=config)
-    oauth_provider = config.server.get("oauth_provider", None)
+    oauth_provider = config.server.get("oauth_provider", None) is not None
 
     return auth_provider or oauth_provider
+
+
+def auth_type(config: DictConfig) -> str | None:
+    """Check configuration object and return authentication type.
+
+    Args:
+        config (DictConfig): Hydra configuration dictionary.
+
+    Returns:
+        str | None: authentication type. None if no authentication is active.
+    """
+
+    # Check if a valid auth key exists
+    if is_basic_auth_active(config=config):
+        auth_type = "basic"
+    elif config.server.get("oauth_provider", None) is not None:
+        auth_type = config.server.oauth_provider
+    else:
+        auth_type = None
+
+    return auth_type
 
 
 def authorize(
@@ -486,7 +507,7 @@ def authorize(
 
     # Set current user from panel state
     current_user = pn_user(config)
-    privileged_users = list_users(config=config)
+    privileged_users = list_privileged_users(config=config)
     log.debug(f"target path: {target_path}")
     # If user is not authenticated block it
     if not current_user:
@@ -660,7 +681,7 @@ def remove_user(user: str, config: DictConfig) -> dict:
     }
 
 
-def list_users(config: DictConfig) -> list[str]:
+def list_privileged_users(config: DictConfig) -> list[str]:
     """List only privileged users (from `privileged_users` table).
 
     Args:
@@ -706,10 +727,14 @@ def list_users_guests_and_privileges(config: DictConfig) -> pd.DataFrame:
         config=config,
         index_col="user",
     )
-    df_credentials = models.Credentials.read_as_df(
-        config=config,
-        index_col="user",
-    )
+    # Leave credentials table empty if basic auth is not active
+    if is_basic_auth_active(config=config):
+        df_credentials = models.Credentials.read_as_df(
+            config=config,
+            index_col="user",
+        )
+    else:
+        df_credentials = pd.DataFrame()
     # Change admin column to privileges (used after join)
     df_privileged_users["group"] = df_privileged_users.admin.map(
         {True: "admin", False: "user"}
@@ -759,7 +784,7 @@ def is_guest(
         return True
 
     # Otherwise check if user is not included in privileged users
-    privileged_users = list_users(config)
+    privileged_users = list_privileged_users(config)
 
     is_guest = user not in privileged_users
 

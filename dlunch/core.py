@@ -691,7 +691,9 @@ class Waiter:
                     username_key_press
                     not in (
                         name
-                        for name in auth.list_users(config=self.config)
+                        for name in auth.list_privileged_users(
+                            config=self.config
+                        )
                         if name != "guest"
                     )
                 )
@@ -849,7 +851,7 @@ class Waiter:
                     )
                     and (
                         username_key_press
-                        in auth.list_users(config=self.config)
+                        in auth.list_privileged_users(config=self.config)
                     )
                     and (auth.is_auth_active(config=self.config))
                 ):
