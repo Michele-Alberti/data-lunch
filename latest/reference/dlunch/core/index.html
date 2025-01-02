@@ -2709,11 +2709,7 @@ and the Panel widgets.</p>
 <span class="normal">1285</span>
 <span class="normal">1286</span>
 <span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span>
-<span class="normal">1290</span>
-<span class="normal">1291</span>
-<span class="normal">1292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Waiter</span><span class="p">:</span>
+<span class="normal">1288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Waiter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that defines main functions used to manage Data-Lunch operations.</span>
 
 <span class="sd">    Args:</span>
@@ -3711,13 +3707,59 @@ and the Panel widgets.</p>
                     <span class="p">)</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="p">]</span>
-        <span class="c1"># Read dataframe (including notes)</span>
+        <span class="c1"># Read orders dataframe (including notes)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">orders_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
             <span class="p">),</span>
             <span class="n">engine</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="c1"># The following function prepare the dataframe before saving it into</span>
+        <span class="c1"># the dictionary that will be returned</span>
+        <span class="k">def</span> <span class="nf">_clean_up_table</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
+            <span class="n">df_in</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+            <span class="n">df_complete</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># Group notes per menu item by concat users notes</span>
+            <span class="c1"># Use value counts to keep track of how many time a note is repeated</span>
+            <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df_complete</span><span class="p">[</span>
+                    <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">lunch_time</span> <span class="o">==</span> <span class="n">time</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">note</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+                <span class="p">]</span>
+                <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;lunch_time&quot;</span><span class="p">])</span>
+                <span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;note&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">df_notes</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df_notes</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">df_notes</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">df_notes</span> <span class="o">=</span> <span class="n">df_notes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+            <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">df_notes</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span>
+                <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">join</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="c1"># Add columns of totals</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Drop unused rows if requested</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">drop_unused_menu_items</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Add notes</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_notes</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_column_name</span><span class="p">})</span>
+            <span class="c1"># Change NaNs to &#39;-&#39;</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+            <span class="c1"># Avoid mixed types (float and notes str)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">df</span>
 
         <span class="c1"># Build a dict of dataframes, one for each lunch time</span>
         <span class="n">df_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -3742,56 +3784,6 @@ and the Panel widgets.</p>
             <span class="n">df_users_takeaways</span> <span class="o">=</span> <span class="n">df_users</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="p">:,</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_users</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">takeaway_list</span><span class="p">]</span>
             <span class="p">]</span>
-
-            <span class="c1"># The following function prepare the dataframe before saving it into</span>
-            <span class="c1"># the dictionary that will be returned</span>
-            <span class="k">def</span> <span class="nf">_clean_up_table</span><span class="p">(</span>
-                <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
-                <span class="n">df_in</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-                <span class="n">df_complete</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="c1"># Group notes per menu item by concat users notes</span>
-                <span class="c1"># Use value counts to keep track of how many time a note is repeated</span>
-                <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">df_complete</span><span class="p">[</span>
-                        <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">lunch_time</span> <span class="o">==</span> <span class="n">time</span><span class="p">)</span>
-                        <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">note</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                        <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
-                    <span class="p">]</span>
-                    <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;lunch_time&quot;</span><span class="p">])</span>
-                    <span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-                    <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;note&quot;</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">df_notes</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">df_notes</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-                        <span class="n">df_notes</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">count</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">df_notes</span> <span class="o">=</span> <span class="n">df_notes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
-                <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">df_notes</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">join</span><span class="p">)</span>
-                    <span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
-                <span class="p">)</span>
-                <span class="c1"># Add columns of totals</span>
-                <span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                <span class="c1"># Drop unused rows if requested</span>
-                <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">drop_unused_menu_items</span><span class="p">:</span>
-                    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="c1"># Add notes</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_notes</span><span class="p">)</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-                    <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_column_name</span><span class="p">}</span>
-                <span class="p">)</span>
-                <span class="c1"># Change NaNs to &#39;-&#39;</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
-                <span class="c1"># Avoid mixed types (float and notes str)</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-
-                <span class="k">return</span> <span class="n">df</span>
 
             <span class="c1"># Clean and add resulting dataframes to dict</span>
             <span class="c1"># RESTAURANT LUNCH</span>
@@ -5293,11 +5285,7 @@ for a specific item).</p>
 <span class="normal">1134</span>
 <span class="normal">1135</span>
 <span class="normal">1136</span>
-<span class="normal">1137</span>
-<span class="normal">1138</span>
-<span class="normal">1139</span>
-<span class="normal">1140</span>
-<span class="normal">1141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
+<span class="normal">1137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a dictionary of dataframes for each lunch-time, with takeaways included in a dedicated dataframe.</span>
@@ -5330,13 +5318,59 @@ for a specific item).</p>
                 <span class="p">)</span>
             <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="p">]</span>
-    <span class="c1"># Read dataframe (including notes)</span>
+    <span class="c1"># Read orders dataframe (including notes)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">orders_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
         <span class="p">),</span>
         <span class="n">engine</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="c1"># The following function prepare the dataframe before saving it into</span>
+    <span class="c1"># the dictionary that will be returned</span>
+    <span class="k">def</span> <span class="nf">_clean_up_table</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
+        <span class="n">df_in</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">df_complete</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Group notes per menu item by concat users notes</span>
+        <span class="c1"># Use value counts to keep track of how many time a note is repeated</span>
+        <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">df_complete</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">lunch_time</span> <span class="o">==</span> <span class="n">time</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">note</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+            <span class="p">]</span>
+            <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;lunch_time&quot;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;note&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">df_notes</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">df_notes</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">df_notes</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">df_notes</span> <span class="o">=</span> <span class="n">df_notes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+        <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">df_notes</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">join</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="c1"># Add columns of totals</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Drop unused rows if requested</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">drop_unused_menu_items</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Add notes</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_notes</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_column_name</span><span class="p">})</span>
+        <span class="c1"># Change NaNs to &#39;-&#39;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="c1"># Avoid mixed types (float and notes str)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span>
 
     <span class="c1"># Build a dict of dataframes, one for each lunch time</span>
     <span class="n">df_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5361,56 +5395,6 @@ for a specific item).</p>
         <span class="n">df_users_takeaways</span> <span class="o">=</span> <span class="n">df_users</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="p">:,</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_users</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">takeaway_list</span><span class="p">]</span>
         <span class="p">]</span>
-
-        <span class="c1"># The following function prepare the dataframe before saving it into</span>
-        <span class="c1"># the dictionary that will be returned</span>
-        <span class="k">def</span> <span class="nf">_clean_up_table</span><span class="p">(</span>
-            <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
-            <span class="n">df_in</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-            <span class="n">df_complete</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="p">):</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="c1"># Group notes per menu item by concat users notes</span>
-            <span class="c1"># Use value counts to keep track of how many time a note is repeated</span>
-            <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">df_complete</span><span class="p">[</span>
-                    <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">lunch_time</span> <span class="o">==</span> <span class="n">time</span><span class="p">)</span>
-                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">note</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                    <span class="o">&amp;</span> <span class="p">(</span><span class="n">df_complete</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
-                <span class="p">]</span>
-                <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;lunch_time&quot;</span><span class="p">])</span>
-                <span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-                <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;note&quot;</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">df_notes</span><span class="o">.</span><span class="n">note</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">df_notes</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
-                <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-                    <span class="n">df_notes</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">count</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">df_notes</span> <span class="o">=</span> <span class="n">df_notes</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
-            <span class="n">df_notes</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">df_notes</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)[</span><span class="s2">&quot;note&quot;</span><span class="p">]</span>
-                <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_sep</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">join</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
-            <span class="p">)</span>
-            <span class="c1"># Add columns of totals</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="c1"># Drop unused rows if requested</span>
-            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">drop_unused_menu_items</span><span class="p">:</span>
-                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">total_column_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="c1"># Add notes</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_notes</span><span class="p">)</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">note_column_name</span><span class="p">}</span>
-            <span class="p">)</span>
-            <span class="c1"># Change NaNs to &#39;-&#39;</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
-            <span class="c1"># Avoid mixed types (float and notes str)</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">df</span>
 
         <span class="c1"># Clean and add resulting dataframes to dict</span>
         <span class="c1"># RESTAURANT LUNCH</span>
@@ -5509,7 +5493,11 @@ for a specific item).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1143</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1139</span>
+<span class="normal">1140</span>
+<span class="normal">1141</span>
+<span class="normal">1142</span>
+<span class="normal">1143</span>
 <span class="normal">1144</span>
 <span class="normal">1145</span>
 <span class="normal">1146</span>
@@ -5654,11 +5642,7 @@ for a specific item).</p>
 <span class="normal">1285</span>
 <span class="normal">1286</span>
 <span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span>
-<span class="normal">1290</span>
-<span class="normal">1291</span>
-<span class="normal">1292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_dataframe</span><span class="p">(</span>
+<span class="normal">1288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_dataframe</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BytesIO</span><span class="p">:</span>
