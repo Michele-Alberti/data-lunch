@@ -3,7 +3,6 @@
 Helper classes and utility functions for data management are defined here.
 """
 
-from datetime import datetime
 import hydra
 import logging
 from omegaconf import DictConfig
@@ -1021,16 +1020,9 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
             # Check if admin exists
             if session.get(Credentials, "admin") is None:
                 # Add authorization and credentials for admin
-                auth.add_privileged_user(
-                    user="admin",
-                    is_admin=True,
-                    config=config,
-                )
-                auth.add_user_hashed_password(
-                    user="admin",
-                    password="admin",
-                    config=config,
-                )
+                auth_user = auth.AuthUser(config=config, name="admin")
+                auth_user.add_privileged_user(is_admin=True)
+                auth_user.add_user_hashed_password(password="admin")
                 log.warning(
                     "admin user created, remember to change the default password"
                 )
@@ -1040,11 +1032,8 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
             ) and config.basic_auth.guest_user:
                 # Add only credentials for guest (guest users are not included
                 # in privileged_users table)
-                auth.add_user_hashed_password(
-                    user="guest",
-                    password="guest",
-                    config=config,
-                )
+                auth_user = auth.AuthUser(config=config, name="guest")
+                auth_user.add_user_hashed_password(password="guest")
                 log.warning(
                     "guest user created, remember to change the default password"
                 )

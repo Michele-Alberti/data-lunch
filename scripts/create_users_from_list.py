@@ -10,7 +10,6 @@
 # Email client
 import ssl
 import smtplib
-import html
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from email.message import EmailMessage
 from email.utils import formatdate, make_msgid
@@ -75,11 +74,12 @@ send_from = mail_sender
 # MIME
 for user in new_users_names_df.itertuples():
     # Generate a random password
-    password = auth.generate_password(
+    auth_user = auth.AuthUser(config=config, name=user.name)
+    password = auth_user.auth_context.generate_password(
         special_chars=config.basic_auth.psw_special_chars
     )
     # Add hashed password to credentials file
-    auth.add_user_hashed_password(user.name, password, config=config)
+    auth_user.add_user_hashed_password(password=password)
 
     # Send email to user: recipient (built from username)
     send_to = user.email

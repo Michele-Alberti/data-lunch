@@ -47,13 +47,20 @@ def cli(ctx, hydra_overrides: tuple | None):
         config_path="conf", job_name="data_lunch_cli", version_base="1.3"
     )
     config = compose(config_name="config", overrides=hydra_overrides)
-    ctx.obj = {"config": config}
 
-    # Set waiter config
+    # Instance auth context and waiter
+    auth_context = auth.AuthContext(config=config)
     waiter.set_config(config)
 
+    # Store common objects in context
+    ctx.obj = {
+        "config": config,
+        "auth_context": auth_context,
+        "waiter": waiter,
+    }
+
     # Auth encryption
-    auth.set_app_auth_and_encryption(config)
+    auth_context.set_app_auth_and_encryption()
 
 
 @cli.group()
@@ -79,18 +86,18 @@ def list_users(obj, list_only_privileged_users):
         return df.str.ljust(df.str.len().max())
 
     # Auth settings
-    auth_type = auth.auth_type(config=obj["config"]) or "not active"
+    auth_type = obj["auth_context"].auth_type() or "not active"
     click.secho("AUTH SETTINGS", fg="yellow", bold=True)
     click.secho(f"authentication: {auth_type}\n")
 
     # List user
     click.secho("USERS", fg="yellow", bold=True)
     if list_only_privileged_users:
-        users = auth.list_privileged_users(config=obj["config"])
+        users = obj["auth_context"].list_privileged_users()
         click.secho("user", fg="cyan")
         click.secho("\n".join(users))
     else:
-        df_users = auth.list_users_guests_and_privileges(config=obj["config"])
+        df_users = obj["auth_context"].list_users_guests_and_privileges()
         df_users = (
             df_users.reset_index()
             .apply(_left_justify)
@@ -110,11 +117,8 @@ def add_privileged_user(obj, user, is_admin):
     """Add privileged users (with or without admin privileges)."""
 
     # Add privileged user to 'privileged_users' table
-    auth.add_privileged_user(
-        user=user,
-        is_admin=is_admin,
-        config=obj["config"],
-    )
+    auth_user = auth.AuthUser(config=obj["config"], name=user)
+    auth_user.add_privileged_user(is_admin=is_admin)
 
     click.secho(f"User '{user}' added (admin: {is_admin})", fg="green")
 
@@ -127,7 +131,7 @@ def remove_privileged_user(obj, user):
     """Remove user from both privileged users and basic login credentials table."""
 
     # Clear action
-    deleted_data = auth.remove_user(user, config=obj["config"])
+    deleted_data = auth.AuthUser(config=obj["config"], name=user).remove_user()
 
     if (deleted_data["privileged_users_deleted"] > 0) or (
         deleted_data["credentials_deleted"] > 0
@@ -162,14 +166,11 @@ def add_user_credential(obj, user, password, is_admin, is_guest):
     and to privileged users (if not guest)."""
 
     # Add a privileged users only if guest option is not active
+    auth_user = auth.AuthUser(config=obj["config"], name=user)
     if not is_guest:
-        auth.add_privileged_user(
-            user=user,
-            is_admin=is_admin,
-            config=obj["config"],
-        )
+        auth_user.add_privileged_user(is_admin=is_admin)
     # Add hashed password to credentials table
-    auth.add_user_hashed_password(user, password, config=obj["config"])
+    auth_user.add_user_hashed_password(password)
 
     click.secho(f"User '{user}' added", fg="green")
 
@@ -182,7 +183,7 @@ def remove_user_credential(obj, user):
     """Remove user from both privileged users and basic login credentials table."""
 
     # Clear action
-    deleted_data = auth.remove_user(user, config=obj["config"])
+    deleted_data = auth.AuthUser(config=obj["config"], name=user).remove_user()
 
     if (deleted_data["privileged_users_deleted"] > 0) or (
         deleted_data["credentials_deleted"] > 0

@@ -27,8 +27,7 @@ from sqlalchemy.sql.expression import true as sql_true
 # Graphic interface imports (after class definition)
 from . import models
 from . import gui
-from . import auth
-from .auth import pn_user
+from .auth import AuthUser
 
 # APP METADATA ----------------------------------------------------------------
 __version__: str = "3.4.0"
@@ -308,6 +307,10 @@ class Waiter:
             event (param.parameterized.Event): Panel button event.
             gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
         """
+
+        # Read user from Panel state
+        auth_user = AuthUser(config=self.config)
+
         # Create session
         session = models.create_session(self.config)
 
@@ -329,17 +332,13 @@ class Waiter:
             # Check guest override button status (if not in table use False)
             gi.toggle_guest_override_button.value = models.get_flag(
                 config=self.config,
-                id=f"{pn_user(self.config)}_guest_override",
+                id=f"{auth_user.name}_guest_override",
                 value_if_missing=False,
             )
 
             # Set no more orders toggle button and the change order time button
             # visibility and activation
-            if auth.is_guest(
-                user=pn_user(self.config),
-                config=self.config,
-                allow_override=False,
-            ):
+            if auth_user.is_guest(allow_override=False):
                 # Deactivate the no_more_orders_button for guest users
                 gi.toggle_no_more_order_button.disabled = True
                 gi.toggle_no_more_order_button.visible = False
@@ -355,7 +354,7 @@ class Waiter:
                 gi.change_order_time_takeaway_button.visible = True
 
             # Guest graphic configuration
-            if auth.is_guest(user=pn_user(self.config), config=self.config):
+            if auth_user.is_guest():
                 # If guest show guest type selection group
                 gi.person_widget.widgets["guest"].disabled = False
                 gi.person_widget.widgets["guest"].visible = True
@@ -584,9 +583,9 @@ class Waiter:
             )
             # Stats top text
             stats_and_info_text = gi.build_stats_and_info_text(
-                config=self.config,
+                auth_user=auth_user,
                 df_stats=df_stats,
-                user=pn_user(self.config),
+                user=auth_user.name,
                 version=__version__,
                 host_name=self.get_host_name(),
                 stylesheets=[self.config.panel.gui.css_files.stats_info_path],
@@ -637,6 +636,10 @@ class Waiter:
             person (gui.Person): class that collect order data for the user that is the target of the order.
             gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
         """
+
+        # Read user from Panel state
+        auth_user = AuthUser(config=self.config)
+
         # Get username updated at each key press
         username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -665,9 +668,12 @@ class Waiter:
             # If auth is active, check if a guests is using a name reserved to a
             # privileged user
             if (
-                auth.is_guest(user=pn_user(self.config), config=self.config)
-                and (username_key_press in auth.list_users(config=self.config))
-                and (auth.is_auth_active(config=self.config))
+                auth_user.is_guest()
+                and (
+                    username_key_press
+                    in auth_user.auth_context.list_privileged_users()
+                )
+                and (auth_user.auth_context.is_auth_active())
             ):
                 pn.state.notifications.error(
                     f"{username_key_press} is a reserved name<br>Please choose a different one",
@@ -684,20 +690,16 @@ class Waiter:
 
             # Check if a privileged user is ordering for an invalid name
             if (
-                not auth.is_guest(
-                    user=pn_user(self.config), config=self.config
-                )
+                not auth_user.is_guest()
                 and (
                     username_key_press
                     not in (
                         name
-                        for name in auth.list_privileged_users(
-                            config=self.config
-                        )
+                        for name in auth_user.auth_context.list_privileged_users()
                         if name != "guest"
                     )
                 )
-                and (auth.is_auth_active(config=self.config))
+                and (auth_user.auth_context.is_auth_active())
             ):
                 pn.state.notifications.error(
                     f"{username_key_press} is not a valid name<br>for a privileged user<br>Please choose a different one",
@@ -731,9 +733,7 @@ class Waiter:
                     try:
                         # Add User
                         # Do not pass guest for privileged users (default to NotAGuest)
-                        if auth.is_guest(
-                            user=pn_user(self.config), config=self.config
-                        ):
+                        if auth_user.is_guest():
                             new_user = models.Users(
                                 id=username_key_press,
                                 guest=person.guest,
@@ -817,6 +817,10 @@ class Waiter:
             app (pn.Template): Panel app template (used to open modal windows in case of database errors).
             gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
         """
+
+        # Read user from Panel state
+        auth_user = AuthUser(config=self.config)
+
         # Get username, updated on every keypress
         username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -846,14 +850,12 @@ class Waiter:
                 # If auth is active, check if a guests is deleting an order of a
                 # privileged user
                 if (
-                    auth.is_guest(
-                        user=pn_user(self.config), config=self.config
-                    )
+                    auth_user.is_guest()
                     and (
                         username_key_press
-                        in auth.list_privileged_users(config=self.config)
+                        in auth_user.auth_context.list_privileged_users()
                     )
-                    and (auth.is_auth_active(config=self.config))
+                    and (auth_user.auth_context.is_auth_active())
                 ):
                     pn.state.notifications.error(
                         f"You do not have enough privileges<br>to delete<br>{username_key_press}'s order",

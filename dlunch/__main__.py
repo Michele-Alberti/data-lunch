@@ -43,11 +43,12 @@ def run_app(config: DictConfig) -> None:
     waiter.set_config(config)
 
     # Set auth configurations
-    log.info("set auth config and encryption")
+    log.info("set auth context and encryption")
+    auth_context = auth.AuthContext(config=config)
     # Auth encryption
-    auth.set_app_auth_and_encryption(config)
+    auth_context.set_app_auth_and_encryption()
     log.debug(
-        f'authentication {"" if auth.is_auth_active(config) else "not "}active'
+        f'authentication {"" if auth_context.is_auth_active() else "not "}active'
     )
 
     log.info("set panel config")
@@ -68,12 +69,12 @@ def run_app(config: DictConfig) -> None:
     pn.config.auth_template = config.auth.auth_error_template
 
     # If basic auth is used the database and users credentials shall be created here
-    if auth.is_basic_auth_active:
+    if auth_context.is_basic_auth_active():
         log.info("initialize database and users credentials for basic auth")
         # Create tables
         models.create_database(
             config,
-            add_basic_auth_users=auth.is_basic_auth_active(config=config),
+            add_basic_auth_users=auth_context.is_basic_auth_active(),
         )
 
     # Starting scheduled tasks
@@ -94,14 +95,14 @@ def run_app(config: DictConfig) -> None:
     # Health is an endpoint for app health assessments
     # Pass a dictionary for a multipage app
     pages = {"": lambda: create_app(config=config)}
-    if auth.is_auth_active(config=config):
+    if auth_context.is_auth_active():
         pages["backend"] = lambda: create_backend(config=config)
 
     # If basic authentication is active, instantiate ta special auth object
     # otherwise leave an empty dict
     # This step is done before panel.serve because auth_provider requires that
     # the whole config is passed as an input
-    if auth.is_basic_auth_active(config=config):
+    if auth_context.is_basic_auth_active():
         auth_object = {
             "auth_provider": hydra.utils.instantiate(
                 config.basic_auth.auth_provider, config

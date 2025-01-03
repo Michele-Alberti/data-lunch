@@ -10,8 +10,7 @@ from . import models
 from . import core
 from .core import __version__
 from . import gui
-from . import auth
-from .auth import pn_user
+from .auth import AuthUser
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -41,16 +40,21 @@ def create_app(config: DictConfig) -> pn.Template:
     """
     log.info("starting initialization process")
 
+    # Create an instance of AuthUser (which has also an instance of AuthContext
+    # among its attributes)
+    auth_user = AuthUser(config=config)
+
     log.info("initialize database")
     # Create tables
     models.create_database(
-        config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
+        config,
+        add_basic_auth_users=auth_user.auth_context.is_basic_auth_active(),
     )
 
     log.info("initialize support variables")
     # Generate a random password only if requested (check on flag)
     log.debug("config guest user")
-    guest_password = auth.set_guest_user_password(config)
+    guest_password = auth_user.auth_context.set_guest_user_password()
 
     log.info("instantiate app")
 
@@ -62,13 +66,11 @@ def create_app(config: DictConfig) -> pn.Template:
     # Set guest override flag if it is None (not found in flags table)
     # Guest override flag is per-user and is not set for guests
     if (
-        models.get_flag(config=config, id=f"{pn_user(config)}_guest_override")
+        models.get_flag(config=config, id=f"{auth_user.name}_guest_override")
         is None
-    ) and not auth.is_guest(
-        user=pn_user(config), config=config, allow_override=False
-    ):
+    ) and not auth_user.is_guest():
         models.set_flag(
-            config=config, id=f"{pn_user(config)}_guest_override", value=False
+            config=config, id=f"{auth_user.name}_guest_override", value=False
         )
 
     # DASHBOARD BASE TEMPLATE
@@ -100,6 +102,7 @@ def create_app(config: DictConfig) -> pn.Template:
         app=app,
         person=person,
         guest_password=guest_password,
+        auth_user=auth_user,
     )
 
     # DASHBOARD
@@ -127,7 +130,7 @@ def create_app(config: DictConfig) -> pn.Template:
     gi.reload_on_guest_override(
         toggle=models.get_flag(
             config=config,
-            id=f"{pn_user(config)}_guest_override",
+            id=f"{auth_user.name}_guest_override",
             value_if_missing=False,
         ),
         reload=False,
@@ -156,10 +159,15 @@ def create_backend(config: DictConfig) -> pn.Template:
 
     log.info("starting initialization process")
 
+    # Create an instance of AuthUser (which has also an instance of AuthContext
+    # among its attributes)
+    auth_user = AuthUser(config=config)
+
     log.info("initialize database")
     # Create tables
     models.create_database(
-        config, add_basic_auth_users=auth.is_basic_auth_active(config=config)
+        config,
+        add_basic_auth_users=auth_user.auth_context.is_basic_auth_active(),
     )
 
     log.info("instantiate backend")
@@ -180,7 +188,7 @@ def create_backend(config: DictConfig) -> pn.Template:
     )
 
     # CONFIGURABLE OBJECTS
-    backend_gi = gui.BackendInterface(config)
+    backend_gi = gui.BackendInterface(config, auth_user=auth_user)
 
     # DASHBOARD
     # Build dashboard

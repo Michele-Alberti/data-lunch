@@ -53,6 +53,9 @@ def reset_guest_user_password(config: DictConfig) -> callable:
         callable: function to be scheduled.
     """
 
+    # Create instance of AuthContext
+    auth_context = auth.AuthContext(config=config)
+
     async def scheduled_function() -> None:
         """Reset guest user password."""
         log.info(f"reset guest user password executed at {dt.datetime.now()}")
@@ -61,7 +64,7 @@ def reset_guest_user_password(config: DictConfig) -> callable:
             config=config, id="reset_guest_user_password", value=True
         )
         # Reset password
-        auth.set_guest_user_password(config)
+        auth_context.set_guest_user_password()
 
     return scheduled_function
 
