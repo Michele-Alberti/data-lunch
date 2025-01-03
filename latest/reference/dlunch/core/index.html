@@ -669,9 +669,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#dlunch.core.Waiter.auth_user" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;auth_user
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dlunch.core.Waiter.config" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlunch.core.Waiter.hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;hostname
     </span>
   </a>
   
@@ -744,15 +762,6 @@
   <a href="#dlunch.core.Waiter.download_dataframe" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;download_dataframe
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dlunch.core.Waiter.get_host_name" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;get_host_name
     </span>
   </a>
   
@@ -959,9 +968,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#dlunch.core.Waiter.auth_user" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;auth_user
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dlunch.core.Waiter.config" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlunch.core.Waiter.hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;hostname
     </span>
   </a>
   
@@ -1034,15 +1061,6 @@
   <a href="#dlunch.core.Waiter.download_dataframe" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;download_dataframe
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dlunch.core.Waiter.get_host_name" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;get_host_name
     </span>
   </a>
   
@@ -1122,14 +1140,6 @@ and the Panel widgets.</p>
         </tr>
       </thead>
       <tbody>
-          <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="dlunch.core.auth" href="../auth/#dlunch.auth">auth</a></code></td>
-            <td>
-              <div class="doc-md-description">
-                <p>Module with classes and functions used for authentication and password handling.</p>
-              </div>
-            </td>
-          </tr>
           <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="dlunch.core.gui" href="../gui/#dlunch.gui">gui</a></code></td>
             <td>
@@ -1306,11 +1316,11 @@ and the Panel widgets.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Hydra configuration object. Defaults to None.</p>
+                <p>Hydra configuration object.</p>
               </div>
             </td>
             <td>
-                  <code>None</code>
+                <em>required</em>
             </td>
           </tr>
       </tbody>
@@ -1403,14 +1413,6 @@ and the Panel widgets.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.get_host_name" href="#dlunch.core.Waiter.get_host_name">get_host_name</a></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Return hostname.</p>
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
               <td><code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.reload_menu" href="#dlunch.core.Waiter.reload_menu">reload_menu</a></code></td>
               <td>
                 <div class="doc-md-description">
@@ -1451,13 +1453,35 @@ and the Panel widgets.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.auth_user" href="#dlunch.core.Waiter.auth_user">auth_user</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="dlunch.auth.AuthUser" href="../auth/#dlunch.auth.AuthUser">AuthUser</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Object with authenticated user data and related methods</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.config" href="#dlunch.core.Waiter.config">config</a></code></td>
             <td>
-                  <code><span title="omegaconf.DictConfig">DictConfig</span> | None</code>
+                  <code><span title="omegaconf.DictConfig">DictConfig</span></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Hydra configuration object</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.hostname" href="#dlunch.core.Waiter.hostname">hostname</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return hostname.</p>
               </div>
             </td>
           </tr>
@@ -1466,7 +1490,8 @@ and the Panel widgets.</p>
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/core.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  45</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  44</span>
+<span class="normal">  45</span>
 <span class="normal">  46</span>
 <span class="normal">  47</span>
 <span class="normal">  48</span>
@@ -2685,66 +2710,21 @@ and the Panel widgets.</p>
 <span class="normal">1261</span>
 <span class="normal">1262</span>
 <span class="normal">1263</span>
-<span class="normal">1264</span>
-<span class="normal">1265</span>
-<span class="normal">1266</span>
-<span class="normal">1267</span>
-<span class="normal">1268</span>
-<span class="normal">1269</span>
-<span class="normal">1270</span>
-<span class="normal">1271</span>
-<span class="normal">1272</span>
-<span class="normal">1273</span>
-<span class="normal">1274</span>
-<span class="normal">1275</span>
-<span class="normal">1276</span>
-<span class="normal">1277</span>
-<span class="normal">1278</span>
-<span class="normal">1279</span>
-<span class="normal">1280</span>
-<span class="normal">1281</span>
-<span class="normal">1282</span>
-<span class="normal">1283</span>
-<span class="normal">1284</span>
-<span class="normal">1285</span>
-<span class="normal">1286</span>
-<span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span>
-<span class="normal">1290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Waiter</span><span class="p">:</span>
+<span class="normal">1264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Waiter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that defines main functions used to manage Data-Lunch operations.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        config (DictConfig| None): Hydra configuration object. Defaults to None.</span>
+<span class="sd">        config (DictConfig| None): Hydra configuration object.</span>
 
 <span class="sd">    Raise:</span>
 <span class="sd">        ValueError: when calling (unmangled) methods, if the configuration is not set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">=</span> <span class="n">config</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hydra configuration object&quot;&quot;&quot;</span>
-
-        <span class="c1"># Define decorator to raise an error if the configuration is not set</span>
-        <span class="k">def</span> <span class="nf">_common_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-            <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;waiter configuration is not set&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">wrapper</span>
-
-        <span class="c1"># Set decorator to unmangled methods (do not apply to set_config method)</span>
-        <span class="k">for</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="p">[</span>
-            <span class="n">item</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;set_config&quot;</span><span class="p">)</span>
-        <span class="p">]:</span>
-            <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
-            <span class="c1"># Check if the attribute is a method</span>
-            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
-                <span class="n">wrapped</span> <span class="o">=</span> <span class="n">_common_decorator</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="p">:</span> <span class="n">AuthUser</span> <span class="o">=</span> <span class="n">AuthUser</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Object with authenticated user data and related methods&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the configuration for the Waiter instance.</span>
@@ -2754,7 +2734,8 @@ and the Panel widgets.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
-    <span class="k">def</span> <span class="nf">get_host_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return hostname.</span>
 
 <span class="sd">        This function behavior changes if called from localhost, Docker container or</span>
@@ -2977,6 +2958,7 @@ and the Panel widgets.</p>
 <span class="sd">            event (param.parameterized.Event): Panel button event.</span>
 <span class="sd">            gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Create session</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
@@ -2998,17 +2980,13 @@ and the Panel widgets.</p>
             <span class="c1"># Check guest override button status (if not in table use False)</span>
             <span class="n">gi</span><span class="o">.</span><span class="n">toggle_guest_override_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
                 <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
-                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
+                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
                 <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="c1"># Set no more orders toggle button and the change order time button</span>
             <span class="c1"># visibility and activation</span>
-            <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
-                <span class="n">allow_override</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span><span class="n">allow_override</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
                 <span class="c1"># Deactivate the no_more_orders_button for guest users</span>
                 <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
@@ -3024,7 +3002,7 @@ and the Panel widgets.</p>
                 <span class="n">gi</span><span class="o">.</span><span class="n">change_order_time_takeaway_button</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="c1"># Guest graphic configuration</span>
-            <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">():</span>
                 <span class="c1"># If guest show guest type selection group</span>
                 <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;guest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;guest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span>
@@ -3253,11 +3231,10 @@ and the Panel widgets.</p>
             <span class="p">)</span>
             <span class="c1"># Stats top text</span>
             <span class="n">stats_and_info_text</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">build_stats_and_info_text</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">auth_user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="p">,</span>
                 <span class="n">df_stats</span><span class="o">=</span><span class="n">df_stats</span><span class="p">,</span>
-                <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span>
                 <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
-                <span class="n">host_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_host_name</span><span class="p">(),</span>
+                <span class="n">host_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span>
                 <span class="n">stylesheets</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">css_files</span><span class="o">.</span><span class="n">stats_info_path</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="c1"># Remove NotAGuest (non-guest users)</span>
@@ -3306,6 +3283,7 @@ and the Panel widgets.</p>
 <span class="sd">            person (gui.Person): class that collect order data for the user that is the target of the order.</span>
 <span class="sd">            gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Get username updated at each key press</span>
         <span class="n">username_key_press</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">_widgets</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_input</span>
 
@@ -3334,9 +3312,12 @@ and the Panel widgets.</p>
             <span class="c1"># If auth is active, check if a guests is using a name reserved to a</span>
             <span class="c1"># privileged user</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="p">(</span><span class="n">username_key_press</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">list_users</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
-                <span class="ow">and</span> <span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="p">(</span>
+                    <span class="n">username_key_press</span>
+                    <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">())</span>
             <span class="p">):</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">username_key_press</span><span class="si">}</span><span class="s2"> is a reserved name&lt;br&gt;Please choose a different one&quot;</span><span class="p">,</span>
@@ -3353,20 +3334,16 @@ and the Panel widgets.</p>
 
             <span class="c1"># Check if a privileged user is ordering for an invalid name</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="ow">not</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                    <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                <span class="p">)</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
                 <span class="ow">and</span> <span class="p">(</span>
                     <span class="n">username_key_press</span>
                     <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
                         <span class="n">name</span>
-                        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">(</span>
-                            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">()</span>
                         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;guest&quot;</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-                <span class="ow">and</span> <span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">())</span>
             <span class="p">):</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">username_key_press</span><span class="si">}</span><span class="s2"> is not a valid name&lt;br&gt;for a privileged user&lt;br&gt;Please choose a different one&quot;</span><span class="p">,</span>
@@ -3400,9 +3377,7 @@ and the Panel widgets.</p>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="c1"># Add User</span>
                         <span class="c1"># Do not pass guest for privileged users (default to NotAGuest)</span>
-                        <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                            <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                        <span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">():</span>
                             <span class="n">new_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Users</span><span class="p">(</span>
                                 <span class="nb">id</span><span class="o">=</span><span class="n">username_key_press</span><span class="p">,</span>
                                 <span class="n">guest</span><span class="o">=</span><span class="n">person</span><span class="o">.</span><span class="n">guest</span><span class="p">,</span>
@@ -3486,6 +3461,7 @@ and the Panel widgets.</p>
 <span class="sd">            app (pn.Template): Panel app template (used to open modal windows in case of database errors).</span>
 <span class="sd">            gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Get username, updated on every keypress</span>
         <span class="n">username_key_press</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">_widgets</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_input</span>
 
@@ -3515,14 +3491,12 @@ and the Panel widgets.</p>
                 <span class="c1"># If auth is active, check if a guests is deleting an order of a</span>
                 <span class="c1"># privileged user</span>
                 <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                        <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
                     <span class="ow">and</span> <span class="p">(</span>
                         <span class="n">username_key_press</span>
-                        <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+                        <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">()</span>
                     <span class="p">)</span>
-                    <span class="ow">and</span> <span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">())</span>
                 <span class="p">):</span>
                     <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;You do not have enough privileges&lt;br&gt;to delete&lt;br&gt;</span><span class="si">{</span><span class="n">username_key_press</span><span class="si">}</span><span class="s2">&#39;s order&quot;</span><span class="p">,</span>
@@ -3974,6 +3948,29 @@ and the Panel widgets.</p>
 
 
 
+<h4 id="dlunch.core.Waiter.auth_user" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">auth_user</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#dlunch.core.Waiter.auth_user" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">auth_user</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.AuthUser" href="../auth/#dlunch.auth.AuthUser">AuthUser</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.AuthUser" href="../auth/#dlunch.auth.AuthUser">AuthUser</a></span><span class="p">(</span><span class="n"><span title="dlunch.auth.AuthUser(config)">config</span></span><span class="o">=</span><span class="n"><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.config" href="#dlunch.core.Waiter.config">config</a></span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Object with authenticated user data and related methods</p>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h4 id="dlunch.core.Waiter.config" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">config</span>
 
@@ -3983,12 +3980,60 @@ and the Panel widgets.</p>
   </span>
 
 <a href="#dlunch.core.Waiter.config" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.config" href="#dlunch.core.Waiter.config">config</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Hydra configuration object</p>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="dlunch.core.Waiter.hostname" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">hostname</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#dlunch.core.Waiter.hostname" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">hostname</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return hostname.</p>
+<p>This function behavior changes if called from localhost, Docker container or
+production server.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>hostname.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
     </div>
 
 </div>
@@ -4003,60 +4048,22 @@ and the Panel widgets.</p>
 
 
 <a href="#dlunch.core.Waiter.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">config</span><span class="p">:</span> <span class="n"><span title="omegaconf.DictConfig">DictConfig</span></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">54</span>
+<span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">=</span> <span class="n">config</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hydra configuration object&quot;&quot;&quot;</span>
-
-    <span class="c1"># Define decorator to raise an error if the configuration is not set</span>
-    <span class="k">def</span> <span class="nf">_common_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;waiter configuration is not set&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">wrapper</span>
-
-    <span class="c1"># Set decorator to unmangled methods (do not apply to set_config method)</span>
-    <span class="k">for</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="n">item</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;set_config&quot;</span><span class="p">)</span>
-    <span class="p">]:</span>
-        <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
-        <span class="c1"># Check if the attribute is a method</span>
-        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
-            <span class="n">wrapped</span> <span class="o">=</span> <span class="n">_common_decorator</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="p">:</span> <span class="n">AuthUser</span> <span class="o">=</span> <span class="n">AuthUser</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object with authenticated user data and related methods&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4145,7 +4152,26 @@ and the Panel widgets.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
@@ -4263,26 +4289,7 @@ and the Panel widgets.</p>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_menu</span><span class="p">(</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_menu</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -4508,90 +4515,90 @@ and the Panel widgets.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 927</span>
-<span class="normal"> 928</span>
-<span class="normal"> 929</span>
-<span class="normal"> 930</span>
-<span class="normal"> 931</span>
-<span class="normal"> 932</span>
-<span class="normal"> 933</span>
-<span class="normal"> 934</span>
-<span class="normal"> 935</span>
-<span class="normal"> 936</span>
-<span class="normal"> 937</span>
-<span class="normal"> 938</span>
-<span class="normal"> 939</span>
-<span class="normal"> 940</span>
-<span class="normal"> 941</span>
-<span class="normal"> 942</span>
-<span class="normal"> 943</span>
-<span class="normal"> 944</span>
-<span class="normal"> 945</span>
-<span class="normal"> 946</span>
-<span class="normal"> 947</span>
-<span class="normal"> 948</span>
-<span class="normal"> 949</span>
-<span class="normal"> 950</span>
-<span class="normal"> 951</span>
-<span class="normal"> 952</span>
-<span class="normal"> 953</span>
-<span class="normal"> 954</span>
-<span class="normal"> 955</span>
-<span class="normal"> 956</span>
-<span class="normal"> 957</span>
-<span class="normal"> 958</span>
-<span class="normal"> 959</span>
-<span class="normal"> 960</span>
-<span class="normal"> 961</span>
-<span class="normal"> 962</span>
-<span class="normal"> 963</span>
-<span class="normal"> 964</span>
-<span class="normal"> 965</span>
-<span class="normal"> 966</span>
-<span class="normal"> 967</span>
-<span class="normal"> 968</span>
-<span class="normal"> 969</span>
-<span class="normal"> 970</span>
-<span class="normal"> 971</span>
-<span class="normal"> 972</span>
-<span class="normal"> 973</span>
-<span class="normal"> 974</span>
-<span class="normal"> 975</span>
-<span class="normal"> 976</span>
-<span class="normal"> 977</span>
-<span class="normal"> 978</span>
-<span class="normal"> 979</span>
-<span class="normal"> 980</span>
-<span class="normal"> 981</span>
-<span class="normal"> 982</span>
-<span class="normal"> 983</span>
-<span class="normal"> 984</span>
-<span class="normal"> 985</span>
-<span class="normal"> 986</span>
-<span class="normal"> 987</span>
-<span class="normal"> 988</span>
-<span class="normal"> 989</span>
-<span class="normal"> 990</span>
-<span class="normal"> 991</span>
-<span class="normal"> 992</span>
-<span class="normal"> 993</span>
-<span class="normal"> 994</span>
-<span class="normal"> 995</span>
-<span class="normal"> 996</span>
-<span class="normal"> 997</span>
-<span class="normal"> 998</span>
-<span class="normal"> 999</span>
-<span class="normal">1000</span>
-<span class="normal">1001</span>
-<span class="normal">1002</span>
-<span class="normal">1003</span>
-<span class="normal">1004</span>
-<span class="normal">1005</span>
-<span class="normal">1006</span>
-<span class="normal">1007</span>
-<span class="normal">1008</span>
-<span class="normal">1009</span>
-<span class="normal">1010</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">change_order_time_takeaway</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">901</span>
+<span class="normal">902</span>
+<span class="normal">903</span>
+<span class="normal">904</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span>
+<span class="normal">912</span>
+<span class="normal">913</span>
+<span class="normal">914</span>
+<span class="normal">915</span>
+<span class="normal">916</span>
+<span class="normal">917</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span>
+<span class="normal">922</span>
+<span class="normal">923</span>
+<span class="normal">924</span>
+<span class="normal">925</span>
+<span class="normal">926</span>
+<span class="normal">927</span>
+<span class="normal">928</span>
+<span class="normal">929</span>
+<span class="normal">930</span>
+<span class="normal">931</span>
+<span class="normal">932</span>
+<span class="normal">933</span>
+<span class="normal">934</span>
+<span class="normal">935</span>
+<span class="normal">936</span>
+<span class="normal">937</span>
+<span class="normal">938</span>
+<span class="normal">939</span>
+<span class="normal">940</span>
+<span class="normal">941</span>
+<span class="normal">942</span>
+<span class="normal">943</span>
+<span class="normal">944</span>
+<span class="normal">945</span>
+<span class="normal">946</span>
+<span class="normal">947</span>
+<span class="normal">948</span>
+<span class="normal">949</span>
+<span class="normal">950</span>
+<span class="normal">951</span>
+<span class="normal">952</span>
+<span class="normal">953</span>
+<span class="normal">954</span>
+<span class="normal">955</span>
+<span class="normal">956</span>
+<span class="normal">957</span>
+<span class="normal">958</span>
+<span class="normal">959</span>
+<span class="normal">960</span>
+<span class="normal">961</span>
+<span class="normal">962</span>
+<span class="normal">963</span>
+<span class="normal">964</span>
+<span class="normal">965</span>
+<span class="normal">966</span>
+<span class="normal">967</span>
+<span class="normal">968</span>
+<span class="normal">969</span>
+<span class="normal">970</span>
+<span class="normal">971</span>
+<span class="normal">972</span>
+<span class="normal">973</span>
+<span class="normal">974</span>
+<span class="normal">975</span>
+<span class="normal">976</span>
+<span class="normal">977</span>
+<span class="normal">978</span>
+<span class="normal">979</span>
+<span class="normal">980</span>
+<span class="normal">981</span>
+<span class="normal">982</span>
+<span class="normal">983</span>
+<span class="normal">984</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">change_order_time_takeaway</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">person</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">Person</span><span class="p">,</span>
@@ -4698,23 +4705,23 @@ and the Panel widgets.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">clean_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">clean_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Clean tables that should be reset when a new menu is uploaded.&quot;&quot;&quot;</span>
     <span class="c1"># Clean tables</span>
     <span class="c1"># Clean orders</span>
@@ -4754,17 +4761,17 @@ and the Panel widgets.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">delete_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">delete_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete local temporary files.&quot;&quot;&quot;</span>
     <span class="c1"># Delete menu file if exist (every extension)</span>
     <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
@@ -4866,7 +4873,32 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">802</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
 <span class="normal">803</span>
 <span class="normal">804</span>
 <span class="normal">805</span>
@@ -4963,33 +4995,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 <span class="normal">896</span>
 <span class="normal">897</span>
 <span class="normal">898</span>
-<span class="normal">899</span>
-<span class="normal">900</span>
-<span class="normal">901</span>
-<span class="normal">902</span>
-<span class="normal">903</span>
-<span class="normal">904</span>
-<span class="normal">905</span>
-<span class="normal">906</span>
-<span class="normal">907</span>
-<span class="normal">908</span>
-<span class="normal">909</span>
-<span class="normal">910</span>
-<span class="normal">911</span>
-<span class="normal">912</span>
-<span class="normal">913</span>
-<span class="normal">914</span>
-<span class="normal">915</span>
-<span class="normal">916</span>
-<span class="normal">917</span>
-<span class="normal">918</span>
-<span class="normal">919</span>
-<span class="normal">920</span>
-<span class="normal">921</span>
-<span class="normal">922</span>
-<span class="normal">923</span>
-<span class="normal">924</span>
-<span class="normal">925</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">delete_order</span><span class="p">(</span>
+<span class="normal">899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">delete_order</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -5007,6 +5013,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 <span class="sd">        app (pn.Template): Panel app template (used to open modal windows in case of database errors).</span>
 <span class="sd">        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Get username, updated on every keypress</span>
     <span class="n">username_key_press</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">_widgets</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_input</span>
 
@@ -5036,14 +5043,12 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
             <span class="c1"># If auth is active, check if a guests is deleting an order of a</span>
             <span class="c1"># privileged user</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                    <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
                 <span class="ow">and</span> <span class="p">(</span>
                     <span class="n">username_key_press</span>
-                    <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+                    <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">()</span>
                 <span class="p">)</span>
-                <span class="ow">and</span> <span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">())</span>
             <span class="p">):</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;You do not have enough privileges&lt;br&gt;to delete&lt;br&gt;</span><span class="si">{</span><span class="n">username_key_press</span><span class="si">}</span><span class="s2">&#39;s order&quot;</span><span class="p">,</span>
@@ -5162,7 +5167,33 @@ for a specific item).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1012</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 986</span>
+<span class="normal"> 987</span>
+<span class="normal"> 988</span>
+<span class="normal"> 989</span>
+<span class="normal"> 990</span>
+<span class="normal"> 991</span>
+<span class="normal"> 992</span>
+<span class="normal"> 993</span>
+<span class="normal"> 994</span>
+<span class="normal"> 995</span>
+<span class="normal"> 996</span>
+<span class="normal"> 997</span>
+<span class="normal"> 998</span>
+<span class="normal"> 999</span>
+<span class="normal">1000</span>
+<span class="normal">1001</span>
+<span class="normal">1002</span>
+<span class="normal">1003</span>
+<span class="normal">1004</span>
+<span class="normal">1005</span>
+<span class="normal">1006</span>
+<span class="normal">1007</span>
+<span class="normal">1008</span>
+<span class="normal">1009</span>
+<span class="normal">1010</span>
+<span class="normal">1011</span>
+<span class="normal">1012</span>
 <span class="normal">1013</span>
 <span class="normal">1014</span>
 <span class="normal">1015</span>
@@ -5263,33 +5294,7 @@ for a specific item).</p>
 <span class="normal">1110</span>
 <span class="normal">1111</span>
 <span class="normal">1112</span>
-<span class="normal">1113</span>
-<span class="normal">1114</span>
-<span class="normal">1115</span>
-<span class="normal">1116</span>
-<span class="normal">1117</span>
-<span class="normal">1118</span>
-<span class="normal">1119</span>
-<span class="normal">1120</span>
-<span class="normal">1121</span>
-<span class="normal">1122</span>
-<span class="normal">1123</span>
-<span class="normal">1124</span>
-<span class="normal">1125</span>
-<span class="normal">1126</span>
-<span class="normal">1127</span>
-<span class="normal">1128</span>
-<span class="normal">1129</span>
-<span class="normal">1130</span>
-<span class="normal">1131</span>
-<span class="normal">1132</span>
-<span class="normal">1133</span>
-<span class="normal">1134</span>
-<span class="normal">1135</span>
-<span class="normal">1136</span>
-<span class="normal">1137</span>
-<span class="normal">1138</span>
-<span class="normal">1139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
+<span class="normal">1113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a dictionary of dataframes for each lunch-time, with takeaways included in a dedicated dataframe.</span>
@@ -5497,7 +5502,33 @@ for a specific item).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1141</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1115</span>
+<span class="normal">1116</span>
+<span class="normal">1117</span>
+<span class="normal">1118</span>
+<span class="normal">1119</span>
+<span class="normal">1120</span>
+<span class="normal">1121</span>
+<span class="normal">1122</span>
+<span class="normal">1123</span>
+<span class="normal">1124</span>
+<span class="normal">1125</span>
+<span class="normal">1126</span>
+<span class="normal">1127</span>
+<span class="normal">1128</span>
+<span class="normal">1129</span>
+<span class="normal">1130</span>
+<span class="normal">1131</span>
+<span class="normal">1132</span>
+<span class="normal">1133</span>
+<span class="normal">1134</span>
+<span class="normal">1135</span>
+<span class="normal">1136</span>
+<span class="normal">1137</span>
+<span class="normal">1138</span>
+<span class="normal">1139</span>
+<span class="normal">1140</span>
+<span class="normal">1141</span>
 <span class="normal">1142</span>
 <span class="normal">1143</span>
 <span class="normal">1144</span>
@@ -5620,33 +5651,7 @@ for a specific item).</p>
 <span class="normal">1261</span>
 <span class="normal">1262</span>
 <span class="normal">1263</span>
-<span class="normal">1264</span>
-<span class="normal">1265</span>
-<span class="normal">1266</span>
-<span class="normal">1267</span>
-<span class="normal">1268</span>
-<span class="normal">1269</span>
-<span class="normal">1270</span>
-<span class="normal">1271</span>
-<span class="normal">1272</span>
-<span class="normal">1273</span>
-<span class="normal">1274</span>
-<span class="normal">1275</span>
-<span class="normal">1276</span>
-<span class="normal">1277</span>
-<span class="normal">1278</span>
-<span class="normal">1279</span>
-<span class="normal">1280</span>
-<span class="normal">1281</span>
-<span class="normal">1282</span>
-<span class="normal">1283</span>
-<span class="normal">1284</span>
-<span class="normal">1285</span>
-<span class="normal">1286</span>
-<span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span>
-<span class="normal">1290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_dataframe</span><span class="p">(</span>
+<span class="normal">1264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_dataframe</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BytesIO</span><span class="p">:</span>
@@ -5805,119 +5810,6 @@ for a specific item).</p>
 <div class="doc doc-object doc-function">
 
 
-<h4 id="dlunch.core.Waiter.get_host_name" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">get_host_name</span>
-
-
-<a href="#dlunch.core.Waiter.get_host_name" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_host_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Return hostname.</p>
-<p>This function behavior changes if called from localhost, Docker container or
-production server.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>hostname.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_host_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return hostname.</span>
-
-<span class="sd">    This function behavior changes if called from localhost, Docker container or</span>
-<span class="sd">    production server.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        str: hostname.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">ip_address</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">())</span>
-        <span class="n">dig_res</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-            <span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">,</span> <span class="s2">&quot;+short&quot;</span><span class="p">,</span> <span class="s2">&quot;-x&quot;</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">stdout</span>
-        <span class="n">host_name</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                <span class="p">[</span><span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="s2">&quot;-d.&quot;</span><span class="p">,</span> <span class="s2">&quot;-f1&quot;</span><span class="p">],</span>
-                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
-                <span class="nb">input</span><span class="o">=</span><span class="n">dig_res</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">host_name</span><span class="p">:</span>
-            <span class="n">host_name</span> <span class="o">=</span> <span class="n">host_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">docker_username</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">host_name</span> <span class="o">=</span> <span class="s2">&quot;no info&quot;</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">host_name</span> <span class="o">=</span> <span class="s2">&quot;not available&quot;</span>
-
-    <span class="k">return</span> <span class="n">host_name</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
 <h4 id="dlunch.core.Waiter.reload_menu" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">reload_menu</span>
 
@@ -5985,7 +5877,26 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
@@ -6286,30 +6197,7 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
 <span class="normal">589</span>
 <span class="normal">590</span>
 <span class="normal">591</span>
-<span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span>
-<span class="normal">601</span>
-<span class="normal">602</span>
-<span class="normal">603</span>
-<span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span>
-<span class="normal">613</span>
-<span class="normal">614</span>
-<span class="normal">615</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reload_menu</span><span class="p">(</span>
+<span class="normal">592</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reload_menu</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
@@ -6329,6 +6217,7 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
 <span class="sd">        event (param.parameterized.Event): Panel button event.</span>
 <span class="sd">        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Create session</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
@@ -6350,17 +6239,13 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
         <span class="c1"># Check guest override button status (if not in table use False)</span>
         <span class="n">gi</span><span class="o">.</span><span class="n">toggle_guest_override_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
-            <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
             <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Set no more orders toggle button and the change order time button</span>
         <span class="c1"># visibility and activation</span>
-        <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-            <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
-            <span class="n">allow_override</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span><span class="n">allow_override</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="c1"># Deactivate the no_more_orders_button for guest users</span>
             <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
@@ -6376,7 +6261,7 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
             <span class="n">gi</span><span class="o">.</span><span class="n">change_order_time_takeaway_button</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># Guest graphic configuration</span>
-        <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">():</span>
             <span class="c1"># If guest show guest type selection group</span>
             <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;guest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;guest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">True</span>
@@ -6605,11 +6490,10 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
         <span class="p">)</span>
         <span class="c1"># Stats top text</span>
         <span class="n">stats_and_info_text</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">build_stats_and_info_text</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">auth_user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="p">,</span>
             <span class="n">df_stats</span><span class="o">=</span><span class="n">df_stats</span><span class="p">,</span>
-            <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span>
             <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
-            <span class="n">host_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_host_name</span><span class="p">(),</span>
+            <span class="n">host_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span>
             <span class="n">stylesheets</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">gui</span><span class="o">.</span><span class="n">css_files</span><span class="o">.</span><span class="n">stats_info_path</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="c1"># Remove NotAGuest (non-guest users)</span>
@@ -6746,7 +6630,30 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">617</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
 <span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
@@ -6904,32 +6811,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 <span class="normal">772</span>
 <span class="normal">773</span>
 <span class="normal">774</span>
-<span class="normal">775</span>
-<span class="normal">776</span>
-<span class="normal">777</span>
-<span class="normal">778</span>
-<span class="normal">779</span>
-<span class="normal">780</span>
-<span class="normal">781</span>
-<span class="normal">782</span>
-<span class="normal">783</span>
-<span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span>
-<span class="normal">789</span>
-<span class="normal">790</span>
-<span class="normal">791</span>
-<span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span>
-<span class="normal">796</span>
-<span class="normal">797</span>
-<span class="normal">798</span>
-<span class="normal">799</span>
-<span class="normal">800</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">send_order</span><span class="p">(</span>
+<span class="normal">775</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">send_order</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -6952,6 +6834,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 <span class="sd">        person (gui.Person): class that collect order data for the user that is the target of the order.</span>
 <span class="sd">        gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Get username updated at each key press</span>
     <span class="n">username_key_press</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">_widgets</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_input</span>
 
@@ -6980,9 +6863,12 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
         <span class="c1"># If auth is active, check if a guests is using a name reserved to a</span>
         <span class="c1"># privileged user</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">username_key_press</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">list_users</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">username_key_press</span>
+                <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">())</span>
         <span class="p">):</span>
             <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">username_key_press</span><span class="si">}</span><span class="s2"> is a reserved name&lt;br&gt;Please choose a different one&quot;</span><span class="p">,</span>
@@ -6999,20 +6885,16 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
         <span class="c1"># Check if a privileged user is ordering for an invalid name</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-            <span class="p">)</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
             <span class="ow">and</span> <span class="p">(</span>
                 <span class="n">username_key_press</span>
                 <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
                     <span class="n">name</span>
-                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">(</span>
-                        <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">list_privileged_users</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;guest&quot;</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">())</span>
         <span class="p">):</span>
             <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">username_key_press</span><span class="si">}</span><span class="s2"> is not a valid name&lt;br&gt;for a privileged user&lt;br&gt;Please choose a different one&quot;</span><span class="p">,</span>
@@ -7046,9 +6928,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># Add User</span>
                     <span class="c1"># Do not pass guest for privileged users (default to NotAGuest)</span>
-                    <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
-                        <span class="n">user</span><span class="o">=</span><span class="n">pn_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                    <span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">():</span>
                         <span class="n">new_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Users</span><span class="p">(</span>
                             <span class="nb">id</span><span class="o">=</span><span class="n">username_key_press</span><span class="p">,</span>
                             <span class="n">guest</span><span class="o">=</span><span class="n">person</span><span class="o">.</span><span class="n">guest</span><span class="p">,</span>
@@ -7167,13 +7047,13 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the configuration for the Waiter instance.</span>
 
 <span class="sd">    Args:</span>

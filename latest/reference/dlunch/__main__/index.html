@@ -1129,10 +1129,7 @@ Setup panel and create objects for frontend and backend.</p>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="s2">&quot;1.3&quot;</span><span class="p">)</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="s2">&quot;1.3&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">run_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main entrypoint, start the app loop.</span>
 
@@ -1143,16 +1140,13 @@ Setup panel and create objects for frontend and backend.</p>
 <span class="sd">        config (DictConfig): hydra configuration object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Configure waiter</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set waiter config&quot;</span><span class="p">)</span>
-    <span class="n">waiter</span><span class="o">.</span><span class="n">set_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-
     <span class="c1"># Set auth configurations</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set auth config and encryption&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set auth context and encryption&quot;</span><span class="p">)</span>
+    <span class="n">auth_context</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">AuthContext</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
     <span class="c1"># Auth encryption</span>
-    <span class="n">auth</span><span class="o">.</span><span class="n">set_app_auth_and_encryption</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">auth_context</span><span class="o">.</span><span class="n">set_app_auth_and_encryption</span><span class="p">()</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s1">&#39;authentication </span><span class="si">{</span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;not &quot;</span><span class="si">}</span><span class="s1">active&#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;authentication </span><span class="si">{</span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">()</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;not &quot;</span><span class="si">}</span><span class="s1">active&#39;</span>
     <span class="p">)</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set panel config&quot;</span><span class="p">)</span>
@@ -1173,12 +1167,12 @@ Setup panel and create objects for frontend and backend.</p>
     <span class="n">pn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">auth_template</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">auth_error_template</span>
 
     <span class="c1"># If basic auth is used the database and users credentials shall be created here</span>
-    <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">():</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;initialize database and users credentials for basic auth&quot;</span><span class="p">)</span>
         <span class="c1"># Create tables</span>
         <span class="n">models</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
             <span class="n">config</span><span class="p">,</span>
-            <span class="n">add_basic_auth_users</span><span class="o">=</span><span class="n">auth</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">),</span>
+            <span class="n">add_basic_auth_users</span><span class="o">=</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">(),</span>
         <span class="p">)</span>
 
     <span class="c1"># Starting scheduled tasks</span>
@@ -1199,14 +1193,14 @@ Setup panel and create objects for frontend and backend.</p>
     <span class="c1"># Health is an endpoint for app health assessments</span>
     <span class="c1"># Pass a dictionary for a multipage app</span>
     <span class="n">pages</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">create_app</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)}</span>
-    <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">():</span>
         <span class="n">pages</span><span class="p">[</span><span class="s2">&quot;backend&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">create_backend</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 
     <span class="c1"># If basic authentication is active, instantiate ta special auth object</span>
     <span class="c1"># otherwise leave an empty dict</span>
     <span class="c1"># This step is done before panel.serve because auth_provider requires that</span>
     <span class="c1"># the whole config is passed as an input</span>
-    <span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">():</span>
         <span class="n">auth_object</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;auth_provider&quot;</span><span class="p">:</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
                 <span class="n">config</span><span class="o">.</span><span class="n">basic_auth</span><span class="o">.</span><span class="n">auth_provider</span><span class="p">,</span> <span class="n">config</span>
@@ -1378,7 +1372,10 @@ May be expressed as a timedelta or a string.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
@@ -1424,10 +1421,7 @@ May be expressed as a timedelta or a string.</p>
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">schedule_task</span><span class="p">(</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">schedule_task</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
