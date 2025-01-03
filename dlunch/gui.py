@@ -964,7 +964,6 @@ class GraphicInterface:
         self,
         auth_user: AuthUser,
         df_stats: pd.DataFrame,
-        user: str,
         version: str,
         host_name: str,
         stylesheets: list = [],
@@ -1022,7 +1021,7 @@ class GraphicInterface:
                         <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                     </svg>
                     <span>
-                        <strong>User:</strong> <i>{user}</i>
+                        <strong>User:</strong> <i>{auth_user.name}</i>
                     </span>
                 </div>
                 <div class="icon-container">

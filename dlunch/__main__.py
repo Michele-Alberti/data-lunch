@@ -10,7 +10,7 @@ from omegaconf import DictConfig
 
 from . import auth
 from . import models
-from . import create_app, create_backend, waiter
+from . import create_app, create_backend
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -37,10 +37,6 @@ def run_app(config: DictConfig) -> None:
     Args:
         config (DictConfig): hydra configuration object.
     """
-
-    # Configure waiter
-    log.info("set waiter config")
-    waiter.set_config(config)
 
     # Set auth configurations
     log.info("set auth context and encryption")

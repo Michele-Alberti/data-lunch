@@ -16,7 +16,7 @@ import subprocess
 from .models import create_database, create_engine, SCHEMA, Data, metadata_obj
 
 # Waiter Imports
-from . import waiter
+from .core import Waiter
 
 # Auth imports
 from . import auth
@@ -50,7 +50,7 @@ def cli(ctx, hydra_overrides: tuple | None):
 
     # Instance auth context and waiter
     auth_context = auth.AuthContext(config=config)
-    waiter.set_config(config)
+    waiter = Waiter(config=config)
 
     # Store common objects in context
     ctx.obj = {
@@ -247,7 +247,7 @@ def clean_tables(obj):
 
     # Drop table
     try:
-        waiter.clean_tables()
+        obj["waiter"].clean_tables()
         click.secho("done", fg="green")
     except Exception as e:
         # Generic error

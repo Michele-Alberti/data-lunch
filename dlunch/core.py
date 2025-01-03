@@ -45,36 +45,17 @@ class Waiter:
     """Class that defines main functions used to manage Data-Lunch operations.
 
     Args:
-        config (DictConfig| None): Hydra configuration object. Defaults to None.
+        config (DictConfig| None): Hydra configuration object.
 
     Raise:
         ValueError: when calling (unmangled) methods, if the configuration is not set.
     """
 
-    def __init__(self, config: DictConfig | None = None):
-        self.config: DictConfig | None = None
+    def __init__(self, config: DictConfig):
+        self.config: DictConfig = config
         """Hydra configuration object"""
-
-        # Define decorator to raise an error if the configuration is not set
-        def _common_decorator(func):
-            def wrapper(*args, **kwargs):
-                if self.config is None:
-                    raise ValueError("waiter configuration is not set")
-                return func(*args, **kwargs)
-
-            return wrapper
-
-        # Set decorator to unmangled methods (do not apply to set_config method)
-        for method_name in [
-            item
-            for item in dir(self)
-            if not item.startswith("_") and not (item == "set_config")
-        ]:
-            attr = getattr(self, method_name)
-            # Check if the attribute is a method
-            if callable(attr):
-                wrapped = _common_decorator(attr)
-                setattr(self, method_name, wrapped)
+        self.auth_user: AuthUser = AuthUser(config=config)
+        """Object with authenticated user data and related methods"""
 
     def set_config(self, config: DictConfig):
         """Set the configuration for the Waiter instance.
@@ -84,7 +65,8 @@ class Waiter:
         """
         self.config = config
 
-    def get_host_name(self) -> str:
+    @property
+    def hostname(self) -> str:
         """Return hostname.
 
         This function behavior changes if called from localhost, Docker container or
@@ -308,9 +290,6 @@ class Waiter:
             gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
         """
 
-        # Read user from Panel state
-        auth_user = AuthUser(config=self.config)
-
         # Create session
         session = models.create_session(self.config)
 
@@ -332,13 +311,13 @@ class Waiter:
             # Check guest override button status (if not in table use False)
             gi.toggle_guest_override_button.value = models.get_flag(
                 config=self.config,
-                id=f"{auth_user.name}_guest_override",
+                id=f"{self.auth_user.name}_guest_override",
                 value_if_missing=False,
             )
 
             # Set no more orders toggle button and the change order time button
             # visibility and activation
-            if auth_user.is_guest(allow_override=False):
+            if self.auth_user.is_guest(allow_override=False):
                 # Deactivate the no_more_orders_button for guest users
                 gi.toggle_no_more_order_button.disabled = True
                 gi.toggle_no_more_order_button.visible = False
@@ -354,7 +333,7 @@ class Waiter:
                 gi.change_order_time_takeaway_button.visible = True
 
             # Guest graphic configuration
-            if auth_user.is_guest():
+            if self.auth_user.is_guest():
                 # If guest show guest type selection group
                 gi.person_widget.widgets["guest"].disabled = False
                 gi.person_widget.widgets["guest"].visible = True
@@ -583,11 +562,10 @@ class Waiter:
             )
             # Stats top text
             stats_and_info_text = gi.build_stats_and_info_text(
-                auth_user=auth_user,
+                auth_user=self.auth_user,
                 df_stats=df_stats,
-                user=auth_user.name,
                 version=__version__,
-                host_name=self.get_host_name(),
+                host_name=self.hostname,
                 stylesheets=[self.config.panel.gui.css_files.stats_info_path],
             )
             # Remove NotAGuest (non-guest users)
@@ -637,9 +615,6 @@ class Waiter:
             gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
         """
 
-        # Read user from Panel state
-        auth_user = AuthUser(config=self.config)
-
         # Get username updated at each key press
         username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -668,12 +643,12 @@ class Waiter:
             # If auth is active, check if a guests is using a name reserved to a
             # privileged user
             if (
-                auth_user.is_guest()
+                self.auth_user.is_guest()
                 and (
                     username_key_press
-                    in auth_user.auth_context.list_privileged_users()
+                    in self.auth_user.auth_context.list_privileged_users()
                 )
-                and (auth_user.auth_context.is_auth_active())
+                and (self.auth_user.auth_context.is_auth_active())
             ):
                 pn.state.notifications.error(
                     f"{username_key_press} is a reserved name<br>Please choose a different one",
@@ -690,16 +665,16 @@ class Waiter:
 
             # Check if a privileged user is ordering for an invalid name
             if (
-                not auth_user.is_guest()
+                not self.auth_user.is_guest()
                 and (
                     username_key_press
                     not in (
                         name
-                        for name in auth_user.auth_context.list_privileged_users()
+                        for name in self.auth_user.auth_context.list_privileged_users()
                         if name != "guest"
                     )
                 )
-                and (auth_user.auth_context.is_auth_active())
+                and (self.auth_user.auth_context.is_auth_active())
             ):
                 pn.state.notifications.error(
                     f"{username_key_press} is not a valid name<br>for a privileged user<br>Please choose a different one",
@@ -733,7 +708,7 @@ class Waiter:
                     try:
                         # Add User
                         # Do not pass guest for privileged users (default to NotAGuest)
-                        if auth_user.is_guest():
+                        if self.auth_user.is_guest():
                             new_user = models.Users(
                                 id=username_key_press,
                                 guest=person.guest,
@@ -818,9 +793,6 @@ class Waiter:
             gi (gui.GraphicInterface): graphic interface object (used to interact with Panel widgets).
         """
 
-        # Read user from Panel state
-        auth_user = AuthUser(config=self.config)
-
         # Get username, updated on every keypress
         username_key_press = gi.person_widget._widgets["username"].value_input
 
@@ -850,12 +822,12 @@ class Waiter:
                 # If auth is active, check if a guests is deleting an order of a
                 # privileged user
                 if (
-                    auth_user.is_guest()
+                    self.auth_user.is_guest()
                     and (
                         username_key_press
-                        in auth_user.auth_context.list_privileged_users()
+                        in self.auth_user.auth_context.list_privileged_users()
                     )
-                    and (auth_user.auth_context.is_auth_active())
+                    and (self.auth_user.auth_context.is_auth_active())
                 ):
                     pn.state.notifications.error(
                         f"You do not have enough privileges<br>to delete<br>{username_key_press}'s order",

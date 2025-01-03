@@ -7,8 +7,7 @@ from omegaconf import DictConfig, OmegaConf
 
 # Relative imports
 from . import models
-from . import core
-from .core import __version__
+from .core import __version__, Waiter
 from . import gui
 from .auth import AuthUser
 
@@ -21,10 +20,6 @@ log: logging.Logger = logging.getLogger(__name__)
 OmegaConf.register_new_resolver(
     "pkg_path", lambda pkg: str(importlib.resources.files(pkg))
 )
-
-# APP WAITER ------------------------------------------------------------------
-# Create the waiter instance
-waiter = core.Waiter()
 
 # APP FACTORY FUNCTION --------------------------------------------------------
 
@@ -40,9 +35,10 @@ def create_app(config: DictConfig) -> pn.Template:
     """
     log.info("starting initialization process")
 
-    # Create an instance of AuthUser (which has also an instance of AuthContext
-    # among its attributes)
+    # Create an instance of AuthUser (that includes an instance of AuthContext)
+    # and a waiter instance
     auth_user = AuthUser(config=config)
+    waiter = Waiter(config=config)
 
     log.info("initialize database")
     # Create tables
