@@ -589,7 +589,7 @@ class AuthContext:
         if self.is_basic_auth_active():
             # If active basic_auth.guest_user is true if guest user is active
             is_guest_user_active = self.config.basic_auth.guest_user
-            log.debug("guest user flag is {is_guest_user_active}")
+            log.debug(f"guest user flag is {is_guest_user_active}")
         else:
             # Otherwise the guest user feature is not applicable
             is_guest_user_active = False
@@ -970,51 +970,61 @@ class AuthUser:
         }
 
 
-# FUNCTIONS -------------------------------------------------------------------
-
-
-def authorize(
-    config: DictConfig,
-    user_info: dict,
-    target_path: str,
-    authorize_guest_users=False,
-) -> bool:
-    """Authorization callback: read config, user info and the target path of the
-    requested resource.
-
-    Return `True` (authorized) or `False` (not authorized) by checking current user
-    and target path.
+class AuthCallback:
+    """Class to handle authorization callback.
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
-        user_info (dict): dictionary with user info passed by Panel to the authorization handle.
-        target_path (str): path of the requested resource.
         authorize_guest_users (bool, optional): Set to `True` to enable the main page to guest users.
             Defaults to `False`.
-
-    Returns:
-        bool: authorization flag. `True` if authorized.
     """
-    # Set authenticated user from panel state (authentication context is
-    # instantiated automatically)
-    auth_user = AuthUser(config=config)
-    # If authorization is not active authorize every user
-    if not auth_user.auth_context.is_auth_active():
-        return True
-    # Get privileged users
-    privileged_users = auth_user.auth_context.list_privileged_users()
-    log.debug(f"target path: {target_path}")
-    # If user is not authenticated block it
-    if not auth_user.name:
-        return False
-    # All privileged users can reach backend (but the backend will have
-    # controls only for admins)
-    if auth_user.name in privileged_users:
-        return True
-    # If the target is the mainpage always authorized (if authenticated)
-    if authorize_guest_users and (target_path == "/"):
-        return True
 
-    # In all other cases, don't authorize and logout
-    pn.state.location.pathname.split("/")[0] + "/logout"
-    return False
+    def __init__(
+        self, config: DictConfig, authorize_guest_users: bool = False
+    ) -> None:
+        self.config = config
+        self.authorize_guest_users = authorize_guest_users
+
+    def authorize(self, user_info: dict, target_path: str) -> bool:
+        """Authorization callback: read config, user info and the target path of the
+        requested resource.
+
+        Return `True` (authorized) or `False` (not authorized) by checking current user
+        and target path.
+
+        Args:
+            user_info (dict): dictionary with user info passed by Panel to the authorization handle.
+            target_path (str): path of the requested resource.
+
+        Returns:
+            bool: authorization flag. `True` if authorized.
+        """
+        # Set authenticated user from panel state (authentication context is
+        # instantiated automatically)
+        auth_user = AuthUser(config=self.config)
+        # If authorization is not active authorize every user
+        if not auth_user.auth_context.is_auth_active():
+            return True
+        # Get privileged users
+        privileged_users = auth_user.auth_context.list_privileged_users()
+        log.debug(f"target path: {target_path}")
+        # If user is not authenticated block it
+        if not auth_user.name:
+            log.debug("user not authenticated")
+            return False
+        # All privileged users can reach backend (but the backend will have
+        # controls only for admins)
+        if auth_user.name in privileged_users:
+            return True
+        # If the target is the mainpage always authorized (if authenticated)
+        if self.authorize_guest_users and (target_path == "/"):
+            return True
+
+        # In all other cases, don't authorize and logout
+        log.debug("not authorized")
+        pn.state.location.pathname.split("/")[0] + "/logout"
+        return False
+
+
+# FUNCTIONS -------------------------------------------------------------------
+# Intentionally left void
