@@ -9487,7 +9487,7 @@ Defaults to False.</p>
 
     <span class="c1"># If requested add users for basic auth (admin and guest)</span>
     <span class="k">if</span> <span class="n">add_basic_auth_users</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;add basic auth standard users&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;add basic auth standard users (if missing)&quot;</span><span class="p">)</span>
         <span class="c1"># If no user exist create the default admin</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 

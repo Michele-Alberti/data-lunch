@@ -1127,9 +1127,7 @@ Setup panel and create objects for frontend and backend.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="s2">&quot;1.3&quot;</span><span class="p">)</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="s2">&quot;1.3&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">run_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main entrypoint, start the app loop.</span>
 
@@ -1158,12 +1156,10 @@ Setup panel and create objects for frontend and backend.</p>
     <span class="c1"># Configurations</span>
     <span class="n">pn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">nthreads</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">nthreads</span>
     <span class="n">pn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">notifications</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">authorize_callback_factory</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+    <span class="n">authorize_callback_object</span><span class="p">:</span> <span class="n">auth</span><span class="o">.</span><span class="n">AuthCallback</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span>
         <span class="n">config</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">authorization_callback</span><span class="p">,</span> <span class="n">config</span>
     <span class="p">)</span>
-    <span class="n">pn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">authorize_callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">ui</span><span class="p">,</span> <span class="n">tp</span><span class="p">:</span> <span class="n">authorize_callback_factory</span><span class="p">(</span>
-        <span class="n">user_info</span><span class="o">=</span><span class="n">ui</span><span class="p">,</span> <span class="n">target_path</span><span class="o">=</span><span class="n">tp</span>
-    <span class="p">)</span>
+    <span class="n">pn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">authorize_callback</span> <span class="o">=</span> <span class="n">authorize_callback_object</span><span class="o">.</span><span class="n">authorize</span>
     <span class="n">pn</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">auth_template</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">auth_error_template</span>
 
     <span class="c1"># If basic auth is used the database and users credentials shall be created here</span>
@@ -1372,7 +1368,9 @@ May be expressed as a timedelta or a string.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -1419,9 +1417,7 @@ May be expressed as a timedelta or a string.</p>
 <span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">schedule_task</span><span class="p">(</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">schedule_task</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
