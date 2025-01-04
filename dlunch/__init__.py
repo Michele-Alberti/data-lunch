@@ -90,7 +90,7 @@ def create_app(config: DictConfig) -> pn.Template:
     # graphic element that require the Person class has to be instantiated
     # by a dedicated function
     # Create person instance, widget and column
-    log.debug("instantiate person class and graphic graphic interface")
+    log.debug("instantiate person class and graphic interface")
     person = gui.Person(config, name="User")
     gi = gui.GraphicInterface(
         config=config,

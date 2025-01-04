@@ -1012,7 +1012,7 @@ def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
 
     # If requested add users for basic auth (admin and guest)
     if add_basic_auth_users:
-        log.debug("add basic auth standard users")
+        log.debug("add basic auth standard users (if missing)")
         # If no user exist create the default admin
         session = create_session(config)
 
