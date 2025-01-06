@@ -553,15 +553,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#dlunch.__main__.schedule_task" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;schedule_task
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -825,15 +816,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#dlunch.__main__.schedule_task" class="md-nav__link">
-    <span class="md-ellipsis">
-      <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;schedule_task
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -881,14 +863,6 @@
               </div>
             </td>
           </tr>
-          <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="dlunch.__main__.models" href="../models/#dlunch.models">models</a></code></td>
-            <td>
-              <div class="doc-md-description">
-                <p>Module with database tables definitions.</p>
-              </div>
-            </td>
-          </tr>
       </tbody>
     </table>
 
@@ -911,14 +885,6 @@
               <td>
                 <div class="doc-md-description">
                   <p>Main entrypoint, start the app loop.</p>
-                </div>
-              </td>
-            </tr>
-            <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="dlunch.__main__.schedule_task" href="#dlunch.__main__.schedule_task">schedule_task</a></code></td>
-              <td>
-                <div class="doc-md-description">
-                  <p>Schedule a task execution using Panel.</p>
                 </div>
               </td>
             </tr>
@@ -1037,7 +1003,9 @@ Setup panel and create objects for frontend and backend.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 30</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
 <span class="normal"> 31</span>
 <span class="normal"> 32</span>
 <span class="normal"> 33</span>
@@ -1122,13 +1090,8 @@ Setup panel and create objects for frontend and backend.</p>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="s2">&quot;1.3&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">run_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@hydra</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">version_base</span><span class="o">=</span><span class="s2">&quot;1.3&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main entrypoint, start the app loop.</span>
 
 <span class="sd">    Initialize database, authentication and encription.</span>
@@ -1166,19 +1129,16 @@ Setup panel and create objects for frontend and backend.</p>
     <span class="k">if</span> <span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">():</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;initialize database and users credentials for basic auth&quot;</span><span class="p">)</span>
         <span class="c1"># Create tables</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
-            <span class="n">config</span><span class="p">,</span>
+        <span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
             <span class="n">add_basic_auth_users</span><span class="o">=</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">(),</span>
         <span class="p">)</span>
 
     <span class="c1"># Starting scheduled tasks</span>
-    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">scheduled_tasks</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;starting scheduled tasks&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">scheduled_tasks</span><span class="p">:</span>
-            <span class="n">schedule_task</span><span class="p">(</span>
-                <span class="o">**</span><span class="n">task</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
-                <span class="nb">callable</span><span class="o">=</span><span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">callable</span><span class="p">,</span> <span class="n">config</span><span class="p">),</span>
-            <span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;start scheduled tasks&quot;</span><span class="p">)</span>
+    <span class="n">scheduled_tasks</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">scheduled_tasks</span><span class="p">)</span>
+    <span class="n">scheduled_task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">tasks</span><span class="o">=</span><span class="n">scheduled_tasks</span><span class="p">)</span>
+    <span class="n">scheduled_task_manager</span><span class="o">.</span><span class="n">log_tasks</span><span class="p">(</span><span class="n">enabled_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">scheduled_task_manager</span><span class="o">.</span><span class="n">schedule_all</span><span class="p">()</span>
 
     <span class="c1"># Call the app factory function</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set config for app factory function&quot;</span><span class="p">)</span>
@@ -1218,255 +1178,6 @@ Setup panel and create objects for frontend and backend.</p>
     <span class="n">pn</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span>
         <span class="n">panels</span><span class="o">=</span><span class="n">pages</span><span class="p">,</span> <span class="o">**</span><span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">),</span> <span class="o">**</span><span class="n">auth_object</span>
     <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="dlunch.__main__.schedule_task" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">schedule_task</span>
-
-
-<a href="#dlunch.__main__.schedule_task" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">schedule_task</span><span class="p">(</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
-    <span class="n">enabled</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">,</span>
-    <span class="n">hour</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">minute</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">period</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span>
-    <span class="nb">callable</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="collections.abc.Callable" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Schedule a task execution using Panel.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>name</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>task name (used for logs).</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>enabled</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>flag that marks a task as enabled.
-tasks are not executed if disabled.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>hour</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>start hour (used only if also minute is not None).</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>minute</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>start minute (used only if also hour is not None).</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>period</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>the period between executions.
-May be expressed as a timedelta or a string.</p>
-<ul>
-<li>Week: <code>'1w'</code></li>
-<li>Day: <code>'1d'</code></li>
-<li>Hour: <code>'1h'</code></li>
-<li>Minute: <code>'1m'</code></li>
-<li>Second: <code>'1s'</code></li>
-</ul>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>callable</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-external" title="collections.abc.Callable" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>the task to be executed.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>dlunch/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">schedule_task</span><span class="p">(</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">minute</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">period</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Schedule a task execution using Panel.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        name (str): task name (used for logs).</span>
-<span class="sd">        enabled (bool): flag that marks a task as enabled.</span>
-<span class="sd">            tasks are not executed if disabled.</span>
-<span class="sd">        hour (int | None): start hour (used only if also minute is not None).</span>
-<span class="sd">        minute (int | None): start minute (used only if also hour is not None).</span>
-<span class="sd">        period (str): the period between executions.</span>
-<span class="sd">            May be expressed as a timedelta or a string.</span>
-
-<span class="sd">            * Week: `&#39;1w&#39;`</span>
-<span class="sd">            * Day: `&#39;1d&#39;`</span>
-<span class="sd">            * Hour: `&#39;1h&#39;`</span>
-<span class="sd">            * Minute: `&#39;1m&#39;`</span>
-<span class="sd">            * Second: `&#39;1s&#39;`</span>
-
-<span class="sd">        callable (Callable): the task to be executed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Starting scheduled tasks (if enabled)</span>
-    <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting task &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">hour</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">minute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">start_time</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span>
-                <span class="n">minute</span><span class="o">=</span><span class="n">minute</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="c1"># Set start time to tomorrow if the time already passed</span>
-            <span class="k">if</span> <span class="n">start_time</span> <span class="o">&lt;</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">():</span>
-                <span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;starting time: </span><span class="si">{</span><span class="n">start_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> - period: </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting time: now - period: </span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">schedule_task</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;data_lunch_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="nb">callable</span><span class="p">,</span>
-            <span class="n">period</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
-            <span class="n">at</span><span class="o">=</span><span class="n">start_time</span><span class="p">,</span>
-        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

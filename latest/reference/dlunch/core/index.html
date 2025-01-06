@@ -687,6 +687,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#dlunch.core.Waiter.database_connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;database_connector
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dlunch.core.Waiter.hostname" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;hostname
@@ -980,6 +989,15 @@
   <a href="#dlunch.core.Waiter.config" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlunch.core.Waiter.database_connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;database_connector
     </span>
   </a>
   
@@ -1471,6 +1489,17 @@ and the Panel widgets.</p>
             <td>
               <div class="doc-md-description">
                 <p>Hydra configuration object</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.database_connector" href="#dlunch.core.Waiter.database_connector">database_connector</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="dlunch.models.DatabaseConnector" href="../models/#dlunch.models.DatabaseConnector">DatabaseConnector</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Object that handles database connection and operations</p>
               </div>
             </td>
           </tr>
@@ -2710,7 +2739,7 @@ and the Panel widgets.</p>
 <span class="normal">1261</span>
 <span class="normal">1262</span>
 <span class="normal">1263</span>
-<span class="normal">1264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Waiter</span><span class="p">:</span>
+<span class="normal">1264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Waiter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that defines main functions used to manage Data-Lunch operations.</span>
 
 <span class="sd">    Args:</span>
@@ -2720,13 +2749,17 @@ and the Panel widgets.</p>
 <span class="sd">        ValueError: when calling (unmangled) methods, if the configuration is not set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">=</span> <span class="n">config</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hydra configuration object&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="p">:</span> <span class="n">AuthUser</span> <span class="o">=</span> <span class="n">AuthUser</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Object with authenticated user data and related methods&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Object that handles database connection and operations&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the configuration for the Waiter instance.</span>
 
 <span class="sd">        Args:</span>
@@ -2735,7 +2768,7 @@ and the Panel widgets.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return hostname.</span>
 
 <span class="sd">        This function behavior changes if called from localhost, Docker container or</span>
@@ -2769,7 +2802,7 @@ and the Panel widgets.</p>
 
         <span class="k">return</span> <span class="n">host_name</span>
 
-    <span class="k">def</span> <span class="nf">delete_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete local temporary files.&quot;&quot;&quot;</span>
         <span class="c1"># Delete menu file if exist (every extension)</span>
         <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
@@ -2781,7 +2814,7 @@ and the Panel widgets.</p>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="n">file</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">clean_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean tables that should be reset when a new menu is uploaded.&quot;&quot;&quot;</span>
         <span class="c1"># Clean tables</span>
         <span class="c1"># Clean orders</span>
@@ -2793,13 +2826,13 @@ and the Panel widgets.</p>
         <span class="c1"># Clean flags</span>
         <span class="n">models</span><span class="o">.</span><span class="n">Flags</span><span class="o">.</span><span class="n">clear_guest_override</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="c1"># Reset flags</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;reset values in table &#39;flags&#39;&quot;</span><span class="p">)</span>
         <span class="c1"># Clean cache</span>
         <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">clear_caches</span><span class="p">()</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;cache cleaned&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">build_menu</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_menu</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
         <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -2897,14 +2930,11 @@ and the Panel widgets.</p>
                 <span class="k">return</span>
 
             <span class="c1"># Upload to database menu table</span>
-            <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;item&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span>
-                    <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">,</span>
-                    <span class="n">engine</span><span class="p">,</span>
-                    <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">),</span>
+                <span class="n">num_rows_written</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">write_from_df</span><span class="p">(</span>
+                    <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                    <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;item&quot;</span><span class="p">),</span>
                     <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">if_exists</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="c1"># Update dataframe widget</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
@@ -2916,7 +2946,7 @@ and the Panel widgets.</p>
                     <span class="s2">&quot;Menu uploaded&quot;</span><span class="p">,</span>
                     <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;menu uploaded&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;menu uploaded (</span><span class="si">{</span><span class="n">num_rows_written</span><span class="si">}</span><span class="s2"> rows)&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="c1"># Any exception here is a database fault</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -2938,7 +2968,7 @@ and the Panel widgets.</p>
             <span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;no file selected&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">reload_menu</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reload_menu</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
         <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
@@ -2960,28 +2990,30 @@ and the Panel widgets.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Create session</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="c1"># Check if someone changed the &quot;no_more_order&quot; toggle</span>
-            <span class="k">if</span> <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span>
+                <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="c1"># The following statement will trigger the toggle callback</span>
                 <span class="c1"># which will call reload_menu once again</span>
                 <span class="c1"># This is the reason why this if contains a return (without the return</span>
                 <span class="c1"># the content will be reloaded twice)</span>
-                <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                    <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span>
+                <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
 
                 <span class="k">return</span>
 
             <span class="c1"># Check guest override button status (if not in table use False)</span>
-            <span class="n">gi</span><span class="o">.</span><span class="n">toggle_guest_override_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
-                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
-                <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">gi</span><span class="o">.</span><span class="n">toggle_guest_override_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
+                    <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
             <span class="c1"># Set no more orders toggle button and the change order time button</span>
@@ -3012,7 +3044,6 @@ and the Panel widgets.</p>
                 <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;guest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="c1"># Reload menu</span>
-            <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">read_as_df</span><span class="p">(</span>
                 <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
                 <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
@@ -3199,7 +3230,7 @@ and the Panel widgets.</p>
             <span class="p">)</span>
             <span class="n">new_stat</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="n">hungry_people</span><span class="o">=</span><span class="n">today_locals_count</span><span class="p">)</span>
             <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
                 <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;stats_pkey&quot;</span><span class="p">,</span> <span class="n">new_record</span><span class="o">=</span><span class="n">new_stat</span>
             <span class="p">)</span>
             <span class="c1"># For each guest type find how many guests eat today</span>
@@ -3213,7 +3244,7 @@ and the Panel widgets.</p>
                     <span class="n">guest</span><span class="o">=</span><span class="n">guest_type</span><span class="p">,</span> <span class="n">hungry_people</span><span class="o">=</span><span class="n">today_guests_count</span>
                 <span class="p">)</span>
                 <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
                     <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                     <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;stats_pkey&quot;</span><span class="p">,</span>
                     <span class="n">new_record</span><span class="o">=</span><span class="n">new_stat</span><span class="p">,</span>
@@ -3223,11 +3254,11 @@ and the Panel widgets.</p>
             <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
             <span class="c1"># Group stats by month and return how many people had lunch</span>
-            <span class="n">df_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">df_stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
+                <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                <span class="n">query</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
                 <span class="p">),</span>
-                <span class="n">engine</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="c1"># Stats top text</span>
             <span class="n">stats_and_info_text</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">build_stats_and_info_text</span><span class="p">(</span>
@@ -3260,7 +3291,7 @@ and the Panel widgets.</p>
             <span class="n">gi</span><span class="o">.</span><span class="n">sidebar_person_column</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">stats_and_info_text</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">]</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;stats and info updated&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">send_order</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_order</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
         <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -3291,11 +3322,11 @@ and the Panel widgets.</p>
         <span class="n">gi</span><span class="o">.</span><span class="n">error_message</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Create session</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="c1"># Check if the &quot;no more order&quot; toggle button is pressed</span>
-            <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">&quot;It is not possible to place new orders&quot;</span><span class="p">,</span>
                     <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
@@ -3443,7 +3474,7 @@ and the Panel widgets.</p>
                     <span class="p">)</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;no selection made&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">delete_order</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_order</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
         <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -3469,11 +3500,11 @@ and the Panel widgets.</p>
         <span class="n">gi</span><span class="o">.</span><span class="n">error_message</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Create session</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="c1"># Check if the &quot;no more order&quot; toggle button is pressed</span>
-            <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">&quot;It is not possible to delete orders&quot;</span><span class="p">,</span>
                     <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
@@ -3567,7 +3598,7 @@ and the Panel widgets.</p>
                 <span class="p">)</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;missing username&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">change_order_time_takeaway</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_order_time_takeaway</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
         <span class="n">person</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">Person</span><span class="p">,</span>
@@ -3584,11 +3615,11 @@ and the Panel widgets.</p>
         <span class="n">username_key_press</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">_widgets</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_input</span>
 
         <span class="c1"># Create session</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="c1"># Check if the &quot;no more order&quot; toggle button is pressed</span>
-            <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
                 <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">&quot;It is not possible to update orders (time)&quot;</span><span class="p">,</span>
                     <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
@@ -3652,7 +3683,7 @@ and the Panel widgets.</p>
                 <span class="p">)</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;missing username&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a dictionary of dataframes for each lunch-time, with takeaways included in a dedicated dataframe.</span>
@@ -3665,15 +3696,13 @@ and the Panel widgets.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: dictionary with dataframes summarizing the orders for each lunch-time/takeaway-time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Create database engine and session</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="c1"># Read menu and save how menu items are sorted (first courses, second courses, etc.)</span>
         <span class="n">original_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">read_as_df</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
             <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">item</span>
         <span class="c1"># Create session</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="c1"># Build takeaway list</span>
@@ -3686,16 +3715,16 @@ and the Panel widgets.</p>
                 <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="p">]</span>
         <span class="c1"># Read orders dataframe (including notes)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">orders_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+            <span class="n">query</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">orders_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
             <span class="p">),</span>
-            <span class="n">engine</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># The following function prepare the dataframe before saving it into</span>
         <span class="c1"># the dictionary that will be returned</span>
-        <span class="k">def</span> <span class="nf">_clean_up_table</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_clean_up_table</span><span class="p">(</span>
             <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
             <span class="n">df_in</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
             <span class="n">df_complete</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -3781,7 +3810,7 @@ and the Panel widgets.</p>
 
         <span class="k">return</span> <span class="n">df_dict</span>
 
-    <span class="k">def</span> <span class="nf">download_dataframe</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download_dataframe</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BytesIO</span><span class="p">:</span>
@@ -3994,6 +4023,31 @@ and the Panel widgets.</p>
 
 
 
+<h4 id="dlunch.core.Waiter.database_connector" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">database_connector</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#dlunch.core.Waiter.database_connector" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">database_connector</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.DatabaseConnector" href="../models/#dlunch.models.DatabaseConnector">DatabaseConnector</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.DatabaseConnector" href="../models/#dlunch.models.DatabaseConnector">DatabaseConnector</a></span><span class="p">(</span>
+    <span class="n"><span title="dlunch.models.DatabaseConnector(config)">config</span></span><span class="o">=</span><span class="n"><a class="autorefs autorefs-internal" title="dlunch.core.Waiter.config" href="#dlunch.core.Waiter.config">config</a></span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Object that handles database connection and operations</p>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h4 id="dlunch.core.Waiter.hostname" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">hostname</span>
 
@@ -4059,11 +4113,19 @@ production server.</p>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">=</span> <span class="n">config</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hydra configuration object&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="p">:</span> <span class="n">AuthUser</span> <span class="o">=</span> <span class="n">AuthUser</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Object with authenticated user data and related methods&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object that handles database connection and operations&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4152,11 +4214,7 @@ production server.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
@@ -4289,7 +4347,8 @@ production server.</p>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">build_menu</span><span class="p">(</span>
+<span class="normal">270</span>
+<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_menu</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -4387,14 +4446,11 @@ production server.</p>
             <span class="k">return</span>
 
         <span class="c1"># Upload to database menu table</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;item&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">__tablename__</span><span class="p">,</span>
-                <span class="n">engine</span><span class="p">,</span>
-                <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">),</span>
+            <span class="n">num_rows_written</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">write_from_df</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s2">&quot;item&quot;</span><span class="p">),</span>
                 <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">if_exists</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="c1"># Update dataframe widget</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reload_menu</span><span class="p">(</span>
@@ -4406,7 +4462,7 @@ production server.</p>
                 <span class="s2">&quot;Menu uploaded&quot;</span><span class="p">,</span>
                 <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;menu uploaded&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;menu uploaded (</span><span class="si">{</span><span class="n">num_rows_written</span><span class="si">}</span><span class="s2"> rows)&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># Any exception here is a database fault</span>
             <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -4515,9 +4571,7 @@ production server.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">901</span>
-<span class="normal">902</span>
-<span class="normal">903</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">903</span>
 <span class="normal">904</span>
 <span class="normal">905</span>
 <span class="normal">906</span>
@@ -4598,7 +4652,9 @@ production server.</p>
 <span class="normal">981</span>
 <span class="normal">982</span>
 <span class="normal">983</span>
-<span class="normal">984</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">change_order_time_takeaway</span><span class="p">(</span>
+<span class="normal">984</span>
+<span class="normal">985</span>
+<span class="normal">986</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">change_order_time_takeaway</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">person</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">Person</span><span class="p">,</span>
@@ -4615,11 +4671,11 @@ production server.</p>
     <span class="n">username_key_press</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">_widgets</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_input</span>
 
     <span class="c1"># Create session</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1"># Check if the &quot;no more order&quot; toggle button is pressed</span>
-        <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
             <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;It is not possible to update orders (time)&quot;</span><span class="p">,</span>
                 <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
@@ -4705,11 +4761,7 @@ production server.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
@@ -4721,7 +4773,11 @@ production server.</p>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
-<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">clean_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Clean tables that should be reset when a new menu is uploaded.&quot;&quot;&quot;</span>
     <span class="c1"># Clean tables</span>
     <span class="c1"># Clean orders</span>
@@ -4733,7 +4789,7 @@ production server.</p>
     <span class="c1"># Clean flags</span>
     <span class="n">models</span><span class="o">.</span><span class="n">Flags</span><span class="o">.</span><span class="n">clear_guest_override</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
     <span class="c1"># Reset flags</span>
-    <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;reset values in table &#39;flags&#39;&quot;</span><span class="p">)</span>
     <span class="c1"># Clean cache</span>
     <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">clear_caches</span><span class="p">()</span>
@@ -4761,17 +4817,17 @@ production server.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">delete_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete local temporary files.&quot;&quot;&quot;</span>
     <span class="c1"># Delete menu file if exist (every extension)</span>
     <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
@@ -4873,9 +4929,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">777</span>
-<span class="normal">778</span>
-<span class="normal">779</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">779</span>
 <span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
@@ -4995,7 +5049,9 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 <span class="normal">896</span>
 <span class="normal">897</span>
 <span class="normal">898</span>
-<span class="normal">899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">delete_order</span><span class="p">(</span>
+<span class="normal">899</span>
+<span class="normal">900</span>
+<span class="normal">901</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_order</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -5021,11 +5077,11 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
     <span class="n">gi</span><span class="o">.</span><span class="n">error_message</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># Create session</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1"># Check if the &quot;no more order&quot; toggle button is pressed</span>
-        <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
             <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;It is not possible to delete orders&quot;</span><span class="p">,</span>
                 <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
@@ -5167,9 +5223,7 @@ for a specific item).</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 986</span>
-<span class="normal"> 987</span>
-<span class="normal"> 988</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 988</span>
 <span class="normal"> 989</span>
 <span class="normal"> 990</span>
 <span class="normal"> 991</span>
@@ -5294,7 +5348,7 @@ for a specific item).</p>
 <span class="normal">1110</span>
 <span class="normal">1111</span>
 <span class="normal">1112</span>
-<span class="normal">1113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
+<span class="normal">1113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">df_list_by_lunch_time</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a dictionary of dataframes for each lunch-time, with takeaways included in a dedicated dataframe.</span>
@@ -5307,15 +5361,13 @@ for a specific item).</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: dictionary with dataframes summarizing the orders for each lunch-time/takeaway-time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Create database engine and session</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
     <span class="c1"># Read menu and save how menu items are sorted (first courses, second courses, etc.)</span>
     <span class="n">original_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">read_as_df</span><span class="p">(</span>
         <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
         <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">item</span>
     <span class="c1"># Create session</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1"># Build takeaway list</span>
@@ -5328,16 +5380,16 @@ for a specific item).</p>
             <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="p">]</span>
     <span class="c1"># Read orders dataframe (including notes)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">orders_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+        <span class="n">query</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">orders_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
         <span class="p">),</span>
-        <span class="n">engine</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># The following function prepare the dataframe before saving it into</span>
     <span class="c1"># the dictionary that will be returned</span>
-    <span class="k">def</span> <span class="nf">_clean_up_table</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clean_up_table</span><span class="p">(</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
         <span class="n">df_in</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">df_complete</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -5651,7 +5703,7 @@ for a specific item).</p>
 <span class="normal">1261</span>
 <span class="normal">1262</span>
 <span class="normal">1263</span>
-<span class="normal">1264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">download_dataframe</span><span class="p">(</span>
+<span class="normal">1264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_dataframe</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BytesIO</span><span class="p">:</span>
@@ -5877,8 +5929,7 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
-<span class="normal">273</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
@@ -6197,7 +6248,9 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
 <span class="normal">589</span>
 <span class="normal">590</span>
 <span class="normal">591</span>
-<span class="normal">592</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reload_menu</span><span class="p">(</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reload_menu</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">,</span>
@@ -6219,28 +6272,30 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Create session</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1"># Check if someone changed the &quot;no_more_order&quot; toggle</span>
-        <span class="k">if</span> <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span>
+            <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="c1"># The following statement will trigger the toggle callback</span>
             <span class="c1"># which will call reload_menu once again</span>
             <span class="c1"># This is the reason why this if contains a return (without the return</span>
             <span class="c1"># the content will be reloaded twice)</span>
-            <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span>
+            <span class="n">gi</span><span class="o">.</span><span class="n">toggle_no_more_order_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">)</span>
             <span class="p">)</span>
 
             <span class="k">return</span>
 
         <span class="c1"># Check guest override button status (if not in table use False)</span>
-        <span class="n">gi</span><span class="o">.</span><span class="n">toggle_guest_override_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
-            <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
-            <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">gi</span><span class="o">.</span><span class="n">toggle_guest_override_button</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
+                <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># Set no more orders toggle button and the change order time button</span>
@@ -6271,7 +6326,6 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
             <span class="n">gi</span><span class="o">.</span><span class="n">person_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s2">&quot;guest&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Reload menu</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Menu</span><span class="o">.</span><span class="n">read_as_df</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
             <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
@@ -6458,7 +6512,7 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
         <span class="p">)</span>
         <span class="n">new_stat</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Stats</span><span class="p">(</span><span class="n">hungry_people</span><span class="o">=</span><span class="n">today_locals_count</span><span class="p">)</span>
         <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
             <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;stats_pkey&quot;</span><span class="p">,</span> <span class="n">new_record</span><span class="o">=</span><span class="n">new_stat</span>
         <span class="p">)</span>
         <span class="c1"># For each guest type find how many guests eat today</span>
@@ -6472,7 +6526,7 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
                 <span class="n">guest</span><span class="o">=</span><span class="n">guest_type</span><span class="p">,</span> <span class="n">hungry_people</span><span class="o">=</span><span class="n">today_guests_count</span>
             <span class="p">)</span>
             <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
                 <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                 <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;stats_pkey&quot;</span><span class="p">,</span>
                 <span class="n">new_record</span><span class="o">=</span><span class="n">new_stat</span><span class="p">,</span>
@@ -6482,11 +6536,11 @@ statistics (values and table) shown inside the app are updated accordingly.</p>
         <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
         <span class="c1"># Group stats by month and return how many people had lunch</span>
-        <span class="n">df_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">df_stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+            <span class="n">query</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">stats_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">)</span>
             <span class="p">),</span>
-            <span class="n">engine</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Stats top text</span>
         <span class="n">stats_and_info_text</span> <span class="o">=</span> <span class="n">gi</span><span class="o">.</span><span class="n">build_stats_and_info_text</span><span class="p">(</span>
@@ -6630,9 +6684,7 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">596</span>
 <span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span>
@@ -6811,7 +6863,9 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 <span class="normal">772</span>
 <span class="normal">773</span>
 <span class="normal">774</span>
-<span class="normal">775</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">send_order</span><span class="p">(</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">send_order</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">event</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">parameterized</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span>
     <span class="n">app</span><span class="p">:</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
@@ -6842,11 +6896,11 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
     <span class="n">gi</span><span class="o">.</span><span class="n">error_message</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># Create session</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1"># Check if the &quot;no more order&quot; toggle button is pressed</span>
-        <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">):</span>
             <span class="n">pn</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;It is not possible to place new orders&quot;</span><span class="p">,</span>
                 <span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
@@ -7047,13 +7101,13 @@ The status of the <code>stop_orders</code> flag is checked to avoid that an orde
 
             <details class="quote">
               <summary>Source code in <code>dlunch/core.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
 <span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the configuration for the Waiter instance.</span>
 
 <span class="sd">    Args:</span>

@@ -1042,7 +1042,8 @@
 
             <details class="quote">
               <summary>Source code in <code>dlunch/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 27</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
+<span class="normal"> 27</span>
 <span class="normal"> 28</span>
 <span class="normal"> 29</span>
 <span class="normal"> 30</span>
@@ -1157,8 +1158,7 @@
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Panel main app factory function</span>
 
 <span class="sd">    Args:</span>
@@ -1176,8 +1176,7 @@
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;initialize database&quot;</span><span class="p">)</span>
     <span class="c1"># Create tables</span>
-    <span class="n">models</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
-        <span class="n">config</span><span class="p">,</span>
+    <span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
         <span class="n">add_basic_auth_users</span><span class="o">=</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">(),</span>
     <span class="p">)</span>
 
@@ -1191,16 +1190,18 @@
     <span class="c1"># Panel configurations</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set toggles initial state&quot;</span><span class="p">)</span>
     <span class="c1"># Set the no_more_orders flag if it is None (not found in flags table)</span>
-    <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># Set guest override flag if it is None (not found in flags table)</span>
     <span class="c1"># Guest override flag is per-user and is not set for guests</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">)</span>
+        <span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span>
+        <span class="p">)</span>
         <span class="ow">is</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">():</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
 
     <span class="c1"># DASHBOARD BASE TEMPLATE</span>
@@ -1254,12 +1255,11 @@
     <span class="c1"># Set components visibility based on no_more_order_button state</span>
     <span class="c1"># and reload menu</span>
     <span class="n">gi</span><span class="o">.</span><span class="n">reload_on_no_more_order</span><span class="p">(</span>
-        <span class="n">toggle</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">),</span>
+        <span class="n">toggle</span><span class="o">=</span><span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;no_more_orders&quot;</span><span class="p">),</span>
         <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gi</span><span class="o">.</span><span class="n">reload_on_guest_override</span><span class="p">(</span>
-        <span class="n">toggle</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+        <span class="n">toggle</span><span class="o">=</span><span class="n">waiter</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">auth_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
             <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">),</span>
@@ -1352,7 +1352,8 @@
 
             <details class="quote">
               <summary>Source code in <code>dlunch/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
@@ -1402,9 +1403,7 @@
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_backend</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_backend</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Panel backend app factory function</span>
 
 <span class="sd">    Args:</span>
@@ -1422,8 +1421,7 @@
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;initialize database&quot;</span><span class="p">)</span>
     <span class="c1"># Create tables</span>
-    <span class="n">models</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
-        <span class="n">config</span><span class="p">,</span>
+    <span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span>
         <span class="n">add_basic_auth_users</span><span class="o">=</span><span class="n">auth_user</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_basic_auth_active</span><span class="p">(),</span>
     <span class="p">)</span>
 

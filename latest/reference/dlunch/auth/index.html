@@ -645,6 +645,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#dlunch.auth.AuthContext.database_connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;database_connector
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dlunch.auth.AuthContext.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__init__
@@ -1436,6 +1445,15 @@
   <a href="#dlunch.auth.AuthContext.config" class="md-nav__link">
     <span class="md-ellipsis">
       <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dlunch.auth.AuthContext.database_connector" class="md-nav__link">
+    <span class="md-ellipsis">
+      <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;database_connector
     </span>
   </a>
   
@@ -2292,11 +2310,7 @@ Defaults to <code>False</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/auth.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 973</span>
-<span class="normal"> 974</span>
-<span class="normal"> 975</span>
-<span class="normal"> 976</span>
-<span class="normal"> 977</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 977</span>
 <span class="normal"> 978</span>
 <span class="normal"> 979</span>
 <span class="normal"> 980</span>
@@ -2345,7 +2359,11 @@ Defaults to <code>False</code>.</p>
 <span class="normal">1023</span>
 <span class="normal">1024</span>
 <span class="normal">1025</span>
-<span class="normal">1026</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AuthCallback</span><span class="p">:</span>
+<span class="normal">1026</span>
+<span class="normal">1027</span>
+<span class="normal">1028</span>
+<span class="normal">1029</span>
+<span class="normal">1030</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AuthCallback</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to handle authorization callback.</span>
 
 <span class="sd">    Args:</span>
@@ -2354,13 +2372,13 @@ Defaults to <code>False</code>.</p>
 <span class="sd">            Defaults to `False`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">authorize_guest_users</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">authorize_guest_users</span> <span class="o">=</span> <span class="n">authorize_guest_users</span>
 
-    <span class="k">def</span> <span class="nf">authorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">target_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">authorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">target_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Authorization callback: read config, user info and the target path of the</span>
 <span class="sd">        requested resource.</span>
 
@@ -2473,11 +2491,11 @@ Defaults to <code>False</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">982</span>
-<span class="normal">983</span>
-<span class="normal">984</span>
-<span class="normal">985</span>
-<span class="normal">986</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">986</span>
+<span class="normal">987</span>
+<span class="normal">988</span>
+<span class="normal">989</span>
+<span class="normal">990</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">authorize_guest_users</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
@@ -2578,11 +2596,7 @@ and target path.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 988</span>
-<span class="normal"> 989</span>
-<span class="normal"> 990</span>
-<span class="normal"> 991</span>
-<span class="normal"> 992</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 992</span>
 <span class="normal"> 993</span>
 <span class="normal"> 994</span>
 <span class="normal"> 995</span>
@@ -2616,7 +2630,11 @@ and target path.</p>
 <span class="normal">1023</span>
 <span class="normal">1024</span>
 <span class="normal">1025</span>
-<span class="normal">1026</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">authorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">target_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">1026</span>
+<span class="normal">1027</span>
+<span class="normal">1028</span>
+<span class="normal">1029</span>
+<span class="normal">1030</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">authorize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">target_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Authorization callback: read config, user info and the target path of the</span>
 <span class="sd">    requested resource.</span>
 
@@ -2843,7 +2861,18 @@ and target path.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Hydra configuration dictionary.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="dlunch.auth.AuthContext.database_connector" href="#dlunch.auth.AuthContext.database_connector">database_connector</a></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="dlunch.models.DatabaseConnector" href="../models/#dlunch.models.DatabaseConnector">DatabaseConnector</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Object that handles database connection and operations</p>
               </div>
             </td>
           </tr>
@@ -3242,17 +3271,27 @@ and target path.</p>
 <span class="normal">786</span>
 <span class="normal">787</span>
 <span class="normal">788</span>
-<span class="normal">789</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AuthContext</span><span class="p">:</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AuthContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to handle authentication context and related operations.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config (DictConfig): Hydra configuration dictionary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Hydra configuration dictionary.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Object that handles database connection and operations&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">is_basic_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_basic_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check configuration object and return `True` if basic authentication is active.</span>
 <span class="sd">        Return `False` otherwise.</span>
 
@@ -3263,7 +3302,7 @@ and target path.</p>
         <span class="n">auth_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;basic_auth&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">auth_provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">is_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check configuration object and return `True` if basic authentication or OAuth is active.</span>
 <span class="sd">        Return `False` otherwise.</span>
 
@@ -3277,7 +3316,7 @@ and target path.</p>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">auth_provider</span> <span class="ow">or</span> <span class="n">oauth_provider</span>
 
-    <span class="k">def</span> <span class="nf">auth_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">auth_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check configuration object and return authentication type.</span>
 
 <span class="sd">        Returns:</span>
@@ -3292,7 +3331,7 @@ and target path.</p>
 
         <span class="k">return</span> <span class="n">auth_type</span>
 
-    <span class="k">def</span> <span class="nf">set_app_auth_and_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_app_auth_and_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup Panel authorization and encryption.</span>
 
 <span class="sd">        Namely:</span>
@@ -3322,13 +3361,13 @@ and target path.</p>
                 <span class="s2">&quot;missing explicit authentication expiry date for cookies, defaults to 1 day&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">list_privileged_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_privileged_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List only privileged users (from `privileged_users` table).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            list[str]: list of usernames.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">privileged_users</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span>
@@ -3341,7 +3380,7 @@ and target path.</p>
 
         <span class="k">return</span> <span class="n">users_list</span>
 
-    <span class="k">def</span> <span class="nf">list_users_guests_and_privileges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_users_guests_and_privileges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Join `privileged_users` and `credentials` tables to list normal users,</span>
 <span class="sd">        admins and guests.</span>
 
@@ -3377,7 +3416,7 @@ and target path.</p>
         <span class="k">return</span> <span class="n">df_user_guests_privileges</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">generate_password</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_password</span><span class="p">(</span>
         <span class="n">alphabet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">special_chars</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
@@ -3417,7 +3456,7 @@ and target path.</p>
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">password</span>
 
-    <span class="k">def</span> <span class="nf">set_guest_user_password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_guest_user_password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;If guest user is active return a password, otherwise return an empty string.</span>
 
 <span class="sd">        This function always returns an empty string if basic authentication is not active.</span>
@@ -3446,26 +3485,24 @@ and target path.</p>
             <span class="c1"># If flag for resetting the password does not exist use the default</span>
             <span class="c1"># value</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                    <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
                 <span class="p">)</span>
                 <span class="ow">is</span> <span class="kc">None</span>
             <span class="p">):</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
-                    <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
                     <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span><span class="p">,</span>
                     <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">basic_auth</span><span class="o">.</span><span class="n">default_reset_guest_user_password_flag</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="c1"># Generate a random password only if requested (check on flag)</span>
             <span class="c1"># otherwise load from database</span>
-            <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
             <span class="p">):</span>
                 <span class="c1"># Turn off reset user password (in order to reset it only once)</span>
                 <span class="c1"># This statement also acquire a lock on database (so it is</span>
                 <span class="c1"># called first)</span>
-                <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
-                    <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
                     <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span><span class="p">,</span>
                     <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -3480,7 +3517,7 @@ and target path.</p>
                 <span class="p">)</span><span class="o">.</span><span class="n">add_user_hashed_password</span><span class="p">(</span><span class="n">guest_password</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Load from database</span>
-                <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+                <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
                 <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">guest_password</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -3501,7 +3538,7 @@ and target path.</p>
 
         <span class="k">return</span> <span class="n">guest_password</span>
 
-    <span class="k">def</span> <span class="nf">submit_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Same as backend_submit_password with an additional check on old password.</span>
 
 <span class="sd">        Args:</span>
@@ -3529,7 +3566,7 @@ and target path.</p>
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">backend_submit_password</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backend_submit_password</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span> <span class="o">|</span> <span class="n">gui</span><span class="o">.</span><span class="n">BackendInterface</span><span class="p">,</span>
         <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3576,7 +3613,9 @@ and target path.</p>
                     <span class="c1"># If is_guest and is_admin are None (not passed) use the ones</span>
                     <span class="c1"># already set for the user</span>
                     <span class="k">if</span> <span class="n">user_is_guest</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">user_is_guest</span> <span class="o">=</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
+                        <span class="n">user_is_guest</span> <span class="o">=</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
+                            <span class="n">allow_override</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="p">)</span>
                     <span class="k">if</span> <span class="n">user_is_admin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">user_is_admin</span> <span class="o">=</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">()</span>
                     <span class="c1"># First remove user from both &#39;privileged_users&#39; and</span>
@@ -3663,6 +3702,33 @@ and target path.</p>
 </code></pre></div>
 
     <div class="doc doc-contents ">
+
+        <p>Hydra configuration dictionary.</p>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="dlunch.auth.AuthContext.database_connector" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">database_connector</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#dlunch.auth.AuthContext.database_connector" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">database_connector</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.DatabaseConnector" href="../models/#dlunch.models.DatabaseConnector">DatabaseConnector</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="dlunch.models.DatabaseConnector" href="../models/#dlunch.models.DatabaseConnector">DatabaseConnector</a></span><span class="p">(</span>
+    <span class="n"><span title="dlunch.models.DatabaseConnector(config)">config</span></span><span class="o">=</span><span class="n"><a class="autorefs autorefs-internal" title="dlunch.auth.AuthContext.config" href="#dlunch.auth.AuthContext.config">config</a></span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Object that handles database connection and operations</p>
     </div>
 
 </div>
@@ -3685,8 +3751,18 @@ and target path.</p>
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">406</span>
-<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hydra configuration dictionary.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object that handles database connection and operations&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3733,12 +3809,7 @@ and target path.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
 <span class="normal">442</span>
@@ -3746,7 +3817,12 @@ and target path.</p>
 <span class="normal">444</span>
 <span class="normal">445</span>
 <span class="normal">446</span>
-<span class="normal">447</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">auth_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">auth_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check configuration object and return authentication type.</span>
 
 <span class="sd">    Returns:</span>
@@ -3907,10 +3983,7 @@ and target path.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span>
-<span class="normal">689</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">689</span>
 <span class="normal">690</span>
 <span class="normal">691</span>
 <span class="normal">692</span>
@@ -4010,7 +4083,12 @@ and target path.</p>
 <span class="normal">786</span>
 <span class="normal">787</span>
 <span class="normal">788</span>
-<span class="normal">789</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">backend_submit_password</span><span class="p">(</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">backend_submit_password</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span> <span class="o">|</span> <span class="n">gui</span><span class="o">.</span><span class="n">BackendInterface</span><span class="p">,</span>
     <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4057,7 +4135,9 @@ and target path.</p>
                 <span class="c1"># If is_guest and is_admin are None (not passed) use the ones</span>
                 <span class="c1"># already set for the user</span>
                 <span class="k">if</span> <span class="n">user_is_guest</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">user_is_guest</span> <span class="o">=</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">()</span>
+                    <span class="n">user_is_guest</span> <span class="o">=</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_guest</span><span class="p">(</span>
+                        <span class="n">allow_override</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="n">user_is_admin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">user_is_admin</span> <span class="o">=</span> <span class="n">auth_user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">()</span>
                 <span class="c1"># First remove user from both &#39;privileged_users&#39; and</span>
@@ -4234,12 +4314,7 @@ Defaults to 12.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
 <span class="normal">541</span>
@@ -4273,8 +4348,13 @@ Defaults to 12.</p>
 <span class="normal">569</span>
 <span class="normal">570</span>
 <span class="normal">571</span>
-<span class="normal">572</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">generate_password</span><span class="p">(</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_password</span><span class="p">(</span>
     <span class="n">alphabet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">special_chars</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
@@ -4360,19 +4440,19 @@ Return <code>False</code> otherwise.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">425</span>
 <span class="normal">426</span>
 <span class="normal">427</span>
 <span class="normal">428</span>
 <span class="normal">429</span>
 <span class="normal">430</span>
 <span class="normal">431</span>
-<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check configuration object and return `True` if basic authentication or OAuth is active.</span>
 <span class="sd">    Return `False` otherwise.</span>
 
@@ -4432,16 +4512,16 @@ Return <code>False</code> otherwise.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">414</span>
 <span class="normal">415</span>
 <span class="normal">416</span>
 <span class="normal">417</span>
-<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_basic_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_basic_auth_active</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check configuration object and return `True` if basic authentication is active.</span>
 <span class="sd">    Return `False` otherwise.</span>
 
@@ -4497,12 +4577,7 @@ Return <code>False</code> otherwise.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
 <span class="normal">485</span>
 <span class="normal">486</span>
 <span class="normal">487</span>
@@ -4514,13 +4589,18 @@ Return <code>False</code> otherwise.</p>
 <span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
-<span class="normal">496</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list_privileged_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_privileged_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List only privileged users (from `privileged_users` table).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list[str]: list of usernames.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="n">privileged_users</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span>
@@ -4580,12 +4660,7 @@ admins and guests.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">498</span>
-<span class="normal">499</span>
-<span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">503</span>
 <span class="normal">504</span>
 <span class="normal">505</span>
 <span class="normal">506</span>
@@ -4613,7 +4688,12 @@ admins and guests.</p>
 <span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
-<span class="normal">531</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">list_users_guests_and_privileges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">list_users_guests_and_privileges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Join `privileged_users` and `credentials` tables to list normal users,</span>
 <span class="sd">    admins and guests.</span>
 
@@ -4701,12 +4781,7 @@ admins and guests.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">454</span>
 <span class="normal">455</span>
 <span class="normal">456</span>
 <span class="normal">457</span>
@@ -4729,7 +4804,12 @@ admins and guests.</p>
 <span class="normal">474</span>
 <span class="normal">475</span>
 <span class="normal">476</span>
-<span class="normal">477</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_app_auth_and_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_app_auth_and_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup Panel authorization and encryption.</span>
 
 <span class="sd">    Namely:</span>
@@ -4809,12 +4889,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">579</span>
 <span class="normal">580</span>
 <span class="normal">581</span>
 <span class="normal">582</span>
@@ -4891,7 +4966,10 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">653</span>
 <span class="normal">654</span>
 <span class="normal">655</span>
-<span class="normal">656</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_guest_user_password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_guest_user_password</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If guest user is active return a password, otherwise return an empty string.</span>
 
 <span class="sd">    This function always returns an empty string if basic authentication is not active.</span>
@@ -4920,26 +4998,24 @@ and uploaded to database. Otherwise the existing password is queried from databa
         <span class="c1"># If flag for resetting the password does not exist use the default</span>
         <span class="c1"># value</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
             <span class="p">)</span>
             <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">):</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span><span class="p">,</span>
                 <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">basic_auth</span><span class="o">.</span><span class="n">default_reset_guest_user_password_flag</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="c1"># Generate a random password only if requested (check on flag)</span>
         <span class="c1"># otherwise load from database</span>
-        <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span>
         <span class="p">):</span>
             <span class="c1"># Turn off reset user password (in order to reset it only once)</span>
             <span class="c1"># This statement also acquire a lock on database (so it is</span>
             <span class="c1"># called first)</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
-                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">set_flag</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;reset_guest_user_password&quot;</span><span class="p">,</span>
                 <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
@@ -4954,7 +5030,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
             <span class="p">)</span><span class="o">.</span><span class="n">add_user_hashed_password</span><span class="p">(</span><span class="n">guest_password</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Load from database</span>
-            <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
             <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">guest_password</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -5051,10 +5127,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">658</span>
-<span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">661</span>
 <span class="normal">662</span>
 <span class="normal">663</span>
 <span class="normal">664</span>
@@ -5077,7 +5150,10 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">681</span>
 <span class="normal">682</span>
 <span class="normal">683</span>
-<span class="normal">684</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">submit_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">submit_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gi</span><span class="p">:</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Same as backend_submit_password with an additional check on old password.</span>
 
 <span class="sd">    Args:</span>
@@ -5332,12 +5408,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
               <details class="quote">
                 <summary>Source code in <code>dlunch/auth.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span>
-<span class="normal">796</span>
-<span class="normal">797</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">797</span>
 <span class="normal">798</span>
 <span class="normal">799</span>
 <span class="normal">800</span>
@@ -5510,7 +5581,11 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">967</span>
 <span class="normal">968</span>
 <span class="normal">969</span>
-<span class="normal">970</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AuthUser</span><span class="p">:</span>
+<span class="normal">970</span>
+<span class="normal">971</span>
+<span class="normal">972</span>
+<span class="normal">973</span>
+<span class="normal">974</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AuthUser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to handle user authentication and management.</span>
 
 <span class="sd">    Args:</span>
@@ -5519,7 +5594,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="sd">        auth_context (AuthContext | None, optional): authentication context. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5530,7 +5605,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
         <span class="c1"># Take username from Panel state if not provided</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user_from_panel_state</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">get_user_from_panel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_from_panel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the user from Panel state object.</span>
 
 <span class="sd">        If `config.auth.remove_email_domain` is `True`, remove the email domain from username.</span>
@@ -5546,7 +5621,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
                 <span class="n">user</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">user</span>
 
-    <span class="k">def</span> <span class="nf">is_guest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_guest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a user is a guest by checking if it is listed inside the `privileged_users` table.</span>
 
 <span class="sd">        Args:</span>
@@ -5561,8 +5636,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
         <span class="c1"># Load guest override from flag table (if the button is pressed its value</span>
         <span class="c1"># is True). If not available use False.</span>
-        <span class="n">guest_override</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+        <span class="n">guest_override</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
             <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
@@ -5576,7 +5650,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">privileged_users</span>
 
-    <span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a user is an admin by checking the `privileged_users` table.</span>
 
 <span class="sd">        Returns:</span>
@@ -5585,7 +5659,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
         <span class="c1"># If authorization is not active always return false (ther is no admin)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">admin_users</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">PrivilegedUsers</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -5596,45 +5670,45 @@ and uploaded to database. Otherwise the existing password is queried from databa
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">user</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">admin_users</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">password_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PasswordHash</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">password_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PasswordHash</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Query the database to retrieve the hashed password for the user.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            PasswordHash | None: returns password object if the user exists, `None` otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
         <span class="c1"># Get the hashed password if user exists</span>
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">user_credential</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Credentials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">user_credential</span><span class="o">.</span><span class="n">password_hash</span> <span class="k">if</span> <span class="n">user_credential</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">add_privileged_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_privileged_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add user id to `privileged_users` table.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            is_admin (bool): admin flag.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
         <span class="c1"># New credentials</span>
         <span class="n">new_privileged_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PrivilegedUsers</span><span class="p">(</span>
             <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">admin</span><span class="o">=</span><span class="n">is_admin</span>
         <span class="p">)</span>
         <span class="c1"># Update credentials</span>
         <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
             <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
             <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;privileged_users_pkey&quot;</span><span class="p">,</span>
             <span class="n">new_record</span><span class="o">=</span><span class="n">new_privileged_user</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">add_user_hashed_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_user_hashed_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add user credentials to `credentials` table.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            password (str): plain password (not hashed).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
         <span class="c1"># New credentials</span>
         <span class="c1"># For the user named &quot;guest&quot; add also the encrypted password so that panel</span>
         <span class="c1"># can show the decrypted guest password to logged users</span>
@@ -5652,21 +5726,21 @@ and uploaded to database. Otherwise the existing password is queried from databa
             <span class="p">)</span>
         <span class="c1"># Update credentials</span>
         <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-        <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
             <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
             <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;credentials_pkey&quot;</span><span class="p">,</span>
             <span class="n">new_record</span><span class="o">=</span><span class="n">new_user_credential</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">remove_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove user from the database.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: dictionary with `privileged_users_deleted` and `credentials_deleted`</span>
 <span class="sd">                with deleted rows from each table.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
             <span class="c1"># Delete user from privileged_users table</span>
@@ -5832,16 +5906,16 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
-<span class="normal">804</span>
-<span class="normal">805</span>
-<span class="normal">806</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">806</span>
 <span class="normal">807</span>
 <span class="normal">808</span>
 <span class="normal">809</span>
-<span class="normal">810</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5905,11 +5979,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">890</span>
-<span class="normal">891</span>
-<span class="normal">892</span>
-<span class="normal">893</span>
-<span class="normal">894</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">894</span>
 <span class="normal">895</span>
 <span class="normal">896</span>
 <span class="normal">897</span>
@@ -5923,20 +5993,24 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">905</span>
 <span class="normal">906</span>
 <span class="normal">907</span>
-<span class="normal">908</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_privileged_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span>
+<span class="normal">912</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_privileged_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add user id to `privileged_users` table.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        is_admin (bool): admin flag.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
     <span class="c1"># New credentials</span>
     <span class="n">new_privileged_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PrivilegedUsers</span><span class="p">(</span>
         <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">admin</span><span class="o">=</span><span class="n">is_admin</span>
     <span class="p">)</span>
     <span class="c1"># Update credentials</span>
     <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-    <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+    <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
         <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
         <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;privileged_users_pkey&quot;</span><span class="p">,</span>
         <span class="n">new_record</span><span class="o">=</span><span class="n">new_privileged_user</span><span class="p">,</span>
@@ -5996,11 +6070,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">910</span>
-<span class="normal">911</span>
-<span class="normal">912</span>
-<span class="normal">913</span>
-<span class="normal">914</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">914</span>
 <span class="normal">915</span>
 <span class="normal">916</span>
 <span class="normal">917</span>
@@ -6025,13 +6095,17 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">936</span>
 <span class="normal">937</span>
 <span class="normal">938</span>
-<span class="normal">939</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_user_hashed_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">939</span>
+<span class="normal">940</span>
+<span class="normal">941</span>
+<span class="normal">942</span>
+<span class="normal">943</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_user_hashed_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add user credentials to `credentials` table.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        password (str): plain password (not hashed).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
     <span class="c1"># New credentials</span>
     <span class="c1"># For the user named &quot;guest&quot; add also the encrypted password so that panel</span>
     <span class="c1"># can show the decrypted guest password to logged users</span>
@@ -6049,7 +6123,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
         <span class="p">)</span>
     <span class="c1"># Update credentials</span>
     <span class="c1"># Use an upsert for postgresql, a simple session add otherwise</span>
-    <span class="n">models</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
+    <span class="n">models</span><span class="o">.</span><span class="n">DatabaseConnector</span><span class="o">.</span><span class="n">session_add_with_upsert</span><span class="p">(</span>
         <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
         <span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;credentials_pkey&quot;</span><span class="p">,</span>
         <span class="n">new_record</span><span class="o">=</span><span class="n">new_user_credential</span><span class="p">,</span>
@@ -6102,12 +6176,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">812</span>
-<span class="normal">813</span>
-<span class="normal">814</span>
-<span class="normal">815</span>
-<span class="normal">816</span>
-<span class="normal">817</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">817</span>
 <span class="normal">818</span>
 <span class="normal">819</span>
 <span class="normal">820</span>
@@ -6116,7 +6185,12 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">823</span>
 <span class="normal">824</span>
 <span class="normal">825</span>
-<span class="normal">826</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_user_from_panel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_user_from_panel_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the user from Panel state object.</span>
 
 <span class="sd">    If `config.auth.remove_email_domain` is `True`, remove the email domain from username.</span>
@@ -6177,11 +6251,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">858</span>
-<span class="normal">859</span>
-<span class="normal">860</span>
-<span class="normal">861</span>
-<span class="normal">862</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">862</span>
 <span class="normal">863</span>
 <span class="normal">864</span>
 <span class="normal">865</span>
@@ -6194,7 +6264,11 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">872</span>
 <span class="normal">873</span>
 <span class="normal">874</span>
-<span class="normal">875</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a user is an admin by checking the `privileged_users` table.</span>
 
 <span class="sd">    Returns:</span>
@@ -6203,7 +6277,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
     <span class="c1"># If authorization is not active always return false (ther is no admin)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">is_auth_active</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="n">admin_users</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span>
             <span class="n">select</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">PrivilegedUsers</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -6289,12 +6363,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">828</span>
-<span class="normal">829</span>
-<span class="normal">830</span>
-<span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">833</span>
 <span class="normal">834</span>
 <span class="normal">835</span>
 <span class="normal">836</span>
@@ -6317,7 +6386,11 @@ and uploaded to database. Otherwise the existing password is queried from databa
 <span class="normal">853</span>
 <span class="normal">854</span>
 <span class="normal">855</span>
-<span class="normal">856</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_guest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_guest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">allow_override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a user is a guest by checking if it is listed inside the `privileged_users` table.</span>
 
 <span class="sd">    Args:</span>
@@ -6332,8 +6405,7 @@ and uploaded to database. Otherwise the existing password is queried from databa
 
     <span class="c1"># Load guest override from flag table (if the button is pressed its value</span>
     <span class="c1"># is True). If not available use False.</span>
-    <span class="n">guest_override</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
-        <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+    <span class="n">guest_override</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">get_flag</span><span class="p">(</span>
         <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_guest_override&quot;</span><span class="p">,</span>
         <span class="n">value_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
@@ -6393,11 +6465,7 @@ with deleted rows from each table.</p>
 
             <details class="quote">
               <summary>Source code in <code>dlunch/auth.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">941</span>
-<span class="normal">942</span>
-<span class="normal">943</span>
-<span class="normal">944</span>
-<span class="normal">945</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">945</span>
 <span class="normal">946</span>
 <span class="normal">947</span>
 <span class="normal">948</span>
@@ -6422,14 +6490,18 @@ with deleted rows from each table.</p>
 <span class="normal">967</span>
 <span class="normal">968</span>
 <span class="normal">969</span>
-<span class="normal">970</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">remove_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">970</span>
+<span class="normal">971</span>
+<span class="normal">972</span>
+<span class="normal">973</span>
+<span class="normal">974</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove user from the database.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: dictionary with `privileged_users_deleted` and `credentials_deleted`</span>
 <span class="sd">            with deleted rows from each table.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">session</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">create_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_context</span><span class="o">.</span><span class="n">database_connector</span><span class="o">.</span><span class="n">create_session</span><span class="p">()</span>
 
     <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
         <span class="c1"># Delete user from privileged_users table</span>
@@ -6625,7 +6697,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DataLunchLoginHandler</span><span class="p">(</span><span class="n">RequestHandler</span><span class="p">):</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataLunchLoginHandler</span><span class="p">(</span><span class="n">RequestHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Panel login Handler.</span>
 
 <span class="sd">    This class run the user authentication process for Data-Lunch when basic authentication</span>
@@ -6635,7 +6707,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="sd">    password hash if the hashing protocol is superseeded) and set the current user once validated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the login template.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">errormessage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_argument</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
@@ -6644,7 +6716,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
         <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_login_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">errormessage</span><span class="o">=</span><span class="n">errormessage</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">check_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate user.</span>
 
 <span class="sd">        Automatically update the password hash if it was generated by an old hashing protocol.</span>
@@ -6669,7 +6741,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
         <span class="c1"># Return the NOT OK value</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate user and set the current user if valid.&quot;&quot;&quot;</span>
         <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_argument</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_argument</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -6683,7 +6755,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">set_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set secure cookie for the selected user.</span>
 
 <span class="sd">        Args:</span>
@@ -6833,7 +6905,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">check_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate user.</span>
 
 <span class="sd">    Automatically update the password hash if it was generated by an old hashing protocol.</span>
@@ -6887,7 +6959,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the login template.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">errormessage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_argument</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
@@ -6930,7 +7002,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
-<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate user and set the current user if valid.&quot;&quot;&quot;</span>
     <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_argument</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_argument</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -7020,7 +7092,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set secure cookie for the selected user.</span>
 
 <span class="sd">    Args:</span>
@@ -7260,7 +7332,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DataLunchProvider</span><span class="p">(</span><span class="n">OAuthProvider</span><span class="p">):</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataLunchProvider</span><span class="p">(</span><span class="n">OAuthProvider</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Panel auth provider.</span>
 
 <span class="sd">    It&#39;s a simple login page with a form that interacts with authentication tables.</span>
@@ -7273,7 +7345,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="sd">        logout_template (str | None, optional): path to logout template. Defaults to None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
         <span class="n">login_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7288,12 +7360,12 @@ password hash if the hashing protocol is superseeded) and set the current user o
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">login_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">login_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Login url (`/login`).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;/login&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataLunchLoginHandler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">login_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataLunchLoginHandler</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Data-Lunch custom login handler.&quot;&quot;&quot;</span>
         <span class="c1"># Set basic template</span>
         <span class="n">DataLunchLoginHandler</span><span class="o">.</span><span class="n">_login_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_login_template</span>
@@ -7416,7 +7488,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span>
     <span class="n">login_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7686,7 +7758,7 @@ encrypted.</p>
 <span class="normal">393</span>
 <span class="normal">394</span>
 <span class="normal">395</span>
-<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PasswordEncrypt</span><span class="p">:</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PasswordEncrypt</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that store the encrypted value of a password.</span>
 
 <span class="sd">    The encryption is based on Panel encryption system.</span>
@@ -7702,7 +7774,7 @@ encrypted.</p>
 <span class="sd">        encrypted_password (str): encrypted password.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encrypted_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encrypted_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Consistency checks</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">150</span>
@@ -7711,7 +7783,7 @@ encrypted.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">encrypted_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">encrypted_password</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Encrypted password.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Decrypt the candidate string and compares it to the stored encrypted value.</span>
 
 <span class="sd">        Args:</span>
@@ -7729,7 +7801,7 @@ encrypted.</p>
 
         <span class="k">return</span> <span class="n">valid</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple object representation.</span>
 
 <span class="sd">        Returns:</span>
@@ -7738,7 +7810,7 @@ encrypted.</p>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encrypt</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return encrypted password.</span>
 
 <span class="sd">        Args:</span>
@@ -7755,7 +7827,7 @@ encrypted.</p>
             <span class="n">encrypted_password</span> <span class="o">=</span> <span class="n">password</span>
         <span class="k">return</span> <span class="n">encrypted_password</span>
 
-    <span class="k">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decrypt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return decrypted password.</span>
 
 <span class="sd">        Returns:</span>
@@ -7770,7 +7842,7 @@ encrypted.</p>
         <span class="k">return</span> <span class="n">password</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a PasswordEncrypt from the given string.</span>
 
 <span class="sd">        Args:</span>
@@ -7905,7 +7977,7 @@ encrypted.</p>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decrypt the candidate string and compares it to the stored encrypted value.</span>
 
 <span class="sd">    Args:</span>
@@ -7950,7 +8022,7 @@ encrypted.</p>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encrypted_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encrypted_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Consistency checks</span>
     <span class="k">assert</span> <span class="p">(</span>
         <span class="nb">len</span><span class="p">(</span><span class="n">encrypted_password</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">150</span>
@@ -8010,7 +8082,7 @@ encrypted.</p>
 <span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span>
-<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple object representation.</span>
 
 <span class="sd">    Returns:</span>
@@ -8075,7 +8147,7 @@ encrypted.</p>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">decrypt</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return decrypted password.</span>
 
 <span class="sd">    Returns:</span>
@@ -8186,7 +8258,7 @@ encrypted.</p>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">encrypt</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return encrypted password.</span>
 
 <span class="sd">    Args:</span>
@@ -8294,7 +8366,7 @@ encrypted.</p>
 <span class="normal">394</span>
 <span class="normal">395</span>
 <span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a PasswordEncrypt from the given string.</span>
 
 <span class="sd">    Args:</span>
@@ -8578,7 +8650,7 @@ hashed.</p>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
-<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PasswordHash</span><span class="p">:</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PasswordHash</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that store the hashed value of a password.</span>
 
 <span class="sd">    The password hash may be passed to instantiate the new object.</span>
@@ -8590,7 +8662,7 @@ hashed.</p>
 <span class="sd">        hashed_password (str): password hash.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Consistency checks</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">150</span>
@@ -8599,7 +8671,7 @@ hashed.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">hashed_password</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Password hash.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hashes the candidate string and compares it to the stored hash.</span>
 
 <span class="sd">        Args:</span>
@@ -8617,7 +8689,7 @@ hashed.</p>
 
         <span class="k">return</span> <span class="n">valid</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple object representation.</span>
 
 <span class="sd">        Returns:</span>
@@ -8625,7 +8697,7 @@ hashed.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check a password against its hash and return `True` if check passes,</span>
 <span class="sd">        `False` otherwise.</span>
 
@@ -8639,7 +8711,7 @@ hashed.</p>
 
         <span class="k">return</span> <span class="n">valid</span>
 
-    <span class="k">def</span> <span class="nf">verify_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check a password against its hash and return `True` if check passes,</span>
 <span class="sd">        `False` otherwise. Return also a new hash if the original hashing  method</span>
 <span class="sd">        is superseeded</span>
@@ -8661,7 +8733,7 @@ hashed.</p>
         <span class="k">return</span> <span class="n">valid</span><span class="p">,</span> <span class="n">new_hash</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return hash of the given password.</span>
 
 <span class="sd">        Args:</span>
@@ -8673,7 +8745,7 @@ hashed.</p>
         <span class="k">return</span> <span class="n">pwd_context</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">saslprep</span><span class="p">(</span><span class="n">password</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a PasswordHash from the given string.</span>
 
 <span class="sd">        Args:</span>
@@ -8808,7 +8880,7 @@ hashed.</p>
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidate</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hashes the candidate string and compares it to the stored hash.</span>
 
 <span class="sd">    Args:</span>
@@ -8853,7 +8925,7 @@ hashed.</p>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
-<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hashed_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Consistency checks</span>
     <span class="k">assert</span> <span class="p">(</span>
         <span class="nb">len</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">150</span>
@@ -8913,7 +8985,7 @@ hashed.</p>
 <span class="normal">238</span>
 <span class="normal">239</span>
 <span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple object representation.</span>
 
 <span class="sd">    Returns:</span>
@@ -9012,7 +9084,7 @@ hashed.</p>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a PasswordHash from the given string.</span>
 
 <span class="sd">    Args:</span>
@@ -9114,7 +9186,7 @@ hashed.</p>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return hash of the given password.</span>
 
 <span class="sd">    Args:</span>
@@ -9214,7 +9286,7 @@ hashed.</p>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
-<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check a password against its hash and return `True` if check passes,</span>
 <span class="sd">    `False` otherwise.</span>
 
@@ -9327,7 +9399,7 @@ new_hash: new hash to replace the one generated with an old algorithm.</p>
 <span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
-<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">verify_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">verify_and_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check a password against its hash and return `True` if check passes,</span>
 <span class="sd">    `False` otherwise. Return also a new hash if the original hashing  method</span>
 <span class="sd">    is superseeded</span>
