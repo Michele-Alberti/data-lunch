@@ -357,8 +357,7 @@ class GraphicInterface:
             # Only non guest can store this value in 'flags' table (guest users
             # are always guests, there is no use in sorting a flag for them)
             if not auth_user.is_guest(allow_override=False):
-                models.set_flag(
-                    config=config,
+                waiter.database_connector.set_flag(
                     id=f"{auth_user.name}_guest_override",
                     value=toggle,
                 )
@@ -580,7 +579,9 @@ class GraphicInterface:
             toggle: pnw.Toggle, reload: bool = True
         ):
             # Update global variable
-            models.set_flag(config=config, id="no_more_orders", value=toggle)
+            waiter.database_connector.set_flag(
+                id="no_more_orders", value=toggle
+            )
 
             # Show "no more order" text
             self.no_more_order_alert.visible = toggle

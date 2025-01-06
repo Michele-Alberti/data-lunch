@@ -56,6 +56,10 @@ class Waiter:
         """Hydra configuration object"""
         self.auth_user: AuthUser = AuthUser(config=config)
         """Object with authenticated user data and related methods"""
+        self.database_connector: models.DatabaseConnector = (
+            models.DatabaseConnector(config=config)
+        )
+        """Object that handles database connection and operations"""
 
     def set_config(self, config: DictConfig):
         """Set the configuration for the Waiter instance.
@@ -124,7 +128,7 @@ class Waiter:
         # Clean flags
         models.Flags.clear_guest_override(config=self.config)
         # Reset flags
-        models.set_flag(config=self.config, id="no_more_orders", value=False)
+        self.database_connector.set_flag(id="no_more_orders", value=False)
         log.info("reset values in table 'flags'")
         # Clean cache
         pn.state.clear_caches()
@@ -228,14 +232,11 @@ class Waiter:
                 return
 
             # Upload to database menu table
-            engine = models.create_engine(self.config)
             try:
-                df.drop_duplicates(subset="item").to_sql(
-                    models.Menu.__tablename__,
-                    engine,
-                    schema=self.config.db.get("schema", models.SCHEMA),
+                num_rows_written = models.Menu.write_from_df(
+                    config=self.config,
+                    df=df.drop_duplicates(subset="item"),
                     index=False,
-                    if_exists="append",
                 )
                 # Update dataframe widget
                 self.reload_menu(
@@ -247,7 +248,7 @@ class Waiter:
                     "Menu uploaded",
                     duration=self.config.panel.notifications.duration,
                 )
-                log.info("menu uploaded")
+                log.info(f"menu uploaded ({num_rows_written} rows)")
             except Exception as e:
                 # Any exception here is a database fault
                 pn.state.notifications.error(
@@ -291,28 +292,30 @@ class Waiter:
         """
 
         # Create session
-        session = models.create_session(self.config)
+        session = self.database_connector.create_session()
 
         with session:
             # Check if someone changed the "no_more_order" toggle
-            if gi.toggle_no_more_order_button.value != models.get_flag(
-                config=self.config, id="no_more_orders"
+            if (
+                gi.toggle_no_more_order_button.value
+                != self.database_connector.get_flag(id="no_more_orders")
             ):
                 # The following statement will trigger the toggle callback
                 # which will call reload_menu once again
                 # This is the reason why this if contains a return (without the return
                 # the content will be reloaded twice)
-                gi.toggle_no_more_order_button.value = models.get_flag(
-                    config=self.config, id="no_more_orders"
+                gi.toggle_no_more_order_button.value = (
+                    self.database_connector.get_flag(id="no_more_orders")
                 )
 
                 return
 
             # Check guest override button status (if not in table use False)
-            gi.toggle_guest_override_button.value = models.get_flag(
-                config=self.config,
-                id=f"{self.auth_user.name}_guest_override",
-                value_if_missing=False,
+            gi.toggle_guest_override_button.value = (
+                self.database_connector.get_flag(
+                    id=f"{self.auth_user.name}_guest_override",
+                    value_if_missing=False,
+                )
             )
 
             # Set no more orders toggle button and the change order time button
@@ -343,7 +346,6 @@ class Waiter:
                 gi.person_widget.widgets["guest"].visible = False
 
             # Reload menu
-            engine = models.create_engine(self.config)
             df = models.Menu.read_as_df(
                 config=self.config,
                 index_col="id",
@@ -530,7 +532,7 @@ class Waiter:
             )
             new_stat = models.Stats(hungry_people=today_locals_count)
             # Use an upsert for postgresql, a simple session add otherwise
-            models.session_add_with_upsert(
+            models.DatabaseConnector.session_add_with_upsert(
                 session=session, constraint="stats_pkey", new_record=new_stat
             )
             # For each guest type find how many guests eat today
@@ -544,7 +546,7 @@ class Waiter:
                     guest=guest_type, hungry_people=today_guests_count
                 )
                 # Use an upsert for postgresql, a simple session add otherwise
-                models.session_add_with_upsert(
+                models.DatabaseConnector.session_add_with_upsert(
                     session=session,
                     constraint="stats_pkey",
                     new_record=new_stat,
@@ -554,11 +556,11 @@ class Waiter:
             session.commit()
 
             # Group stats by month and return how many people had lunch
-            df_stats = pd.read_sql_query(
-                self.config.db.stats_query.format(
+            df_stats = self.database_connector.read_sql_query(
+                session=session,
+                query=self.config.db.stats_query.format(
                     schema=self.config.db.get("schema", models.SCHEMA)
                 ),
-                engine,
             )
             # Stats top text
             stats_and_info_text = gi.build_stats_and_info_text(
@@ -622,11 +624,11 @@ class Waiter:
         gi.error_message.visible = False
 
         # Create session
-        session = models.create_session(self.config)
+        session = self.database_connector.create_session()
 
         with session:
             # Check if the "no more order" toggle button is pressed
-            if models.get_flag(config=self.config, id="no_more_orders"):
+            if self.database_connector.get_flag(id="no_more_orders"):
                 pn.state.notifications.error(
                     "It is not possible to place new orders",
                     duration=self.config.panel.notifications.duration,
@@ -800,11 +802,11 @@ class Waiter:
         gi.error_message.visible = False
 
         # Create session
-        session = models.create_session(self.config)
+        session = self.database_connector.create_session()
 
         with session:
             # Check if the "no more order" toggle button is pressed
-            if models.get_flag(config=self.config, id="no_more_orders"):
+            if self.database_connector.get_flag(id="no_more_orders"):
                 pn.state.notifications.error(
                     "It is not possible to delete orders",
                     duration=self.config.panel.notifications.duration,
@@ -915,11 +917,11 @@ class Waiter:
         username_key_press = gi.person_widget._widgets["username"].value_input
 
         # Create session
-        session = models.create_session(self.config)
+        session = self.database_connector.create_session()
 
         with session:
             # Check if the "no more order" toggle button is pressed
-            if models.get_flag(config=self.config, id="no_more_orders"):
+            if self.database_connector.get_flag(id="no_more_orders"):
                 pn.state.notifications.error(
                     "It is not possible to update orders (time)",
                     duration=self.config.panel.notifications.duration,
@@ -996,15 +998,13 @@ class Waiter:
         Returns:
             dict: dictionary with dataframes summarizing the orders for each lunch-time/takeaway-time.
         """
-        # Create database engine and session
-        engine = models.create_engine(self.config)
         # Read menu and save how menu items are sorted (first courses, second courses, etc.)
         original_order = models.Menu.read_as_df(
             config=self.config,
             index_col="id",
         ).item
         # Create session
-        session = models.create_session(self.config)
+        session = self.database_connector.create_session()
 
         with session:
             # Build takeaway list
@@ -1017,11 +1017,11 @@ class Waiter:
                 ).all()
             ]
         # Read orders dataframe (including notes)
-        df = pd.read_sql_query(
-            self.config.db.orders_query.format(
+        df = self.database_connector.read_sql_query(
+            session=session,
+            query=self.config.db.orders_query.format(
                 schema=self.config.db.get("schema", models.SCHEMA)
             ),
-            engine,
         )
 
         # The following function prepare the dataframe before saving it into

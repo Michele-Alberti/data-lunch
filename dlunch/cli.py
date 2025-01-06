@@ -8,12 +8,13 @@ Call `data-lunch --help` from the terminal inside an environment where the
 
 import click
 import pkg_resources
-from hydra import compose, initialize
 import pandas as pd
 import subprocess
 
+from hydra import compose, initialize
+
 # Database imports
-from .models import create_database, create_engine, SCHEMA, Data, metadata_obj
+from .models import Data, metadata_obj, CommonTable
 
 # Waiter Imports
 from .core import Waiter
@@ -214,7 +215,10 @@ def init_database(obj, add_basic_auth_users):
     """Initialize the database."""
 
     # Create database
-    create_database(obj["config"], add_basic_auth_users=add_basic_auth_users)
+    waiter: Waiter = obj["waiter"]
+    waiter.database_connector.create_database(
+        add_basic_auth_users=add_basic_auth_users
+    )
 
     click.secho(
         f"Database initialized (basic auth users: {add_basic_auth_users})",
@@ -229,8 +233,9 @@ def delete_database(obj):
     """Delete the database."""
 
     # Create database
+    waiter: Waiter = obj["waiter"]
     try:
-        engine = create_engine(obj["config"])
+        engine = waiter.database_connector.create_engine()
         Data.metadata.drop_all(engine)
         click.secho("Database deleted", fg="green")
     except Exception as e:
@@ -269,8 +274,9 @@ def delete_table(obj, name):
     """Drop a single table from database."""
 
     # Drop table
+    waiter: Waiter = obj["waiter"]
     try:
-        engine = create_engine(obj["config"])
+        engine = waiter.database_connector.create_engine()
         metadata_obj.tables[name].drop(engine)
         click.secho(f"Table '{name}' deleted", fg="green")
     except Exception as e:
@@ -287,38 +293,53 @@ def delete_table(obj, name):
     "index",
     show_default=True,
     default=False,
-    help="select if index is exported to csv",
+    help="select if index column is exported to csv",
 )
 @click.pass_obj
 def export_table_to_csv(obj, name, csv_file_path, index):
     """Export a single table to a csv file."""
 
-    click.secho(f"Export table '{name}' to CSV {csv_file_path}", fg="yellow")
+    click.secho(f"Export table '{name}' to CSV {csv_file_path}\n", fg="yellow")
 
-    # Create dataframe
+    # Instantiate model
+    model = None
     try:
-        engine = create_engine(obj["config"])
-        df = pd.read_sql_table(
-            name, engine, schema=obj["config"].db.get("schema", SCHEMA)
-        )
+        # Find model
+        for mapper in Data.registry.mappers:
+            if mapper.class_.__tablename__ == name:
+                model: CommonTable = mapper.class_
+                break
+
+        # Raise error if can't find a valid table
+        if model is None:
+            raise Exception(f"Table '{name}' not found")
+
+        # Create dataframe
+        df = model.read_as_df(obj["config"])
+
     except Exception as e:
         # Generic error
         click.secho("Cannot read table", fg="red")
         click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
+    else:
+        # Show head
+        click.echo("First three rows of the table (index included)\n")
+        click.secho(
+            df.head(3).to_string(index=False).split("\n")[0], fg="cyan"
+        )
+        click.secho(
+            "\n".join(df.head(3).to_string(index=False).split("\n")[1:])
+        )
 
-    # Show head
-    click.echo("First three rows of the table")
-    click.echo(f"{df.head(3)}\n")
-
-    # Export table
-    try:
-        df.to_csv(csv_file_path, index=index)
-    except Exception as e:
-        # Generic error
-        click.secho("Cannot write CSV", fg="red")
-        click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
-
-    click.secho("Done", fg="green")
+        # Export table
+        try:
+            df.to_csv(csv_file_path, index=index)
+        except Exception as e:
+            # Generic error
+            click.secho("Cannot write CSV", fg="red")
+            click.secho(f"\n ===== EXCEPTION =====\n\n{e}", fg="red")
+        else:
+            click.secho("Done", fg="green")
 
 
 @table.command("load")
@@ -330,15 +351,7 @@ def export_table_to_csv(obj, name, csv_file_path, index):
     "index",
     show_default=True,
     default=True,
-    help="select if index is loaded to table",
-)
-@click.option(
-    "-l",
-    "--index-label",
-    "index_label",
-    type=str,
-    default=None,
-    help="select index label",
+    help="select if index column is uploaded to table",
 )
 @click.option(
     "-c",
@@ -346,21 +359,10 @@ def export_table_to_csv(obj, name, csv_file_path, index):
     "index_col",
     type=str,
     default=None,
-    help="select the column used as index",
-)
-@click.option(
-    "-e",
-    "--if-exists",
-    "if_exists",
-    type=click.Choice(["fail", "replace", "append"], case_sensitive=False),
-    show_default=True,
-    default="append",
-    help="logict used if the table already exists",
+    help="select the column used as index in the csv file",
 )
 @click.pass_obj
-def load_table(
-    obj, name, csv_file_path, index, index_label, index_col, if_exists
-):
+def load_table(obj, name, csv_file_path, index, index_col):
     """Load a single table from a csv file."""
 
     click.secho(f"Load CSV {csv_file_path} to table '{name}'", fg="yellow")
@@ -369,21 +371,33 @@ def load_table(
     df = pd.read_csv(csv_file_path, index_col=index_col)
 
     # Show head
-    click.echo("First three rows of the CSV table")
-    click.echo(f"{df.head(3)}\n")
+    click.echo("First three rows of the table to upload\n")
+    header_rows = 2 if index_col else 1
+    click.secho(
+        "\n".join(df.head(3).to_string().split("\n")[:header_rows]), fg="cyan"
+    )
+    click.secho("\n".join(df.head(3).to_string().split("\n")[header_rows:]))
 
-    # Load table
+    # Instantiate model
+    model = None
+
     try:
-        engine = create_engine(obj["config"])
-        df.to_sql(
-            name,
-            engine,
-            schema=obj["config"].db.get("schema", SCHEMA),
+        # Find model
+        for mapper in Data.registry.mappers:
+            if mapper.class_.__tablename__ == name:
+                model: CommonTable = mapper.class_
+                break
+
+        # Raise error if can't find a valid table
+        if model is None:
+            raise Exception(f"Table '{name}' not found")
+
+        num_rows_written = model.write_from_df(
+            config=obj["config"],
+            df=df,
             index=index,
-            index_label=index_label,
-            if_exists=if_exists,
         )
-        click.secho("Done", fg="green")
+        click.secho(f"\nUpload complete ({num_rows_written} rows)", fg="green")
     except Exception as e:
         # Generic error
         click.secho("Cannot load table", fg="red")

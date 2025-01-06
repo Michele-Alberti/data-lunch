@@ -1,15 +1,12 @@
 """Data-Lunch package entrypoint."""
 
-import datetime as dt
 import hydra
 import logging
 import panel as pn
 
-from collections.abc import Callable
 from omegaconf import DictConfig
 
 from . import auth
-from . import models
 from . import create_app, create_backend
 from .scheduled_tasks import TaskManager
 
@@ -67,8 +64,7 @@ def run_app(config: DictConfig) -> None:
     if auth_context.is_basic_auth_active():
         log.info("initialize database and users credentials for basic auth")
         # Create tables
-        models.create_database(
-            config,
+        auth_context.database_connector.create_database(
             add_basic_auth_users=auth_context.is_basic_auth_active(),
         )
 

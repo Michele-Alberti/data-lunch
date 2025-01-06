@@ -405,6 +405,11 @@ class AuthContext:
 
     def __init__(self, config: DictConfig) -> None:
         self.config = config
+        """Hydra configuration dictionary."""
+        self.database_connector: models.DatabaseConnector = (
+            models.DatabaseConnector(config=config)
+        )
+        """Object that handles database connection and operations"""
 
     def is_basic_auth_active(self) -> bool:
         """Check configuration object and return `True` if basic authentication is active.
@@ -482,7 +487,7 @@ class AuthContext:
         Returns:
             list[str]: list of usernames.
         """
-        session = models.create_session(self.config)
+        session = self.database_connector.create_session()
 
         with session:
             privileged_users = session.scalars(
@@ -600,26 +605,24 @@ class AuthContext:
             # If flag for resetting the password does not exist use the default
             # value
             if (
-                models.get_flag(
-                    config=self.config, id="reset_guest_user_password"
+                self.database_connector.get_flag(
+                    id="reset_guest_user_password"
                 )
                 is None
             ):
-                models.set_flag(
-                    config=self.config,
+                self.database_connector.set_flag(
                     id="reset_guest_user_password",
                     value=self.config.basic_auth.default_reset_guest_user_password_flag,
                 )
             # Generate a random password only if requested (check on flag)
             # otherwise load from database
-            if models.get_flag(
-                config=self.config, id="reset_guest_user_password"
+            if self.database_connector.get_flag(
+                id="reset_guest_user_password"
             ):
                 # Turn off reset user password (in order to reset it only once)
                 # This statement also acquire a lock on database (so it is
                 # called first)
-                models.set_flag(
-                    config=self.config,
+                self.database_connector.set_flag(
                     id="reset_guest_user_password",
                     value=False,
                 )
@@ -634,7 +637,7 @@ class AuthContext:
                 ).add_user_hashed_password(guest_password)
             else:
                 # Load from database
-                session = models.create_session(self.config)
+                session = self.database_connector.create_session()
                 with session:
                     try:
                         guest_password = session.get(
@@ -840,8 +843,7 @@ class AuthUser:
 
         # Load guest override from flag table (if the button is pressed its value
         # is True). If not available use False.
-        guest_override = models.get_flag(
-            config=self.config,
+        guest_override = self.auth_context.database_connector.get_flag(
             id=f"{self.name}_guest_override",
             value_if_missing=False,
         )
@@ -864,7 +866,7 @@ class AuthUser:
         # If authorization is not active always return false (ther is no admin)
         if not self.auth_context.is_auth_active():
             return False
-        session = models.create_session(self.config)
+        session = self.auth_context.database_connector.create_session()
         with session:
             admin_users = session.scalars(
                 select(models.PrivilegedUsers).where(
@@ -881,7 +883,7 @@ class AuthUser:
         Returns:
             PasswordHash | None: returns password object if the user exists, `None` otherwise.
         """
-        session = models.create_session(self.config)
+        session = self.auth_context.database_connector.create_session()
         # Get the hashed password if user exists
         with session:
             user_credential = session.get(models.Credentials, self.name)
@@ -893,14 +895,14 @@ class AuthUser:
         Args:
             is_admin (bool): admin flag.
         """
-        session = models.create_session(self.config)
+        session = self.auth_context.database_connector.create_session()
         # New credentials
         new_privileged_user = models.PrivilegedUsers(
             user=self.name, admin=is_admin
         )
         # Update credentials
         # Use an upsert for postgresql, a simple session add otherwise
-        models.session_add_with_upsert(
+        models.DatabaseConnector.session_add_with_upsert(
             session=session,
             constraint="privileged_users_pkey",
             new_record=new_privileged_user,
@@ -913,7 +915,7 @@ class AuthUser:
         Args:
             password (str): plain password (not hashed).
         """
-        session = models.create_session(self.config)
+        session = self.auth_context.database_connector.create_session()
         # New credentials
         # For the user named "guest" add also the encrypted password so that panel
         # can show the decrypted guest password to logged users
@@ -931,7 +933,7 @@ class AuthUser:
             )
         # Update credentials
         # Use an upsert for postgresql, a simple session add otherwise
-        models.session_add_with_upsert(
+        models.DatabaseConnector.session_add_with_upsert(
             session=session,
             constraint="credentials_pkey",
             new_record=new_user_credential,
@@ -945,7 +947,7 @@ class AuthUser:
             dict: dictionary with `privileged_users_deleted` and `credentials_deleted`
                 with deleted rows from each table.
         """
-        session = models.create_session(self.config)
+        session = self.auth_context.database_connector.create_session()
 
         with session:
             # Delete user from privileged_users table

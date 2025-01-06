@@ -11,7 +11,6 @@ import panel as pn
 from . import auth
 from . import cloud
 from . import core
-from . import models
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -94,8 +93,8 @@ class ResetGuestPassword(TaskAction):
             log.info(
                 f"reset guest user password executed at {dt.datetime.now()}"
             )
-            models.set_flag(
-                config=self.config, id="reset_guest_user_password", value=True
+            auth_context.database_connector.set_flag(
+                id="reset_guest_user_password", value=True
             )
             auth_context.set_guest_user_password()
 

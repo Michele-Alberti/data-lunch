@@ -23,6 +23,7 @@ from sqlalchemy import (
     event,
     MetaData,
     delete,
+    text,
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
@@ -81,7 +82,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
         dbapi_connection (Any): connection to database. Shall have a `cursor` method.
         connection_record (Any): connection record (not used).
     """
-    if get_db_dialect(dbapi_connection) == "sqlite":
+    if DatabaseConnector.get_db_dialect(dbapi_connection) == "sqlite":
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON;")
         cursor.close()
@@ -253,7 +254,92 @@ class Encrypted(TypeDecorator):
 # DATA MODELS -----------------------------------------------------------------
 
 
-class Menu(Data):
+class CommonTable(Data):
+    """Abstract table with common methods."""
+
+    __abstract__ = True
+    """Abstract table flag."""
+
+    @classmethod
+    def clear(self, config: DictConfig) -> int:
+        """Clear table and return deleted rows.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            int: deleted rows.
+        """
+        session = DatabaseConnector(config=config).create_session()
+        with session:
+            # Clean table
+            num_rows_deleted = session.execute(delete(self))
+            session.commit()
+            log.info(
+                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
+            )
+        return num_rows_deleted.rowcount
+
+    @classmethod
+    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
+        """Read table as pandas DataFrame.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+
+        Returns:
+            pd.DataFrame: dataframe with table content.
+        """
+        df = pd.read_sql_table(
+            table_name=self.__tablename__,
+            con=DatabaseConnector(config=config).create_engine(),
+            schema=config.db.get("schema", SCHEMA),
+            **kwargs,
+        )
+        return df
+
+    @classmethod
+    def write_from_df(
+        self, config: DictConfig, df: pd.DataFrame, index: bool = True
+    ) -> int:
+        """Write table from pandas DataFrame.
+
+        If a record already exists in the table, it will be updated.
+
+        Args:
+            config (DictConfig): Hydra configuration dictionary.
+            df (pd.DataFrame): dataframe with table content.
+            index (bool): write index as a column. Use False to ignore index. Defaults to True.
+
+        Returns:
+            int: number of rows written.
+        """
+
+        session = DatabaseConnector(config=config).create_session()
+        # Convert the dataframe to a dictionary of records
+        drop_index = not index
+        records_dict = df.reset_index(drop=drop_index).to_dict(
+            orient="records"
+        )
+
+        with session:
+            # Add rows
+            for record in records_dict:
+                # Convert the tuple to dict and expand to avoid errors
+                new_record = self(**record)
+                DatabaseConnector.session_add_with_upsert(
+                    session=session,
+                    constraint=f"{self.__tablename__}_pkey",
+                    new_record=new_record,
+                )
+
+            # Commit only at the end
+            session.commit()
+
+        return len(df)
+
+
+class Menu(CommonTable):
     """Table with menu items."""
 
     __tablename__ = "menu"
@@ -270,47 +356,6 @@ class Menu(Data):
     )
     """Orders connected to each menu item."""
 
-    @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
-
     def __repr__(self) -> str:
         """Simple object representation.
 
@@ -320,7 +365,7 @@ class Menu(Data):
         return f"<MENU_ITEM:{self.id} - {self.item}>"
 
 
-class Orders(Data):
+class Orders(CommonTable):
     """Table with items that belongs to an order."""
 
     __tablename__ = "orders"
@@ -347,47 +392,6 @@ class Orders(Data):
     note = Column(String(300), unique=False, nullable=True)
     """Note field attached to the order."""
 
-    @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
-
     def __repr__(self) -> str:
         """Simple object representation.
 
@@ -397,7 +401,7 @@ class Orders(Data):
         return f"<ORDER:{self.user}, {self.menu_item.item}>"
 
 
-class Users(Data):
+class Users(CommonTable):
     """Table with users that placed an order."""
 
     __tablename__ = "users"
@@ -429,47 +433,6 @@ class Users(Data):
     )
     """Orders connected to each user."""
 
-    @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
-
     def __repr__(self) -> str:
         """Simple object representation.
 
@@ -479,7 +442,7 @@ class Users(Data):
         return f"<USER:{self.id}>"
 
 
-class Stats(Data):
+class Stats(CommonTable):
     """Table with number of users that ate a lunch, grouped by guest type."""
 
     # Primary key handled with __table_args__ because ON CONFLICT for composite
@@ -516,47 +479,6 @@ class Stats(Data):
     different kind of guests are identified by the value in guest column.
     """
 
-    @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
-
     def __repr__(self) -> str:
         """Simple object representation.
 
@@ -566,7 +488,7 @@ class Stats(Data):
         return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
 
 
-class Flags(Data):
+class Flags(CommonTable):
     """Table with global flags used by Data-Lunch.
 
     'No more orders' flag and guest override flags are stored here.
@@ -585,28 +507,6 @@ class Flags(Data):
     """Flag value."""
 
     @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
     def clear_guest_override(self, config: DictConfig) -> int:
         """Clear 'guest_override' flags and return deleted rows
 
@@ -617,7 +517,7 @@ class Flags(Data):
             int: deleted rows.
         """
 
-        session = create_session(config)
+        session = DatabaseConnector(config=config).create_session()
         with session:
             # Clean menu
             num_rows_deleted = session.execute(
@@ -630,25 +530,6 @@ class Flags(Data):
 
         return num_rows_deleted.rowcount
 
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
-
     def __repr__(self) -> str:
         """Simple object representation.
 
@@ -659,7 +540,7 @@ class Flags(Data):
 
 
 # CREDENTIALS MODELS ----------------------------------------------------------
-class PrivilegedUsers(Data):
+class PrivilegedUsers(CommonTable):
     """Table with user that have privileges (normal users and admin).
 
     If enabled guests are all the authenticated users that do not belong to this table
@@ -679,47 +560,6 @@ class PrivilegedUsers(Data):
     )
     """Admin flag (true if admin)."""
 
-    @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
-
     def __repr__(self) -> str:
         """Simple object representation.
 
@@ -729,7 +569,7 @@ class PrivilegedUsers(Data):
         return f"<PRIVILEGED_USER:{self.id}>"
 
 
-class Credentials(Data):
+class Credentials(CommonTable):
     """Table with users credentials, used only if basic authentication is active."""
 
     __tablename__ = "credentials"
@@ -752,47 +592,6 @@ class Credentials(Data):
     """Encryped password.
 
     Used only if basic authentication and guest users are both active."""
-
-    @classmethod
-    def clear(self, config: DictConfig) -> int:
-        """Clear table and return deleted rows.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            int: deleted rows.
-        """
-
-        session = create_session(config)
-        with session:
-            # Clean menu
-            num_rows_deleted = session.execute(delete(self))
-            session.commit()
-            log.info(
-                f"deleted {num_rows_deleted.rowcount} rows from table '{self.__tablename__}'"
-            )
-
-        return num_rows_deleted.rowcount
-
-    @classmethod
-    def read_as_df(self, config: DictConfig, **kwargs) -> pd.DataFrame:
-        """Read table as pandas DataFrame.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
-
-        Returns:
-            pd.DataFrame: dataframe with table content.
-        """
-        df = pd.read_sql_table(
-            self.__tablename__,
-            create_engine(config=config),
-            schema=config.db.get("schema", SCHEMA),
-            **kwargs,
-        )
-
-        return df
 
     def __repr__(self) -> str:
         """Simple object representation.
@@ -837,250 +636,237 @@ class Credentials(Data):
         return getattr(type(self), key).type.validator(password)
 
 
-# FUNCTIONS -------------------------------------------------------------------
+# DATABASE CONNECTOR ----------------------------------------------------------
+class DatabaseConnector:
+    """Class for handling database connections and operations."""
 
+    def __init__(self, config: DictConfig):
+        self.config: DictConfig = config
+        """Hydra configuration dictionary."""
 
-def get_db_dialect(
-    db_obj: Session | ConnectionSqlite | ConnectionPostgresql,
-) -> str:
-    """Return database type (postgresql, sqlite, etc.) based on the database object passed as input.
-    If a session is passed, the database type is set based on an internal map (see `models._DBTYPE_MAP`).
+    @staticmethod
+    def get_db_dialect(
+        db_obj: Session | ConnectionSqlite | ConnectionPostgresql,
+    ) -> str:
+        """Return database type (postgresql, sqlite, etc.) based on the database object passed as input.
+        If a session is passed, the database type is set based on an internal map (see `models._DBTYPE_MAP`).
 
-    Args:
-        db_obj (Session | ConnectionSqlite | ConnectionPostgresql): session or connection object.
+        Args:
+            db_obj (Session | ConnectionSqlite | ConnectionPostgresql): session or connection object.
 
-    Raises:
-        TypeError: db_obj shall be a session or a connection object.
+        Raises:
+            TypeError: db_obj shall be a session or a connection object.
 
-    Returns:
-        str: database dialect.
-    """
-    if isinstance(db_obj, Session):
-        dialect = db_obj.bind.dialect.name
-    elif isinstance(db_obj, ConnectionSqlite) or isinstance(
-        db_obj, ConnectionPostgresql
-    ):
-        module = db_obj.__class__.__module__.split(".", 1)[0]
-        dialect = _MODULE_TO_DIALECT_MAP[module]
-    else:
-        raise TypeError("db_obj should be a session or connection object")
+        Returns:
+            str: database dialect.
+        """
+        if isinstance(db_obj, Session):
+            dialect = db_obj.bind.dialect.name
+        elif isinstance(db_obj, ConnectionSqlite) or isinstance(
+            db_obj, ConnectionPostgresql
+        ):
+            module = db_obj.__class__.__module__.split(".", 1)[0]
+            dialect = _MODULE_TO_DIALECT_MAP[module]
+        else:
+            raise TypeError("db_obj should be a session or connection object")
 
-    return dialect
+        return dialect
 
+    @staticmethod
+    def session_add_with_upsert(
+        session: Session, constraint: str, new_record: Stats | Flags
+    ) -> None:
+        """Use an upsert statement for postgresql to add a new record to a table,
+        a simple session add otherwise.
 
-def session_add_with_upsert(
-    session: Session, constraint: str, new_record: Stats | Flags
-) -> None:
-    """Use an upsert statement for postgresql to add a new record to a table,
-    a simple session add otherwise.
-
-    Args:
-        session (Session): SQLAlchemy session object.
-        constraint (str): constraint used for upsert (usually the primary key)
-        new_record (Stats | Flags): table resord (valid tables are `stats` or `flags`)
-    """
-    # Use an upsert for postgresql (for sqlite an 'on conflict replace' is set
-    # on table, so session.add is fine)
-    if get_db_dialect(session) == "postgresql":
-        insert_statement = postgresql_upsert(new_record.__table__).values(
-            {
-                column.name: getattr(new_record, column.name)
-                for column in new_record.__table__.c
-                if getattr(new_record, column.name, None) is not None
-            }
-        )
-        upsert_statement = insert_statement.on_conflict_do_update(
-            constraint=constraint,
-            set_={
-                column.name: getattr(insert_statement.excluded, column.name)
-                for column in insert_statement.excluded
-            },
-        )
-        session.execute(upsert_statement)
-    else:
-        session.add(new_record)
-
-
-def create_engine(config: DictConfig) -> Engine:
-    """Factory function for SQLAlchemy engine.
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-
-    Returns:
-        Engine: SQLAlchemy engine.
-    """
-    engine = hydra.utils.instantiate(config.db.engine)
-
-    # Change schema with change_execution_options
-    # If schema exist in config.db it will override the schema selected through
-    # the environment variable
-    if "schema" in config.db:
-        engine.update_execution_options(
-            schema_translate_map={SCHEMA: config.db.schema}
-        )
-
-    return engine
-
-
-def create_session(config: DictConfig) -> Session:
-    """Factory function for database session.
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-
-    Returns:
-        Session: SQLAlchemy session.
-    """
-    engine = create_engine(config)
-    session = Session(engine)
-
-    return session
-
-
-def create_exclusive_session(config: DictConfig) -> Session:
-    """Factory function for database exclusive session.
-    Database is locked until the transaction is completed (to be used to avoid
-    race conditions).
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-
-    Returns:
-        Session: SQLAlchemy exclusive session.
-
-    Note:
-        This function is not used inside Data-Lunch code.
-
-    """
-    engine = create_engine(config)
-
-    # Alter begin statement
-    @event.listens_for(engine, "connect")
-    def _do_connect(dbapi_connection, connection_record):
-        # disable pysqlite's emitting of the BEGIN statement entirely.
-        # also stops it from emitting COMMIT before any DDL.
-        dbapi_connection.isolation_level = None
-
-    @event.listens_for(engine, "begin")
-    def _do_begin(conn):
-        # Emit exclusive BEGIN
-        conn.exec_driver_sql("BEGIN EXCLUSIVE")
-
-    session = Session(engine)
-
-    return session
-
-
-def create_database(config: DictConfig, add_basic_auth_users=False) -> None:
-    """Function to create the database through SQLAlchemy models.
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-        add_basic_auth_users (bool, optional): set to true to add admin and guest users.
-            These users are of interest only if 'basic authentication' is selected.
-            Defaults to False.
-    """
-    # Create directory if missing
-    log.debug("create 'shared_data' folder")
-    pathlib.Path(config.db.shared_data_folder).mkdir(exist_ok=True)
-
-    # In case the database is not ready use a retry mechanism
-    @tenacity.retry(
-        retry=tenacity.retry_if_exception_type(OperationalError),
-        wait=tenacity.wait_fixed(config.db.create_retries.wait),
-        stop=(
-            tenacity.stop_after_delay(config.db.create_retries.stop.delay)
-            | tenacity.stop_after_attempt(
-                config.db.create_retries.stop.attempts
+        Args:
+            session (Session): SQLAlchemy session object.
+            constraint (str): constraint used for upsert (usually the primary key)
+            new_record (Stats | Flags): table resord (valid tables are `stats` or `flags`)
+        """
+        # Use an upsert for postgresql (for sqlite an 'on conflict replace' is set
+        # on table, so session.add is fine)
+        if DatabaseConnector.get_db_dialect(session) == "postgresql":
+            insert_statement = postgresql_upsert(new_record.__table__).values(
+                {
+                    column.name: getattr(new_record, column.name)
+                    for column in new_record.__table__.c
+                    if getattr(new_record, column.name, None) is not None
+                }
             )
-        ),
-    )
-    def _create_database_with_retries(config: DictConfig) -> None:
-        engine = create_engine(config)
-        Data.metadata.create_all(engine)
+            upsert_statement = insert_statement.on_conflict_do_update(
+                constraint=constraint,
+                set_={
+                    column.name: getattr(
+                        insert_statement.excluded, column.name
+                    )
+                    for column in insert_statement.excluded
+                },
+            )
+            session.execute(upsert_statement)
+        else:
+            session.add(new_record)
 
-    # Create tables
-    log.debug(f"attempt database creation: {config.db.attempt_creation}")
-    if config.db.attempt_creation:
-        _create_database_with_retries(config)
+    @staticmethod
+    def read_sql_query(session: Session, query: str) -> pd.DataFrame:
+        """Read a SQL query as pandas DataFrame.
 
-        # Retries stats
-        log.debug(
-            f"create database attempts: {_create_database_with_retries.retry.statistics}"
+        Args:
+            session (Session): SQLAlchemy session object.
+            query (str): SQL query.
+
+        Returns:
+            pd.DataFrame: dataframe with query result.
+        """
+        results = session.execute(text(query))
+        columns = results.keys()
+        # Pass columns to build dataframe with correct columns names even if
+        # the query returns no rows
+        df = pd.DataFrame(results.all(), columns=columns)
+
+        return df
+
+    def create_engine(self) -> Engine:
+        """Factory function for SQLAlchemy engine.
+
+        Returns:
+            Engine: SQLAlchemy engine.
+        """
+        engine = hydra.utils.instantiate(self.config.db.engine)
+
+        # Change schema with change_execution_options
+        # If schema exist in config.db it will override the schema selected through
+        # the environment variable
+        if "schema" in self.config.db:
+            engine.update_execution_options(
+                schema_translate_map={SCHEMA: self.config.db.schema}
+            )
+
+        return engine
+
+    def create_session(self) -> Session:
+        """Factory function for database session.
+
+        Returns:
+            Session: SQLAlchemy session.
+        """
+        engine = self.create_engine()
+        session = Session(engine)
+
+        return session
+
+    def create_database(self, add_basic_auth_users=False) -> None:
+        """Function to create the database through SQLAlchemy models.
+
+        Args:
+            add_basic_auth_users (bool, optional): set to true to add admin and guest users.
+                These users are of interest only if 'basic authentication' is selected.
+                Defaults to False.
+        """
+        # Create directory if missing
+        log.debug("create 'shared_data' folder")
+        pathlib.Path(self.config.db.shared_data_folder).mkdir(exist_ok=True)
+
+        # In case the database is not ready use a retry mechanism
+        @tenacity.retry(
+            retry=tenacity.retry_if_exception_type(OperationalError),
+            wait=tenacity.wait_fixed(self.config.db.create_retries.wait),
+            stop=(
+                tenacity.stop_after_delay(
+                    self.config.db.create_retries.stop.delay
+                )
+                | tenacity.stop_after_attempt(
+                    self.config.db.create_retries.stop.attempts
+                )
+            ),
         )
+        def _create_database_with_retries(config: DictConfig) -> None:
+            engine = self.create_engine()
+            Data.metadata.create_all(engine)
 
-    # If requested add users for basic auth (admin and guest)
-    if add_basic_auth_users:
-        log.debug("add basic auth standard users (if missing)")
-        # If no user exist create the default admin
-        session = create_session(config)
+        # Create tables
+        log.debug(
+            f"attempt database creation: {self.config.db.attempt_creation}"
+        )
+        if self.config.db.attempt_creation:
+            _create_database_with_retries(self.config)
+
+            # Retries stats
+            log.debug(
+                f"create database attempts: {_create_database_with_retries.retry.statistics}"
+            )
+
+        # If requested add users for basic auth (admin and guest)
+        if add_basic_auth_users:
+            log.debug("add basic auth standard users (if missing)")
+            # If no user exist create the default admin
+            session = self.create_session()
+
+            with session:
+                # Check if admin exists
+                if session.get(Credentials, "admin") is None:
+                    # Add authorization and credentials for admin
+                    auth_user = auth.AuthUser(config=self.config, name="admin")
+                    auth_user.add_privileged_user(is_admin=True)
+                    auth_user.add_user_hashed_password(password="admin")
+                    log.warning(
+                        "admin user created, remember to change the default password"
+                    )
+                # Check if guest exists
+                if (
+                    session.get(Credentials, "guest") is None
+                ) and self.config.basic_auth.guest_user:
+                    # Add only credentials for guest (guest users are not included
+                    # in privileged_users table)
+                    auth_user = auth.AuthUser(config=self.config, name="guest")
+                    auth_user.add_user_hashed_password(password="guest")
+                    log.warning(
+                        "guest user created, remember to change the default password"
+                    )
+
+    def set_flag(self, id: str, value: bool) -> None:
+        """Set a key,value pair inside `flag` table.
+
+        Args:
+            id (str): flag id (name).
+            value (bool): flag value.
+        """
+
+        session = self.create_session()
 
         with session:
-            # Check if admin exists
-            if session.get(Credentials, "admin") is None:
-                # Add authorization and credentials for admin
-                auth_user = auth.AuthUser(config=config, name="admin")
-                auth_user.add_privileged_user(is_admin=True)
-                auth_user.add_user_hashed_password(password="admin")
-                log.warning(
-                    "admin user created, remember to change the default password"
-                )
-            # Check if guest exists
-            if (
-                session.get(Credentials, "guest") is None
-            ) and config.basic_auth.guest_user:
-                # Add only credentials for guest (guest users are not included
-                # in privileged_users table)
-                auth_user = auth.AuthUser(config=config, name="guest")
-                auth_user.add_user_hashed_password(password="guest")
-                log.warning(
-                    "guest user created, remember to change the default password"
-                )
+            # Write the selected flag (it will be overwritten if exists)
+            new_flag = Flags(id=id, value=value)
+
+            # Use an upsert for postgresql, a simple session add otherwise
+            DatabaseConnector.session_add_with_upsert(
+                session=session, constraint="flags_pkey", new_record=new_flag
+            )
+
+            session.commit()
+
+    def get_flag(
+        self, id: str, value_if_missing: bool | None = None
+    ) -> bool | None:
+        """Get the value of a flag.
+        Optionally select the values to return if the flag is missing (default to None).
+
+        Args:
+            id (str): flag id (name).
+            value_if_missing (bool | None, optional): value to return if the flag does not exist. Defaults to None.
+
+        Returns:
+            bool | None: flag value.
+        """
+
+        session = self.create_session()
+        flag = session.get(Flags, id)
+        if flag is None:
+            value = value_if_missing
+        else:
+            value = flag.value
+        return value
 
 
-def set_flag(config: DictConfig, id: str, value: bool) -> None:
-    """Set a key,value pair inside `flag` table.
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-        id (str): flag id (name).
-        value (bool): flag value.
-    """
-
-    session = create_session(config)
-
-    with session:
-        # Write the selected flag (it will be overwritten if exists)
-        new_flag = Flags(id=id, value=value)
-
-        # Use an upsert for postgresql, a simple session add otherwise
-        session_add_with_upsert(
-            session=session, constraint="flags_pkey", new_record=new_flag
-        )
-
-        session.commit()
-
-
-def get_flag(
-    config: DictConfig, id: str, value_if_missing: bool | None = None
-) -> bool | None:
-    """Get the value of a flag.
-    Optionally select the values to return if the flag is missing (default to None).
-
-    Args:
-        config (DictConfig): Hydra configuration dictionary.
-        id (str): flag id (name).
-        value_if_missing (bool | None, optional): value to return if the flag does not exist. Defaults to None.
-
-    Returns:
-        bool | None: flag value.
-    """
-
-    session = create_session(config)
-    flag = session.get(Flags, id)
-    if flag is None:
-        value = value_if_missing
-    else:
-        value = flag.value
-    return value
+# FUNCTIONS -------------------------------------------------------------------
+# Intentionally left empty

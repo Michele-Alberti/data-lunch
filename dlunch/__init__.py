@@ -6,7 +6,6 @@ import panel as pn
 from omegaconf import DictConfig, OmegaConf
 
 # Relative imports
-from . import models
 from .core import __version__, Waiter
 from . import gui
 from .auth import AuthUser
@@ -42,8 +41,7 @@ def create_app(config: DictConfig) -> pn.Template:
 
     log.info("initialize database")
     # Create tables
-    models.create_database(
-        config,
+    waiter.database_connector.create_database(
         add_basic_auth_users=auth_user.auth_context.is_basic_auth_active(),
     )
 
@@ -57,16 +55,18 @@ def create_app(config: DictConfig) -> pn.Template:
     # Panel configurations
     log.debug("set toggles initial state")
     # Set the no_more_orders flag if it is None (not found in flags table)
-    if models.get_flag(config=config, id="no_more_orders") is None:
-        models.set_flag(config=config, id="no_more_orders", value=False)
+    if waiter.database_connector.get_flag(id="no_more_orders") is None:
+        waiter.database_connector.set_flag(id="no_more_orders", value=False)
     # Set guest override flag if it is None (not found in flags table)
     # Guest override flag is per-user and is not set for guests
     if (
-        models.get_flag(config=config, id=f"{auth_user.name}_guest_override")
+        waiter.database_connector.get_flag(
+            id=f"{auth_user.name}_guest_override"
+        )
         is None
     ) and not auth_user.is_guest():
-        models.set_flag(
-            config=config, id=f"{auth_user.name}_guest_override", value=False
+        waiter.database_connector.set_flag(
+            id=f"{auth_user.name}_guest_override", value=False
         )
 
     # DASHBOARD BASE TEMPLATE
@@ -120,12 +120,11 @@ def create_app(config: DictConfig) -> pn.Template:
     # Set components visibility based on no_more_order_button state
     # and reload menu
     gi.reload_on_no_more_order(
-        toggle=models.get_flag(config=config, id="no_more_orders"),
+        toggle=waiter.database_connector.get_flag(id="no_more_orders"),
         reload=False,
     )
     gi.reload_on_guest_override(
-        toggle=models.get_flag(
-            config=config,
+        toggle=waiter.database_connector.get_flag(
             id=f"{auth_user.name}_guest_override",
             value_if_missing=False,
         ),
@@ -161,8 +160,7 @@ def create_backend(config: DictConfig) -> pn.Template:
 
     log.info("initialize database")
     # Create tables
-    models.create_database(
-        config,
+    auth_user.auth_context.database_connector.create_database(
         add_basic_auth_users=auth_user.auth_context.is_basic_auth_active(),
     )
 
