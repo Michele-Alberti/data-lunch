@@ -36,6 +36,7 @@ class TaskAction:
         """
 
         async def action_callable() -> None:
+            """Scheduled callable that executes a dummy task action."""
             log.info(
                 f"dummy task executed for {config.panel.gui.title.lower()}"
             )
@@ -62,6 +63,7 @@ class CleanFilesDB(TaskAction):
         waiter = core.Waiter(config=config)
 
         async def action_callable() -> None:
+            """Scheduled callable that cleans temporary tables and files."""
             log.info(
                 f"clean task (files and db) executed at {dt.datetime.now()}"
             )
@@ -90,6 +92,7 @@ class ResetGuestPassword(TaskAction):
         auth_context = auth.AuthContext(config=config)
 
         async def action_callable() -> None:
+            """Scheduled callable that resets the guest user password."""
             log.info(
                 f"reset guest user password executed at {dt.datetime.now()}"
             )
@@ -123,6 +126,7 @@ class UploadDBToGCP(TaskAction):
         """
 
         async def action_callable() -> None:
+            """Scheduled callable that uploads the database to Google Cloud Storage."""
             log.info(
                 f"upload database to gcp storage executed at {dt.datetime.now()}"
             )
