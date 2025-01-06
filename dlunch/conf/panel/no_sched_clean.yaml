@@ -3,31 +3,31 @@ defaults:
 
 # SERVER SCHEDULED ACTIVITIES
 scheduled_tasks: # Set to [] empty list to turn it off
-  - kwargs:
-      name: reset guest password
-      enabled: false
-      hour: null
-      minute: null
-      period: 1d
-    callable:
-      _target_: dlunch.scheduled_tasks.reset_guest_user_password
-  - kwargs:
-      name: scheduled cleaning
-      enabled: false
-      hour: null
-      minute: null
-      period: 30min
-    callable:
-      _target_: dlunch.scheduled_tasks.clean_files_db
-  - kwargs:
-      name: database upload
-      enabled: ${db.ext_storage_upload.enabled}
-      hour: null
-      minute: null
-      period: 30min
-    callable:
-      _target_: dlunch.scheduled_tasks.upload_db_to_gcp_storage
-      source_file_name: ${db.ext_storage_upload.source_file_name}
-      destination_blob_name: ${db.ext_storage_upload.destination_blob_name}
-      bucket_name: ${db.ext_storage_upload.bucket_name}
-      project: ${db.ext_storage_upload.project}
+  - _target_: dlunch.scheduled_tasks.Task
+    name: reset guest password
+    enabled: false
+    hour: null
+    minute: null
+    period: 1d
+    actions:
+      - _target_: dlunch.scheduled_tasks.ResetGuestPassword
+  - _target_: dlunch.scheduled_tasks.Task
+    name: scheduled cleaning
+    enabled: false
+    hour: null
+    minute: null
+    period: 30min
+    actions:
+      - _target_: dlunch.scheduled_tasks.CleanFilesDB
+  - _target_: dlunch.scheduled_tasks.Task
+    name: database upload
+    enabled: ${db.ext_storage_upload.enabled}
+    hour: null
+    minute: null
+    period: 30min
+    actions:
+      - _target_: dlunch.scheduled_tasks.UploadDBToGCP
+        source_file_name: ${db.ext_storage_upload.source_file_name}
+        destination_blob_name: ${db.ext_storage_upload.destination_blob_name}
+        bucket_name: ${db.ext_storage_upload.bucket_name}
+        project: ${db.ext_storage_upload.project}

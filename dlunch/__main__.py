@@ -11,6 +11,7 @@ from omegaconf import DictConfig
 from . import auth
 from . import models
 from . import create_app, create_backend
+from .scheduled_tasks import TaskManager
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -72,13 +73,11 @@ def run_app(config: DictConfig) -> None:
         )
 
     # Starting scheduled tasks
-    if config.panel.scheduled_tasks:
-        log.info("starting scheduled tasks")
-        for task in config.panel.scheduled_tasks:
-            schedule_task(
-                **task.kwargs,
-                callable=hydra.utils.instantiate(task.callable, config),
-            )
+    log.info("start scheduled tasks")
+    scheduled_tasks = hydra.utils.instantiate(config.panel.scheduled_tasks)
+    scheduled_task_manager = TaskManager(config=config, tasks=scheduled_tasks)
+    scheduled_task_manager.log_tasks(enabled_only=True)
+    scheduled_task_manager.schedule_all()
 
     # Call the app factory function
     log.info("set config for app factory function")
@@ -118,58 +117,6 @@ def run_app(config: DictConfig) -> None:
     pn.serve(
         panels=pages, **hydra.utils.instantiate(config.server), **auth_object
     )
-
-
-def schedule_task(
-    name: str,
-    enabled: bool,
-    hour: int | None,
-    minute: int | None,
-    period: str,
-    callable: Callable,
-) -> None:
-    """Schedule a task execution using Panel.
-
-    Args:
-        name (str): task name (used for logs).
-        enabled (bool): flag that marks a task as enabled.
-            tasks are not executed if disabled.
-        hour (int | None): start hour (used only if also minute is not None).
-        minute (int | None): start minute (used only if also hour is not None).
-        period (str): the period between executions.
-            May be expressed as a timedelta or a string.
-
-            * Week: `'1w'`
-            * Day: `'1d'`
-            * Hour: `'1h'`
-            * Minute: `'1m'`
-            * Second: `'1s'`
-
-        callable (Callable): the task to be executed.
-    """
-    # Starting scheduled tasks (if enabled)
-    if enabled:
-        log.info(f"starting task '{name}'")
-        if (hour is not None) and (minute is not None):
-            start_time = dt.datetime.today().replace(
-                hour=hour,
-                minute=minute,
-            )
-            # Set start time to tomorrow if the time already passed
-            if start_time < dt.datetime.now():
-                start_time = start_time + dt.timedelta(days=1)
-            log.info(
-                f"starting time: {start_time.strftime('%Y-%m-%d %H:%M')} - period: {period}"
-            )
-        else:
-            start_time = None
-            log.info(f"starting time: now - period: {period}")
-        pn.state.schedule_task(
-            f"data_lunch_{name}",
-            callable,
-            period=period,
-            at=start_time,
-        )
 
 
 # Call for hydra
