@@ -733,7 +733,9 @@ class AuthContext:
                     # If is_guest and is_admin are None (not passed) use the ones
                     # already set for the user
                     if user_is_guest is None:
-                        user_is_guest = auth_user.is_guest()
+                        user_is_guest = auth_user.is_guest(
+                            allow_override=False
+                        )
                     if user_is_admin is None:
                         user_is_admin = auth_user.is_admin()
                     # First remove user from both 'privileged_users' and
