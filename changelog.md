@@ -1,3 +1,33 @@
+## v3.5.0 (2025-01-19)
+
+### Feat
+
+- **DatabaseConnector-CommonTable**: move functions in models.py to  DatabaseConnector class and group duplicated code in CommonTable class
+- **TaskManager-Task-TaskAction**: improve scheduled tasks by converting functions to classes
+- **AuthCallback**: add AuthCallback class and convert authorize function to a method
+- **Waiter**: simplify Waiter class by making DictConfig argument required at instantiation time
+- move open_backend and force_logout from auth.py to gui.py
+- rename list_users to list_privileged_users, add auth_type in auth.py and improve list user command in cli
+- **models.py**: add warning logs when default admin or guest users are created (basic authentication only)
+- **cli.py**: add utils group and generate-secrets command
+
+### Fix
+
+- **AuthContext.backend_submit_password**: turn off allow_override when checking if a user is a guest
+- **models.py**: remove tables typing
+
+### Refactor
+
+- **auth.AuthContext-auth.AuthUser**: add classes to handle authentication context, authenticated user data and related operations
+- **core.Waiter**: move core functions to a dedicated Waiter class
+- **set_guest_user_password**: move set_guest_user_password from core to auth
+- move functions submit_password and backend_submit_password from core to auth module
+- add internal use indicator to _clean_up_table, _do_connect and _do_begin functions
+
+### Perf
+
+- **core.Waiter**: move _clean_up_table definition outside the main for loop in df_list_by_lunch_time
+
 ## v3.4.0 (2024-11-13)
 
 ### Feat
