@@ -7,8 +7,7 @@ oauth_expiry: 15
 auth_error_template: ${package_path}/templates/error.html
 # Autorization callback (_partial_ is required for usage with lambda functions)
 authorization_callback:
-  _target_: dlunch.auth.authorize
-  _partial_: true
+  _target_: dlunch.auth.AuthCallback
   # Flag to authorize access of guest users to the home page
   # They can only place orders for guests 
   authorize_guest_users: true

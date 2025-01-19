@@ -2,26 +2,34 @@
 
 Classes that uses `param` are then used to create Panel widget directly (see `Panel docs <https://panel.holoviz.org/how_to/param/uis.html>`__)."""
 
+# The __future__ import is necessary to avoid circular imports, it make all
+# the type hints in this file to be interpreted as strings
+from __future__ import annotations
+
 import datetime
-from hydra.utils import instantiate
 import jinja2
 import logging
-from omegaconf import DictConfig, OmegaConf
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
 import param
 import pathlib
 
+from hydra.utils import instantiate
+from omegaconf import DictConfig, OmegaConf
+from typing import TYPE_CHECKING
+
 # Database imports
 from . import models
 
-# Core imports
-from . import core
-
 # Auth
-from . import auth
-from .auth import pn_user
+from .auth import AuthUser
+
+# Import used only for type checking, that have problems with circular imports
+# TYPE_CHECKING is False at runtime (thus the import is not executed)
+if TYPE_CHECKING:
+    from . import core
+
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -84,11 +92,11 @@ class Person(param.Parameterized):
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
         # Check user (a username is already set for privileged users)
-        username = pn_user(config)
-        if not auth.is_guest(
-            user=username, config=config, allow_override=False
-        ) and (username is not None):
-            self.username = username
+        auth_user = AuthUser(config=config)
+        if not auth_user.is_guest(allow_override=False) and (
+            auth_user.name is not None
+        ):
+            self.username = auth_user.name
 
     def __str__(self):
         """String representation of this object.
@@ -253,20 +261,27 @@ class GraphicInterface:
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
+        waiter (core.Waiter): Waiter object with methods to handle user requests.
         app (pn.Template): App panel template (see `Panel docs <https://panel.holoviz.org/how_to/templates/index.html>`__).
         person (Person): Object with user data and preferences for the lunch order.
+        auth_user (AuthUser): AuthUser object with authenticated user data.
         guest_password (str, optional): guest password to show in password tab. Used only if basic authentication is active.
             Defaults to empty string (`""`).
-
     """
 
     def __init__(
         self,
         config: DictConfig,
+        waiter: core.Waiter,
         app: pn.Template,
         person: Person,
+        auth_user: AuthUser,
         guest_password: str = "",
     ):
+        # CONTEXT VARIABLES ---------------------------------------------------
+        # Store authentication context
+        self.auth_context = auth_user.auth_context
+
         # HEADER SECTION ------------------------------------------------------
         # WIDGET
         # Create PNG pane with app icon
@@ -314,15 +329,13 @@ class GraphicInterface:
         if config.panel.gui.header_object:
             self.header_row.append(self.header_object)
         # Append a controls to the right side of header
-        if auth.is_auth_active(config=config):
+        if self.auth_context.is_auth_active():
             self.header_row.append(pn.HSpacer())
             # Backend only for admin
-            if auth.is_admin(user=pn_user(config), config=config):
+            if auth_user.is_admin():
                 self.header_row.append(self.backend_button)
             # Guest override only for non guests
-            if not auth.is_guest(
-                user=pn_user(config), config=config, allow_override=False
-            ):
+            if not auth_user.is_guest(allow_override=False):
                 self.header_row.append(self.toggle_guest_override_button)
             self.header_row.append(self.logout_button)
             self.header_row.append(
@@ -333,7 +346,7 @@ class GraphicInterface:
 
         # CALLBACKS
         # Backend callback
-        self.backend_button.on_click(lambda e: auth.open_backend())
+        self.backend_button.on_click(lambda e: self.open_backend())
 
         # Guest override callback
         @pn.depends(self.toggle_guest_override_button, watch=True)
@@ -342,22 +355,18 @@ class GraphicInterface:
         ):
             # Update global variable that control guest override
             # Only non guest can store this value in 'flags' table (guest users
-            # are always guests, there is no use in sotring a flag for them)
-            if not auth.is_guest(
-                user=pn_user(config), config=config, allow_override=False
-            ):
-                models.set_flag(
-                    config=config,
-                    id=f"{pn_user(config)}_guest_override",
+            # are always guests, there is no use in sorting a flag for them)
+            if not auth_user.is_guest(allow_override=False):
+                waiter.database_connector.set_flag(
+                    id=f"{auth_user.name}_guest_override",
                     value=toggle,
                 )
             # Show banner if override is active
             self.guest_override_alert.visible = toggle
             # Simply reload the menu when the toggle button value changes
             if reload:
-                core.reload_menu(
+                waiter.reload_menu(
                     None,
-                    config,
                     self,
                 )
 
@@ -365,7 +374,7 @@ class GraphicInterface:
         self.reload_on_guest_override = reload_on_guest_override_callback
 
         # Logout callback
-        self.logout_button.on_click(lambda e: auth.force_logout())
+        self.logout_button.on_click(lambda e: self.force_logout())
 
         # MAIN SECTION --------------------------------------------------------
         # Elements required for build the main section of the web app
@@ -570,7 +579,9 @@ class GraphicInterface:
             toggle: pnw.Toggle, reload: bool = True
         ):
             # Update global variable
-            models.set_flag(config=config, id="no_more_orders", value=toggle)
+            waiter.database_connector.set_flag(
+                id="no_more_orders", value=toggle
+            )
 
             # Show "no more order" text
             self.no_more_order_alert.visible = toggle
@@ -582,9 +593,8 @@ class GraphicInterface:
 
             # Simply reload the menu when the toggle button value changes
             if reload:
-                core.reload_menu(
+                waiter.reload_menu(
                     None,
-                    config,
                     self,
                 )
 
@@ -593,17 +603,15 @@ class GraphicInterface:
 
         # Refresh button callback
         self.refresh_button.on_click(
-            lambda e: core.reload_menu(
+            lambda e: waiter.reload_menu(
                 e,
-                config,
                 self,
             )
         )
         # Send order button callback
         self.send_order_button.on_click(
-            lambda e: core.send_order(
+            lambda e: waiter.send_order(
                 e,
-                config,
                 app,
                 person,
                 self,
@@ -611,18 +619,16 @@ class GraphicInterface:
         )
         # Delete order button callback
         self.delete_order_button.on_click(
-            lambda e: core.delete_order(
+            lambda e: waiter.delete_order(
                 e,
-                config,
                 app,
                 self,
             )
         )
         # Change order time button callback
         self.change_order_time_takeaway_button.on_click(
-            lambda e: core.change_order_time_takeaway(
+            lambda e: waiter.change_order_time_takeaway(
                 e,
-                config,
                 person,
                 self,
             )
@@ -734,7 +740,7 @@ class GraphicInterface:
         )
         # Download button and callback
         self.download_button = pn.widgets.FileDownload(
-            callback=lambda: core.download_dataframe(config, self),
+            callback=lambda: waiter.download_dataframe(self),
             filename=config.panel.file_name + ".xlsx",
             sizing_mode="stretch_width",
             icon="download",
@@ -805,26 +811,38 @@ class GraphicInterface:
         self.sidebar_tabs = pn.Tabs(
             width=sidebar_content_width,
         )
-        # Reload tabs according to auth.is_guest results and guest_override
+        # Reload tabs according to auth_user.is_guest results and guest_override
         # flag (no need to cleans, tabs are already empty)
-        self.load_sidebar_tabs(config=config, clear_before_loading=False)
+        self.load_sidebar_tabs(auth_user=auth_user, clear_before_loading=False)
 
         # CALLBACKS
         # Build menu button callback
         self.build_menu_button.on_click(
-            lambda e: core.build_menu(
+            lambda e: waiter.build_menu(
                 e,
-                config,
                 app,
                 self,
             )
         )
         # Submit password button callback
         self.submit_password_button.on_click(
-            lambda e: core.submit_password(gi=self, config=config)
+            lambda e: self.auth_context.submit_password(gi=self)
         )
 
-    # UTILITY FUNCTIONS
+    # UTILITY METHODS ---------------------------------------------------------
+    # NAVBAR
+    def open_backend(self) -> None:
+        """Redirect the browser to the backend endpoint"""
+        # Edit pathname to open backend
+        pn.state.location.pathname = (
+            pn.state.location.pathname.split("/")[0] + "/backend"
+        )
+        pn.state.location.reload = True
+
+    def force_logout(self) -> None:
+        """Redirect the browser to the logout endpoint"""
+        _force_logout()
+
     # MAIN SECTION
     def build_order_table(
         self,
@@ -918,7 +936,7 @@ class GraphicInterface:
 
     # SIDEBAR SECTION
     def load_sidebar_tabs(
-        self, config: DictConfig, clear_before_loading: bool = True
+        self, auth_user: AuthUser, clear_before_loading: bool = True
     ) -> None:
         """Append tabs to the app template sidebar.
 
@@ -926,7 +944,7 @@ class GraphicInterface:
         Use the default value during normal operation to avoid tabs duplication.
 
         Args:
-            config (DictConfig): Hydra configuration dictionary.
+            auth_user (AuthUser): AuthUser object with authenticated user data.
             clear_before_loading (bool, optional): Set to true to remove all tabs before appending the new ones. Defaults to True.
         """
         # Clean tabs
@@ -936,20 +954,17 @@ class GraphicInterface:
         self.sidebar_tabs.append(self.sidebar_person_column)
         # Append upload, download and stats only for non-guest
         # Append password only for non-guest users if auth is active
-        if not auth.is_guest(
-            user=pn_user(config), config=config, allow_override=False
-        ):
+        if not auth_user.is_guest(allow_override=False):
             self.sidebar_tabs.append(self.sidebar_menu_upload_col)
             self.sidebar_tabs.append(self.sidebar_download_orders_col)
             self.sidebar_tabs.append(self.sidebar_stats_col)
-            if auth.is_basic_auth_active(config=config):
+            if self.auth_context.is_basic_auth_active():
                 self.sidebar_tabs.append(self.sidebar_password)
 
     def build_stats_and_info_text(
         self,
-        config: DictConfig,
+        auth_user: AuthUser,
         df_stats: pd.DataFrame,
-        user: str,
         version: str,
         host_name: str,
         stylesheets: list = [],
@@ -959,7 +974,7 @@ class GraphicInterface:
         This functions needs Data-Lunch version and the name of the hosting machine to populate the info section.
 
         Args:
-            config (DictConfig): Hydra configuration dictionary.
+            auth_user (AuthUser): AuthUser object with authenticated user data.
             df_stats (pd.DataFrame): dataframe with statistics.
             user (str): username.
             version (str): Data-Lunch version.
@@ -989,9 +1004,9 @@ class GraphicInterface:
             stylesheets=stylesheets,
         )
         # Define user group
-        if auth.is_guest(user=user, config=config, allow_override=False):
+        if auth_user.is_guest(allow_override=False):
             user_group = "guest"
-        elif auth.is_admin(user=user, config=config):
+        elif auth_user.is_admin():
             user_group = "admin"
         else:
             user_group = "user"
@@ -1007,7 +1022,7 @@ class GraphicInterface:
                         <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                     </svg>
                     <span>
-                        <strong>User:</strong> <i>{user}</i>
+                        <strong>User:</strong> <i>{auth_user.name}</i>
                     </span>
                 </div>
                 <div class="icon-container">
@@ -1061,7 +1076,7 @@ class GraphicInterface:
         return {"stats": stats, "info": other_info}
 
 
-# BACKEND INTERFACE CLASS ========================================================
+# BACKEND INTERFACE CLASS =====================================================
 class BackendInterface:
     """Class with widgets for the backend graphic interface.
 
@@ -1071,12 +1086,18 @@ class BackendInterface:
 
     Args:
         config (DictConfig): Hydra configuration dictionary.
+        auth_user (AuthUser): AuthUser object with authenticated user data.
     """
 
     def __init__(
         self,
         config: DictConfig,
+        auth_user: AuthUser,
     ):
+        # CONTEXT VARIABLES ---------------------------------------------------
+        # Store authentication context
+        self.auth_context = auth_user.auth_context
+
         # HEADER SECTION ------------------------------------------------------
         # WIDGET
 
@@ -1160,7 +1181,7 @@ class BackendInterface:
         )
         # User list
         self.users_tabulator = pn.widgets.Tabulator(
-            value=auth.list_users_guests_and_privileges(config),
+            value=self.auth_context.list_users_guests_and_privileges(),
             sizing_mode="stretch_height",
         )
         # Flags content (use empty dataframe to instantiate)
@@ -1266,13 +1287,13 @@ class BackendInterface:
             min_height=backend_min_height,
         )
         # Add controls only for admin users
-        if not auth.is_admin(user=pn_user(config), config=config):
+        if not auth_user.is_admin():
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:
             # For basic auth use a password renewer, for oauth a widget for
             # adding privileged users
-            if auth.is_basic_auth_active(config=config):
+            if self.auth_context.is_basic_auth_active():
                 self.backend_controls.append(self.add_update_user_column)
             else:
                 self.backend_controls.append(self.add_privileged_user_column)
@@ -1304,11 +1325,10 @@ class BackendInterface:
         # CALLBACKS
         # Submit password button callback
         def submit_password_button_callback(self, config):
-            success = core.backend_submit_password(
+            success = self.auth_context.backend_submit_password(
                 gi=self,
-                is_admin=self.password_widget.object.admin,
-                is_guest=self.password_widget.object.guest,
-                config=config,
+                user_is_admin=self.password_widget.object.admin,
+                user_is_guest=self.password_widget.object.guest,
             )
             if success:
                 self.reload_backend(config)
@@ -1324,10 +1344,10 @@ class BackendInterface:
                 "user"
             ].value_input
             # Add user
-            auth.add_privileged_user(
-                username_key_press,
+            AuthUser(
+                config=config, name=username_key_press
+            ).add_privileged_user(
                 is_admin=self.add_privileged_user_widget.object.admin,
-                config=config,
             )
 
             self.reload_backend(config)
@@ -1345,9 +1365,9 @@ class BackendInterface:
             # Get username, updated at each key press
             username_key_press = self.user_eraser._widgets["user"].value_input
             # Delete user
-            deleted_data = auth.remove_user(
-                user=username_key_press, config=config
-            )
+            deleted_data = AuthUser(
+                config=config, name=username_key_press
+            ).remove_user()
             if (deleted_data["privileged_users_deleted"] > 0) or (
                 deleted_data["credentials_deleted"] > 0
             ):
@@ -1381,7 +1401,20 @@ class BackendInterface:
             lambda e: clear_flags_button_callback(self)
         )
 
-    # UTILITY FUNCTIONS
+    # UTILITY METHODS ---------------------------------------------------------
+    # NAVBAR
+    def force_logout(self) -> None:
+        """Redirect the browser to the logout endpoint"""
+        _force_logout()
+
+    def exit_backend(self) -> None:
+        """Return to main homepage."""
+        # Edit pathname to force exit
+        pn.state.location.pathname = (
+            pn.state.location.pathname.split("/")[0] + "/"
+        )
+        pn.state.location.reload = True
+
     # MAIN SECTION
     def reload_backend(self, config: DictConfig) -> None:
         """Reload backend by updating user lists and privileges.
@@ -1391,8 +1424,8 @@ class BackendInterface:
             config (DictConfig): Hydra configuration dictionary.
         """
         # Users and guests lists
-        self.users_tabulator.value = auth.list_users_guests_and_privileges(
-            config
+        self.users_tabulator.value = (
+            self.auth_context.list_users_guests_and_privileges()
         )
         # Flags table content
         df_flags = models.Flags.read_as_df(
@@ -1401,10 +1434,12 @@ class BackendInterface:
         )
         self.flags_content.value = df_flags
 
-    def exit_backend(self) -> None:
-        """Return to main homepage."""
-        # Edit pathname to force exit
-        pn.state.location.pathname = (
-            pn.state.location.pathname.split("/")[0] + "/"
-        )
-        pn.state.location.reload = True
+
+# UTILITY FUNCTIONS ===========================================================
+def _force_logout() -> None:
+    """Redirect the browser to the logout endpoint"""
+    # Edit pathname to force logout
+    pn.state.location.pathname = (
+        pn.state.location.pathname.split("/")[0] + "/logout"
+    )
+    pn.state.location.reload = True

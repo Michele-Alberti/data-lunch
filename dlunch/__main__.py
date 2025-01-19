@@ -1,15 +1,14 @@
 """Data-Lunch package entrypoint."""
 
-import datetime as dt
 import hydra
 import logging
 import panel as pn
-from collections.abc import Callable
-from omegaconf import DictConfig, OmegaConf
-from omegaconf.errors import ConfigAttributeError
+
+from omegaconf import DictConfig
+
 from . import auth
 from . import create_app, create_backend
-from . import models
+from .scheduled_tasks import TaskManager
 
 # LOGGER ----------------------------------------------------------------------
 log: logging.Logger = logging.getLogger(__name__)
@@ -21,6 +20,7 @@ log: logging.Logger = logging.getLogger(__name__)
 log.debug("set extensions")
 pn.extension(
     "tabulator",
+    notifications=True,
 )
 
 
@@ -35,20 +35,14 @@ def run_app(config: DictConfig) -> None:
     Args:
         config (DictConfig): hydra configuration object.
     """
-    # Starting scheduled cleaning
-    if config.panel.scheduled_tasks:
-        for task in config.panel.scheduled_tasks:
-            schedule_task(
-                **task.kwargs,
-                callable=hydra.utils.instantiate(task.callable, config),
-            )
 
     # Set auth configurations
-    log.info("set auth config and encryption")
+    log.info("set auth context and encryption")
+    auth_context = auth.AuthContext(config=config)
     # Auth encryption
-    auth.set_app_auth_and_encryption(config)
+    auth_context.set_app_auth_and_encryption()
     log.debug(
-        f'authentication {"" if auth.is_auth_active(config) else "not "}active'
+        f'authentication {"" if auth_context.is_auth_active() else "not "}active'
     )
 
     log.info("set panel config")
@@ -60,25 +54,29 @@ def run_app(config: DictConfig) -> None:
     # Configurations
     pn.config.nthreads = config.panel.nthreads
     pn.config.notifications = True
-    authorize_callback_factory = hydra.utils.call(
+    authorize_callback_object: auth.AuthCallback = hydra.utils.instantiate(
         config.auth.authorization_callback, config
     )
-    pn.config.authorize_callback = lambda ui, tp: authorize_callback_factory(
-        user_info=ui, target_path=tp
-    )
+    pn.config.authorize_callback = authorize_callback_object.authorize
     pn.config.auth_template = config.auth.auth_error_template
 
     # If basic auth is used the database and users credentials shall be created here
-    if auth.is_basic_auth_active:
+    if auth_context.is_basic_auth_active():
         log.info("initialize database and users credentials for basic auth")
         # Create tables
-        models.create_database(
-            config,
-            add_basic_auth_users=auth.is_basic_auth_active(config=config),
+        auth_context.database_connector.create_database(
+            add_basic_auth_users=auth_context.is_basic_auth_active(),
         )
 
+    # Starting scheduled tasks
+    log.info("start scheduled tasks")
+    scheduled_tasks = hydra.utils.instantiate(config.panel.scheduled_tasks)
+    scheduled_task_manager = TaskManager(config=config, tasks=scheduled_tasks)
+    scheduled_task_manager.log_tasks(enabled_only=True)
+    scheduled_task_manager.schedule_all()
+
     # Call the app factory function
-    log.info("calling app factory function")
+    log.info("set config for app factory function")
     # Pass the create_app and create_backend function as a lambda function to
     # ensure that each invocation has a dedicated state variable (users'
     # selections are not shared between instances)
@@ -86,14 +84,14 @@ def run_app(config: DictConfig) -> None:
     # Health is an endpoint for app health assessments
     # Pass a dictionary for a multipage app
     pages = {"": lambda: create_app(config=config)}
-    if auth.is_auth_active(config=config):
+    if auth_context.is_auth_active():
         pages["backend"] = lambda: create_backend(config=config)
 
     # If basic authentication is active, instantiate ta special auth object
     # otherwise leave an empty dict
     # This step is done before panel.serve because auth_provider requires that
     # the whole config is passed as an input
-    if auth.is_basic_auth_active(config=config):
+    if auth_context.is_basic_auth_active():
         auth_object = {
             "auth_provider": hydra.utils.instantiate(
                 config.basic_auth.auth_provider, config
@@ -115,58 +113,6 @@ def run_app(config: DictConfig) -> None:
     pn.serve(
         panels=pages, **hydra.utils.instantiate(config.server), **auth_object
     )
-
-
-def schedule_task(
-    name: str,
-    enabled: bool,
-    hour: int | None,
-    minute: int | None,
-    period: str,
-    callable: Callable,
-) -> None:
-    """Schedule a task execution using Panel.
-
-    Args:
-        name (str): task name (used for logs).
-        enabled (bool): flag that marks a task as enabled.
-            tasks are not executed if disabled.
-        hour (int | None): start hour (used only if also minute is not None).
-        minute (int | None): start minute (used only if also hour is not None).
-        period (str): the period between executions.
-            May be expressed as a timedelta or a string.
-
-            * Week: `'1w'`
-            * Day: `'1d'`
-            * Hour: `'1h'`
-            * Minute: `'1m'`
-            * Second: `'1s'`
-
-        callable (Callable): the task to be executed.
-    """
-    # Starting scheduled tasks (if enabled)
-    if enabled:
-        log.info(f"starting task '{name}'")
-        if (hour is not None) and (minute is not None):
-            start_time = dt.datetime.today().replace(
-                hour=hour,
-                minute=minute,
-            )
-            # Set start time to tomorrow if the time already passed
-            if start_time < dt.datetime.now():
-                start_time = start_time + dt.timedelta(days=1)
-            log.info(
-                f"starting time: {start_time.strftime('%Y-%m-%d %H:%M')} - period: {period}"
-            )
-        else:
-            start_time = None
-            log.info(f"starting time: now - period: {period}")
-        pn.state.schedule_task(
-            f"data_lunch_{name}",
-            callable,
-            period=period,
-            at=start_time,
-        )
 
 
 # Call for hydra

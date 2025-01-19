@@ -3,6 +3,8 @@
 site_name: Data-Lunch
 site_url: "http://Michele-Alberti.github.io/data-lunch/"
 site_author: Michele Alberti
+site_description: >-
+  The ultimate web app for a well organized lunch
 
 # Repository
 repo_name: Michele-Alberti/data-lunch
@@ -11,9 +13,10 @@ edit_uri: ""
 
 # Navigation bar
 nav:
-- About Us: index.md
+- Home: index.md
 - getting_started.md
 - Documentation: reference/
+- Developers: developers.md
 
 # THEME -----------------------------------------------------------------------
 # Theme
@@ -22,15 +25,28 @@ theme:
   logo: assets/logo-dark.png
   favicon: assets/favicon.ico
   palette:
-    scheme: dlunch
+    # Light mode
+    - scheme: dlunch
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
   features:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - navigation.top
+    - toc.follow
+  custom_dir: docs/overrides
 
 # Custom colors
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/hero.css
 
 # PLUGINS AND MARKDOWN EXTENSIONS ---------------------------------------------
 # Docs versioning (mike)
@@ -42,9 +58,9 @@ extra:
 
 # Plugins
 plugins:
-- gh-admonitions
 - search
 - autorefs
+- gh-admonitions
 - gen-files:
     scripts:
     - scripts/docs/generate_reference_pages.py
@@ -76,6 +92,8 @@ plugins:
 
 # Extensions
 markdown_extensions:
+  - toc:
+      permalink: true
   - admonition
   - pymdownx.details
   - pymdownx.superfences

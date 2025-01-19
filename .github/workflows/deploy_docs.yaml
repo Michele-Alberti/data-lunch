@@ -30,7 +30,7 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11.7'
           cache: 'pip'
@@ -48,7 +48,7 @@ jobs:
           MAJOR_MINOR_VERSION=$(grep -m 1 '^version =' pyproject.toml | sed -E 's/version = "([0-9]+\.[0-9]+).*/\1/')
           VERSION="v$MAJOR_MINOR_VERSION"
           echo "current version (major-minor): $VERSION"
-          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Build and deploy documentation for development
         if: github.ref_name == 'development'
         run: |
@@ -57,9 +57,9 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           ALIAS=stable
-          echo "version: $VERSION"
+          echo "version: "${{ steps.get_version.outputs.version }}"
           echo "alias: $ALIAS"
-          mike deploy --push --update-aliases "$VERSION" "$ALIAS"
+          mike deploy --push --update-aliases "${{ steps.get_version.outputs.version }}" "$ALIAS"
       - name: Update default (stable)
         if: ${{ env.alias }} == 'stable'
         run: mike set-default --push stable
