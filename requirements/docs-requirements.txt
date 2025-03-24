@@ -1,9 +1,9 @@
 mkdocs==1.6.1 
-mkdocstrings==0.27.0
-mkdocstrings-python==1.13.0
-mkdocs-material==9.5.49
-mkdocs-gen-files==0.4.0
-mkdocs-literate-nav==0.6.1
+mkdocstrings==0.29.0
+mkdocstrings-python==1.16.8
+mkdocs-material==9.6.9
+mkdocs-gen-files==0.5.0
+mkdocs-literate-nav==0.6.2
 mkdocs-section-index==0.3.9
 mkdocs-github-admonitions-plugin==0.0.3
 mike==2.1.3
