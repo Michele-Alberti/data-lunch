@@ -12,6 +12,7 @@ nthreads: null
 # Dashboard options
 result_column_text: "# Orders"
 time_column_text: "#### Summary"
+birthday_column_text: "#### B-days"
 lunch_times_options:
   - "12:00"
   - "12:30"
@@ -60,6 +61,15 @@ additional_items_to_concat:
 guest_types: # Check also guests icons in panel/gui
   - Edison Guest
   - External Guest
+
+# BIRTHDAYS NOTIFICATION
+birthdays_notification:
+  # Set to false to disable birthday notification
+  enabled: true
+  # Days ahead to check
+  days_ahead: 90
+  # Max birthdays to notify
+  max_birthdays_to_notify: 7
 
 # NOTIFICATIONS
 notifications:

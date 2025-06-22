@@ -3,6 +3,7 @@
 Helper classes and utility functions for data management are defined here.
 """
 
+import datetime
 import hydra
 import logging
 from omegaconf import DictConfig
@@ -488,6 +489,48 @@ class Stats(CommonTable):
         return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
 
 
+class Birthdays(CommonTable):
+    """Table with privileged users birthdays."""
+
+    __tablename__ = "birthdays"
+    """Name of the table."""
+    user = Column(
+        String(30),
+        ForeignKey("privileged_users.user", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+        sqlite_on_conflict_primary_key="REPLACE",
+    )
+    """User ID (username)."""
+    user_record = relationship(
+        "PrivilegedUsers", back_populates="birthday_record"
+    )
+    """User connected to this order."""
+    date = Column(
+        Date,
+        nullable=False,
+    )
+    """Users's birthday."""
+    first_name = Column(
+        String(30),
+        nullable=False,
+    )
+    """User's first name."""
+    last_name = Column(
+        String(30),
+        nullable=False,
+    )
+    """User's last name."""
+
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
+        return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
+
+
 class Flags(CommonTable):
     """Table with global flags used by Data-Lunch.
 
@@ -559,6 +602,14 @@ class PrivilegedUsers(CommonTable):
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
     """Admin flag (true if admin)."""
+
+    birthday_record = relationship(
+        "Birthdays",
+        uselist=False,
+        back_populates="user_record",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self) -> str:
         """Simple object representation.
@@ -828,7 +879,7 @@ class DatabaseConnector:
         """Set a key,value pair inside `flag` table.
 
         Args:
-            id (str): flag id (name).
+            id (str): flag ID (name).
             value (bool): flag value.
         """
 
@@ -852,7 +903,7 @@ class DatabaseConnector:
         Optionally select the values to return if the flag is missing (default to None).
 
         Args:
-            id (str): flag id (name).
+            id (str): flag ID (name).
             value_if_missing (bool | None, optional): value to return if the flag does not exist. Defaults to None.
 
         Returns:
@@ -860,12 +911,66 @@ class DatabaseConnector:
         """
 
         session = self.create_session()
-        flag = session.get(Flags, id)
-        if flag is None:
-            value = value_if_missing
-        else:
-            value = flag.value
+
+        with session:
+            flag = session.get(Flags, id)
+            if flag is None:
+                value = value_if_missing
+            else:
+                value = flag.value
         return value
+
+    def set_user_birthday(
+        self,
+        username: str,
+        birthday_date: datetime.date,
+        first_name: str,
+        last_name: str,
+    ) -> None:
+        """Set birthday for a specific user.
+
+        Args:
+            username (str): user ID (name).
+            birthday_date (bool): birthday date.
+        """
+
+        session = self.create_session()
+
+        with session:
+            # Write the selected flag (it will be overwritten if exists)
+            new_birthday = Birthdays(
+                user=username,
+                date=birthday_date,
+                first_name=first_name.lower(),
+                last_name=last_name.lower(),
+            )
+
+            # Use an upsert for postgresql, a simple session add otherwise
+            DatabaseConnector.session_add_with_upsert(
+                session=session,
+                constraint="birthdays_pkey",
+                new_record=new_birthday,
+            )
+
+            session.commit()
+
+    def get_user_birthday(self, username: str) -> Birthdays:
+        """Set birthday for a specific user.
+
+        Args:
+            username (str): user ID (name).
+            birthday_date (bool): birthday date.
+
+        Returns:
+            Birthdays: birthday record for the user.
+        """
+
+        session = self.create_session()
+
+        with session:
+            birthday = session.get(Birthdays, username)
+
+        return birthday
 
 
 # FUNCTIONS -------------------------------------------------------------------

@@ -345,6 +345,16 @@ class Waiter:
                 gi.person_widget.widgets["guest"].disabled = True
                 gi.person_widget.widgets["guest"].visible = False
 
+            # Birthday alert
+            if not self.database_connector.get_user_birthday(
+                username=self.auth_user.name
+            ) and not self.auth_user.is_guest(allow_override=False):
+                # If no birthday is set show alert
+                gi.missing_birthday_alert.visible = True
+            else:
+                # If birthday is set hide alert
+                gi.missing_birthday_alert.visible = False
+
             # Reload menu
             df = models.Menu.read_as_df(
                 config=self.config,
@@ -506,7 +516,6 @@ class Waiter:
                     gi.res_col.append(pn.Spacer(height=5))
                     gi.res_col.append(
                         gi.build_order_table(
-                            self.config,
                             df=df,
                             time=time,
                             guests_lists=guests_lists,
@@ -519,6 +528,60 @@ class Waiter:
 
             log.debug("results reloaded")
 
+            # Reload birthdays
+            if (
+                self.config.panel.birthdays_notification.enabled
+                and not self.auth_user.is_guest(allow_override=False)
+            ):
+                # Clear birthdays column
+                gi.birthdays_col.clear()
+                # Get birthdays from database
+                df_birthdays = self.database_connector.read_sql_query(
+                    session=session,
+                    query=self.config.db.birthdays_query.format(
+                        schema=self.config.db.get("schema", models.SCHEMA)
+                    ),
+                )
+                # Force date and next_birthday columns to datetime.date type (required for SQLite)
+                df_birthdays["date"] = pd.to_datetime(
+                    df_birthdays["date"], errors="coerce"
+                ).dt.date
+                df_birthdays["next_birthday"] = pd.to_datetime(
+                    df_birthdays["next_birthday"], errors="coerce"
+                ).dt.date
+                # If birthdays are found populate column
+                if not df_birthdays.empty:
+                    # Add birthdays title and records
+                    gi.birthdays_col.append(gi.birthday_col_title)
+                    for birthday in df_birthdays.itertuples(name="b_day"):
+                        # Change color if the birthday is today
+                        if (
+                            birthday.next_birthday
+                            == pd.Timestamp.today().date()
+                        ):
+                            birthday_css_classes = OmegaConf.to_container(
+                                self.config.panel.gui.today_class_birthday_col,
+                                resolve=True,
+                            )
+                        else:
+                            birthday_css_classes = OmegaConf.to_container(
+                                self.config.panel.gui.not_today_class_birthday_col,
+                                resolve=True,
+                            )
+                        # Build birthday label
+                        birthday_label = gi.build_birthday_label(
+                            birthday=birthday,
+                            align=("center", "center"),
+                            sizing_mode="stretch_width",
+                            css_classes=birthday_css_classes,
+                            stylesheets=[
+                                self.config.panel.gui.css_files.labels_path
+                            ],
+                        )
+                        # Add birthday label to column
+                        gi.birthdays_col.append(birthday_label)
+
+            log.debug("birthdays reloaded")
             # Clean stats column
             gi.sidebar_stats_col.clear()
             # Update stats

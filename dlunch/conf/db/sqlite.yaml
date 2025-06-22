@@ -24,3 +24,31 @@ stats_query: |-
   FROM stats
   GROUP BY "Year", "Month", "Guest"
   ORDER BY "Year", "Month", "Guest";
+# Birthdays
+birthdays_query: |-
+  SELECT "user", first_name, last_name, date,
+    DATE(
+      CASE
+        WHEN
+          strftime('%m-%d', date) >= strftime('%m-%d', 'now')
+        THEN
+          strftime('%Y', 'now') || '-' || strftime('%m-%d', date)
+        ELSE
+          (CAST(strftime('%Y', 'now') AS INTEGER) + 1) || '-' || strftime('%m-%d', date)
+      END
+    ) AS next_birthday
+  FROM birthdays
+  WHERE 
+    DATE(
+      CASE
+        WHEN
+          strftime('%m-%d', date) >= strftime('%m-%d', 'now')
+        THEN
+          strftime('%Y', 'now') || '-' || strftime('%m-%d', date)
+        ELSE
+          CAST(strftime('%Y', 'now') AS INTEGER) + 1 || '-' || strftime('%m-%d', date)
+      END
+    )
+    BETWEEN DATE('now') AND DATE('now', '+${panel.birthdays_notification.days_ahead} days')
+  ORDER BY next_birthday ASC, "user" ASC
+  LIMIT ${panel.birthdays_notification.max_birthdays_to_notify};

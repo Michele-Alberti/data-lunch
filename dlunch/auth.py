@@ -738,14 +738,23 @@ class AuthContext:
                         )
                     if user_is_admin is None:
                         user_is_admin = auth_user.is_admin()
-                    # First remove user from both 'privileged_users' and
+                    # First check user existence in 'privileged_users' and
                     # 'credentials' tables.
-                    deleted_data = auth_user.remove_user()
-                    if (deleted_data["privileged_users_deleted"] > 0) or (
-                        deleted_data["credentials_deleted"] > 0
-                    ):
+                    session = self.database_connector.create_session()
+                    with session:
+                        # Check if user exists in privileged_users table
+                        user_exists = (
+                            session.get(models.PrivilegedUsers, username)
+                            is not None
+                        )
+                        # Check if user exists in credentials table
+                        credentials_exists = (
+                            session.get(models.Credentials, username)
+                            is not None
+                        )
+                    if (user_exists) or (credentials_exists):
                         pn.state.notifications.success(
-                            f"Removed old data for<br>'{username}'<br>auth: {deleted_data['privileged_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
+                            f"Users<br>'{username}'<br>already exists<br>data will be overwritten",
                             duration=self.config.panel.notifications.duration,
                         )
                     else:

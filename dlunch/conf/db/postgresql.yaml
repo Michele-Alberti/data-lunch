@@ -29,6 +29,38 @@ stats_query: |-
   FROM {schema}.stats
   GROUP BY "Year", "Month", "Guest"
   ORDER BY "Year", "Month", "Guest";
+# Birthdays
+birthdays_query: |-
+  SELECT "user", first_name, last_name, date,
+    make_date(
+      CASE
+        WHEN
+          TO_CHAR(date, 'MM-DD') >= TO_CHAR(CURRENT_DATE, 'MM-DD')
+        THEN
+          EXTRACT(YEAR FROM CURRENT_DATE)::int
+        ELSE
+          EXTRACT(YEAR FROM CURRENT_DATE)::int + 1
+      END,
+      EXTRACT(MONTH FROM date)::int,
+      EXTRACT(DAY FROM date)::int
+    ) AS next_birthday
+  FROM {schema}.birthdays
+  WHERE
+    make_date(
+      CASE
+        WHEN
+          TO_CHAR(date, 'MM-DD') >= TO_CHAR(CURRENT_DATE, 'MM-DD')
+        THEN
+          EXTRACT(YEAR FROM CURRENT_DATE)::int
+        ELSE
+          EXTRACT(YEAR FROM CURRENT_DATE)::int + 1
+      END,
+      EXTRACT(MONTH FROM date)::int,
+      EXTRACT(DAY FROM date)::int
+    ) 
+    BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '${panel.birthdays_notification.days_ahead} days'
+  ORDER BY next_birthday ASC, "user" ASC
+  LIMIT ${panel.birthdays_notification.max_birthdays_to_notify};
 
 # SAVE DATABASE TO CLOUD STORAGE
 ext_storage_upload:

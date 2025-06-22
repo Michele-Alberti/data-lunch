@@ -1,6 +1,7 @@
 """Module that defines main graphic interface and backend graphic interface.
 
-Classes that uses `param` are then used to create Panel widget directly (see `Panel docs <https://panel.holoviz.org/how_to/param/uis.html>`__)."""
+Classes that uses `param` are then used to create Panel widget directly (see `Panel docs <https://panel.holoviz.org/how_to/param/uis.html>`__).
+"""
 
 # The __future__ import is necessary to avoid circular imports, it make all
 # the type hints in this file to be interpreted as strings
@@ -15,6 +16,7 @@ import panel.widgets as pnw
 import param
 import pathlib
 
+from collections import namedtuple
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 from typing import TYPE_CHECKING
@@ -52,7 +54,15 @@ time_col_width: int = 90
 """Time column width (the time column is on the side of the menu table)."""
 time_col_spacer_width: int = 5
 """Time column spacer width."""
-main_area_min_width: int = 580 + time_col_spacer_width + time_col_width
+birthdays_col_width: int = 80
+"""Birthdays column width (the birthdays column is on the side of the menu table)."""
+main_area_min_width: int = (
+    580
+    + time_col_spacer_width
+    + time_col_width
+    + time_col_spacer_width
+    + time_col_width
+)
 """Main area width. It's the area with menu and order summary."""
 backend_min_height: int = 500
 """Backend minimum height."""
@@ -83,7 +93,9 @@ class Person(param.Parameterized):
     )
     """Takeaway flag (true if takeaway)."""
 
-    def __init__(self, config: OmegaConf, **params):
+    def __init__(
+        self, config: OmegaConf, auth_user: AuthUser | None = None, **params
+    ):
         super().__init__(**params)
         # Set lunch times from config
         self.param.lunch_time.objects = config.panel.lunch_times_options
@@ -92,11 +104,30 @@ class Person(param.Parameterized):
         self.param.guest.default = config.panel.guest_types[0]
         self.guest = config.panel.guest_types[0]
         # Check user (a username is already set for privileged users)
-        auth_user = AuthUser(config=config)
-        if not auth_user.is_guest(allow_override=False) and (
-            auth_user.name is not None
+        auth_user_instance = auth_user or AuthUser(config=config)
+        if not auth_user_instance.is_guest(allow_override=False) and (
+            auth_user_instance.name is not None
         ):
-            self.username = auth_user.name
+            self.username = auth_user_instance.name
+
+
+class PersonBirthday(param.Parameterized):
+    """Param class that define user data specific for the birthday feature.
+
+    `username` is automatically set for privileged users. It's left empty for guest users.
+
+    `lunch_time` and `guest` available value are set when instantiation happens.
+    Check `panel.lunch_times_options` and `panel.guest_types` config keys.
+    """
+
+    first_name: param.String = param.String(default="", doc="your first name")
+    """First name."""
+    last_name: param.String = param.String(default="", doc="your last name")
+    """Last name."""
+    birthday_date: param.CalendarDate = param.CalendarDate(
+        doc="Birthday date."
+    )
+    """Birthday date."""
 
     def __str__(self):
         """String representation of this object.
@@ -104,7 +135,7 @@ class Person(param.Parameterized):
         Returns:
             (str): string representation.
         """
-        return f"PERSON:{self.name}"
+        return f"PERSON_BIRTHDAY:{self.name}"
 
 
 class PasswordRenewer(param.Parameterized):
@@ -228,7 +259,7 @@ The app may add some default items to the menu.
 
 download_text: str = """
 ### Download Orders
-Download the order list.
+Download the list of orders.
 """
 """info Text used in `Download Orders` tab."""
 
@@ -237,6 +268,12 @@ guest_user_text: str = """
 """
 """info Text used in guest `Password` widget."""
 
+birthday_text: str = """
+### Birthday Data
+
+Fill your birthday data (along with your first and last name) to be included in the birthday list.
+"""
+"""info Text used in `B-Day` tab."""
 
 # QUOTES ----------------------------------------------------------------------
 # Quote table
@@ -263,7 +300,6 @@ class GraphicInterface:
         config (DictConfig): Hydra configuration dictionary.
         waiter (core.Waiter): Waiter object with methods to handle user requests.
         app (pn.Template): App panel template (see `Panel docs <https://panel.holoviz.org/how_to/templates/index.html>`__).
-        person (Person): Object with user data and preferences for the lunch order.
         auth_user (AuthUser): AuthUser object with authenticated user data.
         guest_password (str, optional): guest password to show in password tab. Used only if basic authentication is active.
             Defaults to empty string (`""`).
@@ -274,18 +310,30 @@ class GraphicInterface:
         config: DictConfig,
         waiter: core.Waiter,
         app: pn.Template,
-        person: Person,
         auth_user: AuthUser,
         guest_password: str = "",
     ):
+
+        # CONFIGURATION VARIABLE ----------------------------------------------
+        # Store configuration
+        self.config = config
+
         # CONTEXT VARIABLES ---------------------------------------------------
-        # Store authentication context
+        # Store authenticated user and authentication context
+        self.auth_user = auth_user
         self.auth_context = auth_user.auth_context
+
+        # Store waiter instance
+        self.waiter = waiter
+
+        # Person data
+        person = Person(self.config, auth_user=self.auth_user, name="User")
+        person_birthday = PersonBirthday(name="B-Day Data")
 
         # HEADER SECTION ------------------------------------------------------
         # WIDGET
         # Create PNG pane with app icon
-        self.header_object = instantiate(config.panel.gui.header_object)
+        self.header_object = instantiate(self.config.panel.gui.header_object)
 
         # BUTTONS
         # Backend button
@@ -306,7 +354,7 @@ class GraphicInterface:
             height=generic_button_height,
             icon="user-bolt",
             icon_size="2em",
-            stylesheets=[config.panel.gui.css_files.guest_override_path],
+            stylesheets=[self.config.panel.gui.css_files.guest_override_path],
         )
         # Logout button
         self.logout_button = pnw.Button(
@@ -326,16 +374,16 @@ class GraphicInterface:
             sizing_mode="stretch_width",
         )
         # Append a graphic element to the left side of header
-        if config.panel.gui.header_object:
+        if self.config.panel.gui.header_object:
             self.header_row.append(self.header_object)
         # Append a controls to the right side of header
         if self.auth_context.is_auth_active():
             self.header_row.append(pn.HSpacer())
             # Backend only for admin
-            if auth_user.is_admin():
+            if self.auth_user.is_admin():
                 self.header_row.append(self.backend_button)
             # Guest override only for non guests
-            if not auth_user.is_guest(allow_override=False):
+            if not self.auth_user.is_guest(allow_override=False):
                 self.header_row.append(self.toggle_guest_override_button)
             self.header_row.append(self.logout_button)
             self.header_row.append(
@@ -356,16 +404,16 @@ class GraphicInterface:
             # Update global variable that control guest override
             # Only non guest can store this value in 'flags' table (guest users
             # are always guests, there is no use in sorting a flag for them)
-            if not auth_user.is_guest(allow_override=False):
-                waiter.database_connector.set_flag(
-                    id=f"{auth_user.name}_guest_override",
+            if not self.auth_user.is_guest(allow_override=False):
+                self.waiter.database_connector.set_flag(
+                    id=f"{self.auth_user.name}_guest_override",
                     value=toggle,
                 )
             # Show banner if override is active
             self.guest_override_alert.visible = toggle
             # Simply reload the menu when the toggle button value changes
             if reload:
-                waiter.reload_menu(
+                self.waiter.reload_menu(
                     None,
                     self,
                 )
@@ -390,9 +438,35 @@ class GraphicInterface:
         )
         # Time column title
         self.time_col_title = pn.pane.Markdown(
-            config.panel.time_column_text,
+            self.config.panel.time_column_text,
             sizing_mode="stretch_width",
             styles={"text-align": "center"},
+        )
+        # Birthday column title
+        self.birthday_col_title = pn.pane.Markdown(
+            self.config.panel.birthday_column_text,
+            sizing_mode="stretch_width",
+            styles={"text-align": "center"},
+        )
+        # Missing birthday message
+        self.missing_birthday_alert = pn.pane.HTML(
+            """
+            <div class="no-more-order-flag">
+                <div class="icon-container">
+                    <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-gift">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M11 14v8h-4a3 3 0 0 1 -3 -3v-4a1 1 0 0 1 1 -1h6zm8 0a1 1 0 0 1 1 1v4a3 3 0 0 1 -3 3h-4v-8h6zm-2.5 -12a3.5 3.5 0 0 1 3.163 5h.337a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-7v-5h-2v5h-7a2 2 0 0 1 -2 -2v-1a2 2 0 0 1 2 -2h.337a3.486 3.486 0 0 1 -.337 -1.5c0 -1.933 1.567 -3.5 3.483 -3.5c1.755 -.03 3.312 1.092 4.381 2.934l.136 .243c1.033 -1.914 2.56 -3.114 4.291 -3.175l.209 -.002zm-9 2a1.5 1.5 0 0 0 0 3h3.143c-.741 -1.905 -1.949 -3.02 -3.143 -3zm8.983 0c-1.18 -.02 -2.385 1.096 -3.126 3h3.143a1.5 1.5 0 1 0 -.017 -3z" />
+                    </svg>
+                    <span><strong>Your birthday date is missing!</strong></span>
+                </div>
+                <div>
+                    Use the B-Day tab to add missing info.
+                </div>
+            </div>
+            """,
+            margin=5,
+            sizing_mode="stretch_width",
+            stylesheets=[self.config.panel.gui.css_files.no_more_orders_path],
         )
         # "no more order" message
         self.no_more_order_alert = pn.pane.HTML(
@@ -412,7 +486,7 @@ class GraphicInterface:
             """,
             margin=5,
             sizing_mode="stretch_width",
-            stylesheets=[config.panel.gui.css_files.no_more_orders_path],
+            stylesheets=[self.config.panel.gui.css_files.no_more_orders_path],
         )
         # Alert for guest override
         self.guest_override_alert = pn.pane.HTML(
@@ -433,11 +507,11 @@ class GraphicInterface:
             """,
             margin=5,
             sizing_mode="stretch_width",
-            stylesheets=[config.panel.gui.css_files.guest_override_path],
+            stylesheets=[self.config.panel.gui.css_files.guest_override_path],
         )
         # Takeaway alert
-        self.takeaway_alert_sign = f"<span {config.panel.gui.takeaway_alert_icon_options}>{config.panel.gui.takeaway_svg_icon}</span>"
-        self.takeaway_alert_text = f"<span {config.panel.gui.takeaway_alert_text_options}>{config.panel.gui.takeaway_id}</span> "
+        self.takeaway_alert_sign = f"<span {self.config.panel.gui.takeaway_alert_icon_options}>{self.config.panel.gui.takeaway_svg_icon}</span>"
+        self.takeaway_alert_text = f"<span {self.config.panel.gui.takeaway_alert_text_options}>{self.config.panel.gui.takeaway_id}</span> "
         # No menu image attribution
         self.no_menu_image_attribution = pn.pane.HTML(
             """
@@ -465,14 +539,16 @@ class GraphicInterface:
         # WIDGETS
         # JPG shown when no menu is available
         self.no_menu_image = pn.pane.JPG(
-            config.panel.gui.no_menu_image_path, alt_text="no menu"
+            self.config.panel.gui.no_menu_image_path, alt_text="no menu"
         )
         # Create dataframe instance
         self.dataframe = pnw.Tabulator(
             name="Order",
-            widths={config.panel.gui.note_column_name: 180},
+            widths={self.config.panel.gui.note_column_name: 180},
             selectable=False,
-            stylesheets=[config.panel.gui.css_files.custom_tabulator_path],
+            stylesheets=[
+                self.config.panel.gui.css_files.custom_tabulator_path
+            ],
         )
 
         # BUTTONS
@@ -543,6 +619,8 @@ class GraphicInterface:
         )
         # Create column for lunch time labels
         self.time_col = pn.Column(width=time_col_width)
+        # Create column for birthdays
+        self.birthdays_col = pn.Column(width=birthdays_col_width)
         # Create column for resulting menus
         self.res_col = pn.Column(
             sizing_mode="stretch_width", min_width=main_area_min_width
@@ -554,6 +632,8 @@ class GraphicInterface:
                 self.dataframe,
                 pn.Spacer(width=time_col_spacer_width),
                 self.time_col,
+                pn.Spacer(width=time_col_spacer_width),
+                self.birthdays_col,
             ],
             min_width=main_area_min_width,
         )
@@ -579,7 +659,7 @@ class GraphicInterface:
             toggle: pnw.Toggle, reload: bool = True
         ):
             # Update global variable
-            waiter.database_connector.set_flag(
+            self.waiter.database_connector.set_flag(
                 id="no_more_orders", value=toggle
             )
 
@@ -593,7 +673,7 @@ class GraphicInterface:
 
             # Simply reload the menu when the toggle button value changes
             if reload:
-                waiter.reload_menu(
+                self.waiter.reload_menu(
                     None,
                     self,
                 )
@@ -603,14 +683,14 @@ class GraphicInterface:
 
         # Refresh button callback
         self.refresh_button.on_click(
-            lambda e: waiter.reload_menu(
+            lambda e: self.waiter.reload_menu(
                 e,
                 self,
             )
         )
         # Send order button callback
         self.send_order_button.on_click(
-            lambda e: waiter.send_order(
+            lambda e: self.waiter.send_order(
                 e,
                 app,
                 person,
@@ -619,7 +699,7 @@ class GraphicInterface:
         )
         # Delete order button callback
         self.delete_order_button.on_click(
-            lambda e: waiter.delete_order(
+            lambda e: self.waiter.delete_order(
                 e,
                 app,
                 self,
@@ -627,7 +707,7 @@ class GraphicInterface:
         )
         # Change order time button callback
         self.change_order_time_takeaway_button.on_click(
-            lambda e: waiter.change_order_time_takeaway(
+            lambda e: self.waiter.change_order_time_takeaway(
                 e,
                 person,
                 self,
@@ -647,10 +727,10 @@ class GraphicInterface:
         # Foldable additional item details dropdown menu
         jinja_template = jinja2.Environment(
             loader=jinja2.BaseLoader
-        ).from_string(config.panel.gui.additional_item_details_template)
+        ).from_string(self.config.panel.gui.additional_item_details_template)
         self.additional_items_details = pn.pane.HTML(
             jinja_template.render(
-                items=config.panel.additional_items_to_concat
+                items=self.config.panel.additional_items_to_concat
             ),
             width=sidebar_content_width,
         )
@@ -662,7 +742,7 @@ class GraphicInterface:
             widgets={
                 "guest": pnw.RadioButtonGroup(
                     options=OmegaConf.to_container(
-                        config.panel.guest_types, resolve=True
+                        self.config.panel.guest_types, resolve=True
                     ),
                     button_type="primary",
                     button_style="outline",
@@ -673,6 +753,11 @@ class GraphicInterface:
                     description=person.param.username.doc,
                 ),
             },
+            width=sidebar_content_width,
+        )
+        # Birthday data
+        self.person_birthday_widget = pn.Param(
+            person_birthday.param,
             width=sidebar_content_width,
         )
         # File upload
@@ -687,8 +772,8 @@ class GraphicInterface:
             width=sidebar_content_width - 20,
             layout="fit_columns",
             stylesheets=[
-                config.panel.gui.css_files.custom_tabulator_path,
-                config.panel.gui.css_files.stats_tabulator_path,
+                self.config.panel.gui.css_files.custom_tabulator_path,
+                self.config.panel.gui.css_files.stats_tabulator_path,
             ],
         )
         # Password renewer
@@ -740,11 +825,21 @@ class GraphicInterface:
         )
         # Download button and callback
         self.download_button = pn.widgets.FileDownload(
-            callback=lambda: waiter.download_dataframe(self),
-            filename=config.panel.file_name + ".xlsx",
+            callback=lambda: self.waiter.download_dataframe(self),
+            filename=self.config.panel.file_name + ".xlsx",
             sizing_mode="stretch_width",
             icon="download",
             icon_size="2em",
+        )
+        # Birthday button
+        self.submit_birthday_button = pnw.Button(
+            name="Submit",
+            button_type="success",
+            button_style="outline",
+            height=generic_button_height,
+            icon="gift",
+            icon_size="2em",
+            sizing_mode="stretch_width",
         )
         # Password button
         self.submit_password_button = pnw.Button(
@@ -764,7 +859,7 @@ class GraphicInterface:
             self.person_widget,
             pn.Spacer(height=5),
             self.additional_items_details,
-            name="User",
+            name="👤 User",
             width=sidebar_content_width,
         )
         # Leave an empty widget for the 'other info' section
@@ -777,23 +872,39 @@ class GraphicInterface:
             upload_text,
             self.file_widget,
             self.build_menu_button,
-            name="Menu Upload",
+            name="🍕 Menu",
             width=sidebar_content_width,
         )
         # Create column for downloading Excel with orders
         self.sidebar_download_orders_col = pn.Column(
             download_text,
             self.download_button,
-            name="Download Orders",
+            name="🛎️ Orders",
             width=sidebar_content_width,
         )
         # Create column for statistics
         self.sidebar_stats_col = pn.Column(
-            name="Stats", width=sidebar_content_width
+            name="📊 Stats", width=sidebar_content_width
+        )
+        # Create column for birthday
+        birthday_data = self.waiter.database_connector.get_user_birthday(
+            self.auth_user.name
+        )
+        if birthday_data:
+            birthday_info = f"**Registered name:** `{birthday_data.first_name.title()} {birthday_data.last_name.title()}`<br>**Registered date:** `{birthday_data.date.strftime('%d/%m/%Y')}`<br><br>_Reload the page to see updates._"
+        else:
+            birthday_info = "**No birthday data registered yet.<br>Fill the form below to register your birthday, then reload the page.**"
+        self.sidebar_birthday_column = pn.Column(
+            birthday_text,
+            birthday_info,
+            self.person_birthday_widget,
+            self.submit_birthday_button,
+            name="🎂 B-Day",
+            width=sidebar_content_width,
         )
 
         self.sidebar_password = pn.Column(
-            config.panel.gui.psw_text,
+            self.config.panel.gui.psw_text,
             self.password_widget,
             self.submit_password_button,
             pn.Spacer(height=5),
@@ -801,7 +912,7 @@ class GraphicInterface:
             guest_user_text,
             self.guest_username_widget,
             self.guest_password_widget,
-            name="Password",
+            name="🔑 Keys",
             width=sidebar_content_width,
         )
 
@@ -813,15 +924,23 @@ class GraphicInterface:
         )
         # Reload tabs according to auth_user.is_guest results and guest_override
         # flag (no need to cleans, tabs are already empty)
-        self.load_sidebar_tabs(auth_user=auth_user, clear_before_loading=False)
+        self.load_sidebar_tabs(
+            auth_user=self.auth_user, clear_before_loading=False
+        )
 
         # CALLBACKS
         # Build menu button callback
         self.build_menu_button.on_click(
-            lambda e: waiter.build_menu(
+            lambda e: self.waiter.build_menu(
                 e,
                 app,
                 self,
+            )
+        )
+        # Birthday password button callback
+        self.submit_birthday_button.on_click(
+            lambda e: self.birthday_button_callback(
+                person_birthday=person_birthday,
             )
         )
         # Submit password button callback
@@ -846,7 +965,6 @@ class GraphicInterface:
     # MAIN SECTION
     def build_order_table(
         self,
-        config: DictConfig,
         df: pd.DataFrame,
         time: str,
         guests_lists: dict = {},
@@ -854,7 +972,6 @@ class GraphicInterface:
         """Build `Tabulator` object to display placed orders.
 
         Args:
-            config (DictConfig): Hydra configuration dictionary.
             df (pd.DataFrame): Table with orders. It has columns for each user that placed an order, total and a note columns.
             time (str): Lunch time.
             guests_lists (dict, optional): Dictionary with lists of users dived by guest type.
@@ -869,7 +986,7 @@ class GraphicInterface:
         for guest_type, guests_list in guests_lists.items():
             columns_with_guests_icons[
                 columns_with_guests_icons.isin(guests_list)
-            ] += f" {config.panel.gui.guest_icons[guest_type]}"
+            ] += f" {self.config.panel.gui.guest_icons[guest_type]}"
         df.columns = columns_with_guests_icons.to_list()
         # Create table widget
         orders_table_widget = pnw.Tabulator(
@@ -877,7 +994,9 @@ class GraphicInterface:
             value=df,
             frozen_columns=[0],
             layout="fit_data_table",
-            stylesheets=[config.panel.gui.css_files.custom_tabulator_path],
+            stylesheets=[
+                self.config.panel.gui.css_files.custom_tabulator_path
+            ],
         )
         # Make the table non-editable
         orders_table_widget.editors = {c: None for c in df.columns}
@@ -934,13 +1053,58 @@ class GraphicInterface:
 
         return time_label
 
+    def build_birthday_label(
+        self,
+        birthday: namedtuple,
+        css_classes: list = [],
+        stylesheets: list = [],
+        **kwargs,
+    ) -> pn.pane.HTML:
+        """Build HTML field to display the birthday label.
+
+        This function is used to display labels with upcoming birthdays.
+
+        Those are shown on the side of the menu table.
+
+        Args:
+            df_birthdays (pandas.DataFrame): Dataframe with username, first and last name, birthday date and next birthday date.
+            diners_n (str): Number of people that placed an order.
+            css_classes (list, optional): CSS classes to assign to the resulting HTML pane. Defaults to [].
+            stylesheets (list, optional): Stylesheets to assign to the resulting HTML pane
+                (see `Panel docs <https://panel.holoviz.org/how_to/styling/apply_css.html>`__). Defaults to [].
+
+        Returns:
+            pn.pane.HTML: HTML pane representing a label with birthday info.
+        """
+        # SQLite will returna string instead of a datetime object, so we need to convert it
+        if isinstance(birthday.date, str):
+            # Convert string to datetime object
+            birthday_date = datetime.datetime.strptime(
+                birthday.date, "%Y-%m-%d"
+            ).date()
+        else:
+            birthday_date = birthday.date
+
+        # Time label pane
+        classes_str = " ".join(css_classes)
+        time_label = pn.pane.HTML(
+            f"""<span class="tooltip">
+                    <span class="{classes_str}">{birthday_date.strftime("%b<br>%d").upper()}</span>
+                    <span class="tooltip-text">{birthday.first_name.title()}<br>{birthday.last_name.title()}</span>
+                </span>""",
+            stylesheets=stylesheets,
+            **kwargs,
+        )
+
+        return time_label
+
     # SIDEBAR SECTION
     def load_sidebar_tabs(
         self, auth_user: AuthUser, clear_before_loading: bool = True
     ) -> None:
         """Append tabs to the app template sidebar.
 
-        The flag `clear_before_loading` is set to true only during first instantiation, because the sidebar is empty at first.
+        The flag `clear_before_loading` is set to False only during first instantiation, because the sidebar is empty at first.
         Use the default value during normal operation to avoid tabs duplication.
 
         Args:
@@ -958,6 +1122,11 @@ class GraphicInterface:
             self.sidebar_tabs.append(self.sidebar_menu_upload_col)
             self.sidebar_tabs.append(self.sidebar_download_orders_col)
             self.sidebar_tabs.append(self.sidebar_stats_col)
+            if (
+                self.auth_context.is_auth_active()
+                and self.config.panel.birthdays_notification.enabled
+            ):
+                self.sidebar_tabs.append(self.sidebar_birthday_column)
             if self.auth_context.is_basic_auth_active():
                 self.sidebar_tabs.append(self.sidebar_password)
 
@@ -1075,6 +1244,36 @@ class GraphicInterface:
 
         return {"stats": stats, "info": other_info}
 
+    def birthday_button_callback(
+        self, person_birthday: PersonBirthday
+    ) -> None:
+        """Callback for the birthday button."""
+        # Submit birthday
+        try:
+            self.waiter.database_connector.set_user_birthday(
+                username=self.auth_user.name,
+                birthday_date=person_birthday.birthday_date,
+                first_name=person_birthday.first_name,
+                last_name=person_birthday.last_name,
+            )
+        except Exception as e:
+            # Notify error
+            pn.state.notifications.error(
+                f"Error updating birthday date: {e}",
+                duration=self.config.panel.notifications.duration,
+            )
+            logging.exception(
+                f"error updating birthday date for user {self.auth_user.name}:\n{e}"
+            )
+            raise e
+        # Notify success
+        pn.state.notifications.success(
+            "Birthday date updated",
+            duration=self.config.panel.notifications.duration,
+        )
+        # Reload tabs to show the new date
+        self.load_sidebar_tabs(auth_user=self.auth_user)
+
 
 # BACKEND INTERFACE CLASS =====================================================
 class BackendInterface:
@@ -1094,8 +1293,14 @@ class BackendInterface:
         config: DictConfig,
         auth_user: AuthUser,
     ):
+
+        # CONFIGURATION VARIABLE ----------------------------------------------
+        # Store configuration
+        self.config = config
+
         # CONTEXT VARIABLES ---------------------------------------------------
-        # Store authentication context
+        # Store authenticated user and authentication context
+        self.auth_user = auth_user
         self.auth_context = auth_user.auth_context
 
         # HEADER SECTION ------------------------------------------------------
@@ -1148,7 +1353,7 @@ class BackendInterface:
             """,
             margin=5,
             sizing_mode="stretch_width",
-            stylesheets=[config.panel.gui.css_files.no_more_orders_path],
+            stylesheets=[self.config.panel.gui.css_files.no_more_orders_path],
         )
 
         # WIDGET
@@ -1186,7 +1391,7 @@ class BackendInterface:
         )
         # Flags content (use empty dataframe to instantiate)
         df_flags = models.Flags.read_as_df(
-            config=config,
+            config=self.config,
             index_col="id",
         )
         self.flags_content = pn.widgets.Tabulator(
@@ -1236,7 +1441,7 @@ class BackendInterface:
         # COLUMN
         # Create column with user credentials controls (basic auth)
         self.add_update_user_column = pn.Column(
-            config.panel.gui.psw_text,
+            self.config.panel.gui.psw_text,
             self.password_widget,
             pn.VSpacer(),
             self.submit_password_button,
@@ -1287,7 +1492,7 @@ class BackendInterface:
             min_height=backend_min_height,
         )
         # Add controls only for admin users
-        if not auth_user.is_admin():
+        if not self.auth_user.is_admin():
             self.backend_controls.append(self.access_denied_text)
             self.backend_controls.append(pn.Spacer(height=15))
         else:
@@ -1324,17 +1529,17 @@ class BackendInterface:
 
         # CALLBACKS
         # Submit password button callback
-        def submit_password_button_callback(self, config):
+        def submit_password_button_callback(self):
             success = self.auth_context.backend_submit_password(
                 gi=self,
                 user_is_admin=self.password_widget.object.admin,
                 user_is_guest=self.password_widget.object.guest,
             )
             if success:
-                self.reload_backend(config)
+                self.reload_backend()
 
         self.submit_password_button.on_click(
-            lambda e: submit_password_button_callback(self, config)
+            lambda e: submit_password_button_callback(self)
         )
 
         # Add privileged user callback
@@ -1345,15 +1550,15 @@ class BackendInterface:
             ].value_input
             # Add user
             AuthUser(
-                config=config, name=username_key_press
+                config=self.config, name=username_key_press
             ).add_privileged_user(
                 is_admin=self.add_privileged_user_widget.object.admin,
             )
 
-            self.reload_backend(config)
+            self.reload_backend()
             pn.state.notifications.success(
                 f"User '{username_key_press}' added",
-                duration=config.panel.notifications.duration,
+                duration=self.config.panel.notifications.duration,
             )
 
         self.add_privileged_user_button.on_click(
@@ -1366,20 +1571,20 @@ class BackendInterface:
             username_key_press = self.user_eraser._widgets["user"].value_input
             # Delete user
             deleted_data = AuthUser(
-                config=config, name=username_key_press
+                config=self.config, name=username_key_press
             ).remove_user()
             if (deleted_data["privileged_users_deleted"] > 0) or (
                 deleted_data["credentials_deleted"] > 0
             ):
-                self.reload_backend(config)
+                self.reload_backend()
                 pn.state.notifications.success(
                     f"User '{self.user_eraser.object.user}' deleted<br>auth: {deleted_data['privileged_users_deleted']}<br>cred: {deleted_data['credentials_deleted']}",
-                    duration=config.panel.notifications.duration,
+                    duration=self.config.panel.notifications.duration,
                 )
             else:
                 pn.state.notifications.error(
                     f"User '{username_key_press}' does not exist",
-                    duration=config.panel.notifications.duration,
+                    duration=self.config.panel.notifications.duration,
                 )
 
         self.delete_user_button.on_click(
@@ -1389,12 +1594,14 @@ class BackendInterface:
         # Clear flags callback
         def clear_flags_button_callback(self):
             # Clear flags
-            num_rows_deleted = models.Flags.clear_guest_override(config=config)
+            num_rows_deleted = models.Flags.clear_guest_override(
+                config=self.config
+            )
             # Reload and notify user
-            self.reload_backend(config)
+            self.reload_backend()
             pn.state.notifications.success(
                 f"Guest override flags cleared<br>{num_rows_deleted} rows deleted",
-                duration=config.panel.notifications.duration,
+                duration=self.config.panel.notifications.duration,
             )
 
         self.clear_flags_button.on_click(
@@ -1416,12 +1623,9 @@ class BackendInterface:
         pn.state.location.reload = True
 
     # MAIN SECTION
-    def reload_backend(self, config: DictConfig) -> None:
+    def reload_backend(self) -> None:
         """Reload backend by updating user lists and privileges.
         Read also flags from `flags` table.
-
-        Args:
-            config (DictConfig): Hydra configuration dictionary.
         """
         # Users and guests lists
         self.users_tabulator.value = (
@@ -1429,7 +1633,7 @@ class BackendInterface:
         )
         # Flags table content
         df_flags = models.Flags.read_as_df(
-            config=config,
+            config=self.config,
             index_col="id",
         )
         self.flags_content.value = df_flags
