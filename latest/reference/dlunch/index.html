@@ -1206,8 +1206,7 @@
 <span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Panel main app factory function</span>
 
 <span class="sd">    Args:</span>
@@ -1275,12 +1274,10 @@
     <span class="c1"># by a dedicated function</span>
     <span class="c1"># Create person instance, widget and column</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;instantiate person class and graphic interface&quot;</span><span class="p">)</span>
-    <span class="n">person</span> <span class="o">=</span> <span class="n">gui</span><span class="o">.</span><span class="n">Person</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;User&quot;</span><span class="p">)</span>
     <span class="n">gi</span> <span class="o">=</span> <span class="n">gui</span><span class="o">.</span><span class="n">GraphicInterface</span><span class="p">(</span>
         <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
         <span class="n">waiter</span><span class="o">=</span><span class="n">waiter</span><span class="p">,</span>
         <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
-        <span class="n">person</span><span class="o">=</span><span class="n">person</span><span class="p">,</span>
         <span class="n">guest_password</span><span class="o">=</span><span class="n">guest_password</span><span class="p">,</span>
         <span class="n">auth_user</span><span class="o">=</span><span class="n">auth_user</span><span class="p">,</span>
     <span class="p">)</span>
@@ -1292,6 +1289,7 @@
     <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gi</span><span class="o">.</span><span class="n">no_menu_col</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gi</span><span class="o">.</span><span class="n">guest_override_alert</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gi</span><span class="o">.</span><span class="n">no_more_order_alert</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gi</span><span class="o">.</span><span class="n">missing_birthday_alert</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gi</span><span class="o">.</span><span class="n">main_header_row</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gi</span><span class="o">.</span><span class="n">quote</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Spacer</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">15</span><span class="p">))</span>
@@ -1402,7 +1400,8 @@
 
             <details class="quote">
               <summary>Source code in <code>dlunch/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
+<span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
@@ -1452,8 +1451,7 @@
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_backend</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
+<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_backend</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pn</span><span class="o">.</span><span class="n">Template</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Panel backend app factory function</span>
 
 <span class="sd">    Args:</span>
