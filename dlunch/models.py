@@ -450,21 +450,16 @@ class Stats(CommonTable):
     # primary key is available only with __table_args__
     __tablename__ = "stats"
     """Name of the table."""
-    __table_args__ = (
-        PrimaryKeyConstraint(
-            "date", "guest", name="stats_pkey", sqlite_on_conflict="REPLACE"
-        ),
-    )
-    """Table arguments, used to create primary key (ON CONFLICT options for composite
-    primary key is available only with __table_args__)."""
     date = Column(
         Date,
+        primary_key=True,
         nullable=False,
         server_default=func.current_date(),
     )
     """Day to which the statistics refers to."""
     guest = Column(
         String(20),
+        primary_key=True,
         nullable=True,
         default="NotAGuest",
         server_default="NotAGuest",
@@ -499,7 +494,6 @@ class Birthdays(CommonTable):
         ForeignKey("privileged_users.user", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """User ID (username)."""
     user_record = relationship(
@@ -543,7 +537,6 @@ class Flags(CommonTable):
         String(50),
         primary_key=True,
         nullable=False,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """Flag ID (name)."""
     value = Column(Boolean, nullable=False)
@@ -595,7 +588,6 @@ class PrivilegedUsers(CommonTable):
     user = Column(
         String(100),
         primary_key=True,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """User name."""
     admin = Column(
@@ -628,7 +620,6 @@ class Credentials(CommonTable):
     user = Column(
         String(100),
         primary_key=True,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """Username."""
     password_hash = Column(Password(150), unique=False, nullable=False)
@@ -727,8 +718,8 @@ class DatabaseConnector:
     def session_add_with_upsert(
         session: Session, constraint: str, new_record: Stats | Flags
     ) -> None:
-        """Use an upsert statement for postgresql to add a new record to a table,
-        a simple session add otherwise.
+        """Use an upsert statement to add a new record to a table,
+        for both Postgresql and SQLite databases.
 
         Args:
             session (Session): SQLAlchemy session object.
@@ -737,26 +728,21 @@ class DatabaseConnector:
         """
         # Use an upsert for postgresql (for sqlite an 'on conflict replace' is set
         # on table, so session.add is fine)
-        if DatabaseConnector.get_db_dialect(session) == "postgresql":
-            insert_statement = postgresql_upsert(new_record.__table__).values(
-                {
-                    column.name: getattr(new_record, column.name)
-                    for column in new_record.__table__.c
-                    if getattr(new_record, column.name, None) is not None
-                }
-            )
-            upsert_statement = insert_statement.on_conflict_do_update(
-                constraint=constraint,
-                set_={
-                    column.name: getattr(
-                        insert_statement.excluded, column.name
-                    )
-                    for column in insert_statement.excluded
-                },
-            )
-            session.execute(upsert_statement)
-        else:
-            session.add(new_record)
+        insert_statement = postgresql_upsert(new_record.__table__).values(
+            {
+                column.name: getattr(new_record, column.name)
+                for column in new_record.__table__.c
+                if getattr(new_record, column.name, None) is not None
+            }
+        )
+        upsert_statement = insert_statement.on_conflict_do_update(
+            constraint=constraint,
+            set_={
+                column.name: getattr(insert_statement.excluded, column.name)
+                for column in insert_statement.excluded
+            },
+        )
+        session.execute(upsert_statement)
 
     @staticmethod
     def read_sql_query(session: Session, query: str) -> pd.DataFrame:
