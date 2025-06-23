@@ -57,7 +57,7 @@ jobs:
         if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           ALIAS=stable
-          echo "version: "${{ steps.get_version.outputs.version }}"
+          echo "version: ${{ steps.get_version.outputs.version }}"
           echo "alias: $ALIAS"
           mike deploy --push --update-aliases "${{ steps.get_version.outputs.version }}" "$ALIAS"
       - name: Update default (stable)

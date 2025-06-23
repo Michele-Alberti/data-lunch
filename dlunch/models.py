@@ -3,6 +3,7 @@
 Helper classes and utility functions for data management are defined here.
 """
 
+import datetime
 import hydra
 import logging
 from omegaconf import DictConfig
@@ -449,21 +450,16 @@ class Stats(CommonTable):
     # primary key is available only with __table_args__
     __tablename__ = "stats"
     """Name of the table."""
-    __table_args__ = (
-        PrimaryKeyConstraint(
-            "date", "guest", name="stats_pkey", sqlite_on_conflict="REPLACE"
-        ),
-    )
-    """Table arguments, used to create primary key (ON CONFLICT options for composite
-    primary key is available only with __table_args__)."""
     date = Column(
         Date,
+        primary_key=True,
         nullable=False,
         server_default=func.current_date(),
     )
     """Day to which the statistics refers to."""
     guest = Column(
         String(20),
+        primary_key=True,
         nullable=True,
         default="NotAGuest",
         server_default="NotAGuest",
@@ -488,6 +484,47 @@ class Stats(CommonTable):
         return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
 
 
+class Birthdays(CommonTable):
+    """Table with privileged users birthdays."""
+
+    __tablename__ = "birthdays"
+    """Name of the table."""
+    user = Column(
+        String(30),
+        ForeignKey("privileged_users.user", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    """User ID (username)."""
+    user_record = relationship(
+        "PrivilegedUsers", back_populates="birthday_record"
+    )
+    """User connected to this order."""
+    date = Column(
+        Date,
+        nullable=False,
+    )
+    """Users's birthday."""
+    first_name = Column(
+        String(30),
+        nullable=False,
+    )
+    """User's first name."""
+    last_name = Column(
+        String(30),
+        nullable=False,
+    )
+    """User's last name."""
+
+    def __repr__(self) -> str:
+        """Simple object representation.
+
+        Returns:
+            str: string representation.
+        """
+        return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
+
+
 class Flags(CommonTable):
     """Table with global flags used by Data-Lunch.
 
@@ -500,7 +537,6 @@ class Flags(CommonTable):
         String(50),
         primary_key=True,
         nullable=False,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """Flag ID (name)."""
     value = Column(Boolean, nullable=False)
@@ -552,13 +588,20 @@ class PrivilegedUsers(CommonTable):
     user = Column(
         String(100),
         primary_key=True,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """User name."""
     admin = Column(
         Boolean, nullable=False, default=False, server_default=sql_false()
     )
     """Admin flag (true if admin)."""
+
+    birthday_record = relationship(
+        "Birthdays",
+        uselist=False,
+        back_populates="user_record",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self) -> str:
         """Simple object representation.
@@ -577,7 +620,6 @@ class Credentials(CommonTable):
     user = Column(
         String(100),
         primary_key=True,
-        sqlite_on_conflict_primary_key="REPLACE",
     )
     """Username."""
     password_hash = Column(Password(150), unique=False, nullable=False)
@@ -676,8 +718,8 @@ class DatabaseConnector:
     def session_add_with_upsert(
         session: Session, constraint: str, new_record: Stats | Flags
     ) -> None:
-        """Use an upsert statement for postgresql to add a new record to a table,
-        a simple session add otherwise.
+        """Use an upsert statement to add a new record to a table,
+        for both Postgresql and SQLite databases.
 
         Args:
             session (Session): SQLAlchemy session object.
@@ -686,26 +728,21 @@ class DatabaseConnector:
         """
         # Use an upsert for postgresql (for sqlite an 'on conflict replace' is set
         # on table, so session.add is fine)
-        if DatabaseConnector.get_db_dialect(session) == "postgresql":
-            insert_statement = postgresql_upsert(new_record.__table__).values(
-                {
-                    column.name: getattr(new_record, column.name)
-                    for column in new_record.__table__.c
-                    if getattr(new_record, column.name, None) is not None
-                }
-            )
-            upsert_statement = insert_statement.on_conflict_do_update(
-                constraint=constraint,
-                set_={
-                    column.name: getattr(
-                        insert_statement.excluded, column.name
-                    )
-                    for column in insert_statement.excluded
-                },
-            )
-            session.execute(upsert_statement)
-        else:
-            session.add(new_record)
+        insert_statement = postgresql_upsert(new_record.__table__).values(
+            {
+                column.name: getattr(new_record, column.name)
+                for column in new_record.__table__.c
+                if getattr(new_record, column.name, None) is not None
+            }
+        )
+        upsert_statement = insert_statement.on_conflict_do_update(
+            constraint=constraint,
+            set_={
+                column.name: getattr(insert_statement.excluded, column.name)
+                for column in insert_statement.excluded
+            },
+        )
+        session.execute(upsert_statement)
 
     @staticmethod
     def read_sql_query(session: Session, query: str) -> pd.DataFrame:
@@ -828,7 +865,7 @@ class DatabaseConnector:
         """Set a key,value pair inside `flag` table.
 
         Args:
-            id (str): flag id (name).
+            id (str): flag ID (name).
             value (bool): flag value.
         """
 
@@ -852,7 +889,7 @@ class DatabaseConnector:
         Optionally select the values to return if the flag is missing (default to None).
 
         Args:
-            id (str): flag id (name).
+            id (str): flag ID (name).
             value_if_missing (bool | None, optional): value to return if the flag does not exist. Defaults to None.
 
         Returns:
@@ -860,12 +897,66 @@ class DatabaseConnector:
         """
 
         session = self.create_session()
-        flag = session.get(Flags, id)
-        if flag is None:
-            value = value_if_missing
-        else:
-            value = flag.value
+
+        with session:
+            flag = session.get(Flags, id)
+            if flag is None:
+                value = value_if_missing
+            else:
+                value = flag.value
         return value
+
+    def set_user_birthday(
+        self,
+        username: str,
+        birthday_date: datetime.date,
+        first_name: str,
+        last_name: str,
+    ) -> None:
+        """Set birthday for a specific user.
+
+        Args:
+            username (str): user ID (name).
+            birthday_date (bool): birthday date.
+        """
+
+        session = self.create_session()
+
+        with session:
+            # Write the selected flag (it will be overwritten if exists)
+            new_birthday = Birthdays(
+                user=username,
+                date=birthday_date,
+                first_name=first_name.lower(),
+                last_name=last_name.lower(),
+            )
+
+            # Use an upsert for postgresql, a simple session add otherwise
+            DatabaseConnector.session_add_with_upsert(
+                session=session,
+                constraint="birthdays_pkey",
+                new_record=new_birthday,
+            )
+
+            session.commit()
+
+    def get_user_birthday(self, username: str) -> Birthdays:
+        """Set birthday for a specific user.
+
+        Args:
+            username (str): user ID (name).
+            birthday_date (bool): birthday date.
+
+        Returns:
+            Birthdays: birthday record for the user.
+        """
+
+        session = self.create_session()
+
+        with session:
+            birthday = session.get(Birthdays, username)
+
+        return birthday
 
 
 # FUNCTIONS -------------------------------------------------------------------

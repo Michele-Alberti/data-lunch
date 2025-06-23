@@ -91,12 +91,10 @@ def create_app(config: DictConfig) -> pn.Template:
     # by a dedicated function
     # Create person instance, widget and column
     log.debug("instantiate person class and graphic interface")
-    person = gui.Person(config, name="User")
     gi = gui.GraphicInterface(
         config=config,
         waiter=waiter,
         app=app,
-        person=person,
         guest_password=guest_password,
         auth_user=auth_user,
     )
@@ -108,6 +106,7 @@ def create_app(config: DictConfig) -> pn.Template:
     app.main.append(gi.no_menu_col)
     app.main.append(gi.guest_override_alert)
     app.main.append(gi.no_more_order_alert)
+    app.main.append(gi.missing_birthday_alert)
     app.main.append(gi.main_header_row)
     app.main.append(gi.quote)
     app.main.append(pn.Spacer(height=15))

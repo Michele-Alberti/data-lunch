@@ -56,6 +56,12 @@ takeaway_class_res_col:
   - takeaway-label-results-column
 takeaway_class_time_col:
   - takeaway-label-time-column
+# Birthdays
+not_today_class_birthday_col:
+  - birthday-label
+today_class_birthday_col:
+  - birthday-label-today
+  - flashing-animation
 
 # RESTAURANT LUNCHES
 restaurant_emoji: "🍴"
