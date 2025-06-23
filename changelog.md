@@ -1,3 +1,10 @@
+## v3.6.0 (2025-06-23)
+
+### Feat
+
+- **models.py**: change session_add_with_upsert to use upsert statement for both postgresql and sqlite
+- add a birthday alert feature
+
 ## v3.5.0 (2025-01-19)
 
 ### Feat

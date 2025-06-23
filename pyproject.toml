@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dlunch"
-version = "3.5.0"
+version = "3.6.0"
 authors = [
   { name="Michele Alberti", email="michele.alberti90@gmail.com" },
 ]
@@ -56,7 +56,7 @@ exclude = '''
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "3.5.0"
+version = "3.6.0"
 version_files = [
     "dlunch/core.py",
     "pyproject.toml:version",
