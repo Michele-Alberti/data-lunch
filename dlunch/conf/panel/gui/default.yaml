@@ -12,7 +12,7 @@ logo_path: ${panel.gui.logo_static_dir}/${panel.gui.logo_filename}
 # IMAGES
 # No menu
 no_menu_image_static_dir: images
-no_menu_image_filename: no_menu.jpg
+no_menu_image_filename: no_menu.png
 no_menu_image_path: ${panel.gui.no_menu_image_static_dir}/${panel.gui.no_menu_image_filename}
 
 # CSS FILES
@@ -21,15 +21,21 @@ css_files:
   # App header
   app_header_filename: app_header.css
   app_header_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.app_header_filename}
-  # No more orders tab
-  no_more_orders: no_more_orders.css
+  # No more orders flag
+  no_more_orders: flags.css
   no_more_orders_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.no_more_orders}
+  # Guest override toggle and flag
+  guest_override_filename: flags.css
+  guest_override_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.guest_override_filename}
+  # Missing birthday flag
+  missing_birthday_filename: flags.css
+  missing_birthday_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.missing_birthday_filename}
+  # Missing birthday flag
+  access_denied_filename: flags.css
+  access_denied_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.access_denied_filename}
   # Tabulator
   custom_tabulator_filename: custom_tabulator.css
   custom_tabulator_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.custom_tabulator_filename}
-  # Toggle
-  guest_override_filename: guest_override.css
-  guest_override_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.guest_override_filename}
   # Stats & Info
   stats_info_filename: stats_and_info.css
   stats_info_path: ${panel.gui.css_static_dir}/${panel.gui.css_files.stats_info_filename}
