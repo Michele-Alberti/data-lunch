@@ -10,6 +10,9 @@ on:
     tags:
       - v*
 
+permissions:
+  contents: read  # IMPORTANT: mandatory for making GitHub Releases
+
 jobs:
   # Build the package for PyPI
   build:
