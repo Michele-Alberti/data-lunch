@@ -6877,7 +6877,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
             <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;?error=&quot;</span> <span class="o">+</span> <span class="n">tornado</span><span class="o">.</span><span class="n">escape</span><span class="o">.</span><span class="n">url_escape</span><span class="p">(</span>
                 <span class="s2">&quot;Invalid username or password!&quot;</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">uri</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_current_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set secure cookie for the selected user.</span>
@@ -7001,7 +7001,7 @@ password hash if the hashing protocol is superseeded) and set the current user o
         <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;?error=&quot;</span> <span class="o">+</span> <span class="n">tornado</span><span class="o">.</span><span class="n">escape</span><span class="o">.</span><span class="n">url_escape</span><span class="p">(</span>
             <span class="s2">&quot;Invalid username or password!&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">uri</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span> <span class="o">+</span> <span class="n">error_msg</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
