@@ -1,0 +1,74 @@
+/* Define hero container, contents and image classes
+Define also some classes for buttons */
+
+.mdx-container{
+    background:linear-gradient(to bottom,var(--md-primary-fg-color),var(--md-primary-fg-color--dark) 99%,var(--md-default-bg-color) 99%);
+    padding-top:1rem;
+}
+
+[data-md-color-scheme=slate] .mdx-container{
+    background:linear-gradient(to bottom,var(--md-primary-fg-color),var(--md-primary-fg-color--dark) 99%,var(--md-default-bg-color) 99%);
+}
+
+.mdx-hero{
+    color:var(--md-primary-bg-color);
+    margin:0 .8rem;
+}
+
+.mdx-hero h1{
+    color:currentcolor;
+    font-weight:700;
+    margin-bottom:1rem;
+}
+
+@media screen and (max-width:29.984375em){
+    .mdx-hero h1{
+        font-size:1.4rem;
+    }
+}
+
+.mdx-hero__content{
+    padding-bottom:3rem;
+}
+
+@media screen and (min-width:60em){
+    .mdx-hero{
+        align-items:stretch;
+        display:flex;
+        justify-content: space-between;
+    }
+    .mdx-hero__content{
+        margin-top:3.5rem;
+        max-width:19rem;
+        padding-bottom:10vw;
+    }
+    .mdx-hero__image{
+        order:1;
+        transform:translateX(4rem);
+        width:30rem;
+    }
+}
+
+@media screen and (min-width:76.25em){
+    .mdx-hero__image{
+        transform:translateX(8rem);
+    }
+}
+
+.mdx-hero .md-button{
+    color:var(--md-primary-fg-color--light);
+    margin-right:.5rem;
+    margin-top:.5rem;
+}
+
+.mdx-hero .md-button:focus,.mdx-hero .md-button:hover{
+    background-color:var(--md-accent-fg-color);
+    border-color:var(--md-accent-fg-color);
+    color:var(--md-accent-bg-color);
+}
+
+.mdx-hero .md-button--primary{
+    background-color:var(--md-primary-bg-color);
+    border-color:var(--md-primary-bg-color);
+    color:var(--md-primary-fg-color);
+}
