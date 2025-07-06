@@ -1,3 +1,22 @@
+## v3.7.0 (2025-07-06)
+
+### Feat
+
+- improve birthdays feature, no_menu image and alert flags (no_more_order, guest_override, missing_birthday, access_denied)
+
+### Fix
+
+- fix security issues in auth.py and models.py
+- **no_menu.png**: improve edges of no_menu.png
+
+### Refactor
+
+- **cli.py**: replace pkg_resources with importlib.metadata to inspect dlunch version
+
+### Perf
+
+- **auth.DataLunchLoginHandler**: improve validation by adding an additional check and copying panel basic auth handler methods
+
 ## v3.6.0 (2025-06-23)
 
 ### Feat

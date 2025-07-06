@@ -30,7 +30,7 @@ from . import gui
 from .auth import AuthUser
 
 # APP METADATA ----------------------------------------------------------------
-__version__: str = "3.6.0"
+__version__: str = "3.7.0"
 """Data-Lunch version."""
 
 # LOGGER ----------------------------------------------------------------------
