@@ -942,9 +942,7 @@ class DatabaseConnector:
 
             session.commit()
 
-        log.debug(
-            f"set birthday for user '{username}' ({first_name} {last_name}) to {birthday_date}"
-        )
+        log.debug(f"set birthday data for user '{username}'")
 
     def get_user_birthday(self, username: str) -> Birthdays:
         """Set birthday for a specific user.

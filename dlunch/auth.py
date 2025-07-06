@@ -127,7 +127,7 @@ class DataLunchLoginHandler(RequestHandler):
             error_msg = "?error=" + tornado.escape.url_escape(
                 "Invalid username or password!"
             )
-            self.redirect(self.request.uri + error_msg)
+            self.redirect("/login" + error_msg)
 
     def set_current_user(self, user: str):
         """Set secure cookie for the selected user.
