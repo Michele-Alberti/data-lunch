@@ -451,7 +451,7 @@ class GraphicInterface:
         # Missing birthday message
         self.missing_birthday_alert = pn.pane.HTML(
             """
-            <div class="no-more-order-flag">
+            <div class="warning-flag">
                 <div class="icon-container">
                     <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-gift">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -466,12 +466,14 @@ class GraphicInterface:
             """,
             margin=5,
             sizing_mode="stretch_width",
-            stylesheets=[self.config.panel.gui.css_files.no_more_orders_path],
+            stylesheets=[
+                self.config.panel.gui.css_files.missing_birthday_path
+            ],
         )
         # "no more order" message
         self.no_more_order_alert = pn.pane.HTML(
             """
-            <div class="no-more-order-flag">
+            <div class="danger-flag">
                 <div class="icon-container">
                     <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-circle-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -491,7 +493,7 @@ class GraphicInterface:
         # Alert for guest override
         self.guest_override_alert = pn.pane.HTML(
             """
-            <div class="guest-override-flag">
+            <div class="warning-flag">
                 <div class="icon-container">
                     <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-radioactive-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M21 11a1 1 0 0 1 1 1a10 10 0 0 1 -5 8.656a1 1 0 0 1 -1.302 -.268l-.064 -.098l-3 -5.19a.995 .995 0 0 1 -.133 -.542l.01 -.11l.023 -.106l.034 -.106l.046 -.1l.056 -.094l.067 -.089a.994 .994 0 0 1 .165 -.155l.098 -.064a2 2 0 0 0 .993 -1.57l.007 -.163a1 1 0 0 1 .883 -.994l.117 -.007h6z" stroke-width="0" fill="currentColor" />
@@ -538,7 +540,7 @@ class GraphicInterface:
 
         # WIDGETS
         # JPG shown when no menu is available
-        self.no_menu_image = pn.pane.JPG(
+        self.no_menu_image = pn.pane.PNG(
             self.config.panel.gui.no_menu_image_path, alt_text="no menu"
         )
         # Create dataframe instance
@@ -831,13 +833,22 @@ class GraphicInterface:
             icon="download",
             icon_size="2em",
         )
-        # Birthday button
+        # Birthday buttons
         self.submit_birthday_button = pnw.Button(
             name="Submit",
             button_type="success",
             button_style="outline",
             height=generic_button_height,
             icon="gift",
+            icon_size="2em",
+            sizing_mode="stretch_width",
+        )
+        self.delete_birthday_button = pnw.Button(
+            name="Delete",
+            button_type="danger",
+            button_style="outline",
+            height=generic_button_height,
+            icon="trash",
             icon_size="2em",
             sizing_mode="stretch_width",
         )
@@ -899,6 +910,7 @@ class GraphicInterface:
             birthday_info,
             self.person_birthday_widget,
             self.submit_birthday_button,
+            self.delete_birthday_button,
             name="🎂 B-Day",
             width=sidebar_content_width,
         )
@@ -937,11 +949,15 @@ class GraphicInterface:
                 self,
             )
         )
-        # Birthday password button callback
+        # Submit birthday button callback
         self.submit_birthday_button.on_click(
-            lambda e: self.birthday_button_callback(
+            lambda e: self.submit_birthday_button_callback(
                 person_birthday=person_birthday,
             )
+        )
+        # Delete birthday button callback
+        self.delete_birthday_button.on_click(
+            lambda e: self.delete_birthday_button_callback()
         )
         # Submit password button callback
         self.submit_password_button.on_click(
@@ -1087,10 +1103,15 @@ class GraphicInterface:
 
         # Time label pane
         classes_str = " ".join(css_classes)
+        complete_name = (
+            f"{birthday.first_name.title()}<br>{birthday.last_name.title()}"
+            if (birthday.first_name and birthday.last_name)
+            else birthday.user
+        )
         time_label = pn.pane.HTML(
             f"""<span class="tooltip">
                     <span class="{classes_str}">{birthday_date.strftime("%b<br>%d").upper()}</span>
-                    <span class="tooltip-text">{birthday.first_name.title()}<br>{birthday.last_name.title()}</span>
+                    <span class="tooltip-text">{complete_name}</span>
                 </span>""",
             stylesheets=stylesheets,
             **kwargs,
@@ -1244,35 +1265,74 @@ class GraphicInterface:
 
         return {"stats": stats, "info": other_info}
 
-    def birthday_button_callback(
+    def submit_birthday_button_callback(
         self, person_birthday: PersonBirthday
     ) -> None:
-        """Callback for the birthday button."""
+        """Callback to submit birthday info."""
         # Submit birthday
-        try:
-            self.waiter.database_connector.set_user_birthday(
-                username=self.auth_user.name,
-                birthday_date=person_birthday.birthday_date,
-                first_name=person_birthday.first_name,
-                last_name=person_birthday.last_name,
-            )
-        except Exception as e:
+        if person_birthday.birthday_date:
+            try:
+                self.waiter.database_connector.set_user_birthday(
+                    username=self.auth_user.name,
+                    birthday_date=person_birthday.birthday_date,
+                    first_name=person_birthday.first_name,
+                    last_name=person_birthday.last_name,
+                )
+            except Exception as e:
+                # Notify error
+                pn.state.notifications.error(
+                    f"Error updating birthday date: {e}",
+                    duration=self.config.panel.notifications.duration,
+                )
+                logging.exception(
+                    f"error updating birthday date for user {self.auth_user.name}:\n{e}"
+                )
+                raise e
+        else:
             # Notify error
             pn.state.notifications.error(
-                f"Error updating birthday date: {e}",
+                "Please fill the birthday date field",
                 duration=self.config.panel.notifications.duration,
             )
-            logging.exception(
-                f"error updating birthday date for user {self.auth_user.name}:\n{e}"
-            )
-            raise e
+            return
+
         # Notify success
         pn.state.notifications.success(
             "Birthday date updated",
             duration=self.config.panel.notifications.duration,
         )
-        # Reload tabs to show the new date
-        self.load_sidebar_tabs(auth_user=self.auth_user)
+
+    def delete_birthday_button_callback(self) -> None:
+        """Callback to delete birthday info."""
+        # Delete birthday
+        try:
+            deleted_birthdays = (
+                self.waiter.database_connector.delete_user_birthday(
+                    username=self.auth_user.name,
+                )
+            )
+        except Exception as e:
+            # Notify error
+            pn.state.notifications.error(
+                f"Error deleting birthday date: {e}",
+                duration=self.config.panel.notifications.duration,
+            )
+            logging.exception(
+                f"error deleting birthday date for user {self.auth_user.name}:\n{e}"
+            )
+            raise e
+
+        # Notify success
+        if deleted_birthdays == 0:
+            pn.state.notifications.warning(
+                "No birthday date to delete",
+                duration=self.config.panel.notifications.duration,
+            )
+        else:
+            pn.state.notifications.success(
+                "Birthday date deleted",
+                duration=self.config.panel.notifications.duration,
+            )
 
 
 # BACKEND INTERFACE CLASS =====================================================
@@ -1341,7 +1401,7 @@ class BackendInterface:
         # "no more order" message
         self.access_denied_text = pn.pane.HTML(
             """
-            <div class="no-more-order-flag">
+            <div class="danger-flag">
                 <div class="icon-container">
                     <svg class="flashing-animation" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shield-lock-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -1353,7 +1413,7 @@ class BackendInterface:
             """,
             margin=5,
             sizing_mode="stretch_width",
-            stylesheets=[self.config.panel.gui.css_files.no_more_orders_path],
+            stylesheets=[self.config.panel.gui.css_files.access_denied_path],
         )
 
         # WIDGET

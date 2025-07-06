@@ -882,6 +882,8 @@ class DatabaseConnector:
 
             session.commit()
 
+        log.debug(f"set flag '{id}' to {value}")
+
     def get_flag(
         self, id: str, value_if_missing: bool | None = None
     ) -> bool | None:
@@ -940,6 +942,8 @@ class DatabaseConnector:
 
             session.commit()
 
+        log.debug(f"set birthday data for user '{username}'")
+
     def get_user_birthday(self, username: str) -> Birthdays:
         """Set birthday for a specific user.
 
@@ -957,6 +961,31 @@ class DatabaseConnector:
             birthday = session.get(Birthdays, username)
 
         return birthday
+
+    def delete_user_birthday(self, username: str) -> None:
+        """Delete birthday for a specific user.
+
+        Args:
+            username (str): user ID (name).
+
+        Returns:
+            int: number of deleted rows.
+        """
+
+        session = self.create_session()
+
+        with session:
+            # Delete the birthday record
+            birthdays_deleted = session.execute(
+                delete(Birthdays).where(Birthdays.user == username)
+            )
+            session.commit()
+
+            log.info(
+                f"deleted {birthdays_deleted.rowcount} birthday records for user '{username}'"
+            )
+
+        return birthdays_deleted.rowcount
 
 
 # FUNCTIONS -------------------------------------------------------------------

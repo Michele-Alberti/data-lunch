@@ -7,6 +7,9 @@ on:
     tags:
       - v*
 
+permissions:
+  contents: write
+
 # Makes sure only one workflow runs at a time.
 concurrency:
   group: 'pages'

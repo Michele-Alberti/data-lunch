@@ -5,7 +5,15 @@ button.bk-active {
     color: var(--panel-primary-color);
 }
 
-.guest-override-flag {
+.danger-flag {
+    font-size: 1.25rem;
+    color: crimson;
+    background-color: whitesmoke;
+    border-left: 0.5rem solid crimson;
+    padding: 0.5rem
+}
+
+.warning-flag {
     font-size: 1.25rem;
     color: var(--warning-bg-color);
     background-color: whitesmoke;

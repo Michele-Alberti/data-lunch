@@ -12,6 +12,9 @@ on:
       build_description:
         description: 'Build description' 
 
+permissions:
+  contents: read
+
 jobs:
   build_container:
     name: 🐋 Build Docker image

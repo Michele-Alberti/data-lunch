@@ -7,7 +7,7 @@ Call `data-lunch --help` from the terminal inside an environment where the
 """
 
 import click
-import pkg_resources
+from importlib.metadata import version
 import pandas as pd
 import subprocess
 
@@ -23,7 +23,7 @@ from .core import Waiter
 from . import auth
 
 # Version
-__version__: str = pkg_resources.require("dlunch")[0].version
+__version__: str = version("dlunch")
 """Data-Lunch command line version."""
 
 
