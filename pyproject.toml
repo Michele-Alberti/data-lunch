@@ -27,6 +27,10 @@ Issues = "https://github.com/Michele-Alberti/data-lunch/issues"
 [project.scripts]
 data-lunch = "dlunch.cli:main"
 
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["tests"]
+
 [tool.setuptools]
 packages = ["dlunch"]
 
