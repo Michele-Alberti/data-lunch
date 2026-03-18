@@ -134,7 +134,7 @@ def create_app(config: DictConfig) -> pn.Template:
         gi,
     )
 
-    app.servable()
+    # app.servable()
 
     log.info("initialization process completed")
 
@@ -188,7 +188,7 @@ def create_backend(config: DictConfig) -> pn.Template:
     backend.header.append(backend_gi.header_row)
     backend.main.append(backend_gi.backend_controls)
 
-    backend.servable()
+    # backend.servable()
 
     log.info("initialization process completed")
 
