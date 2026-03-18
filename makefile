@@ -30,7 +30,7 @@ UP_SERVICES:=web nginx
 CERT_DIR := ssl
 
 # Conda commands
-CONDA_ACTIVATE_BASE:=source ${CONDA_ROOT}/etc/profile.d/conda.sh; conda activate;
+CONDA_ACTIVATE_BASE:=source $$(conda info --base)/etc/profile.d/conda.sh; conda activate;
 
 help:
 	@echo -e " ${PURPLE}                                  LIST OF AVAILABLE COMMANDS                                    ${NC}"
