@@ -102,13 +102,17 @@ class Password(TypeDecorator):
         """Ensure the value is a PasswordHash and then return its hash.
 
         Args:
-            value (auth.PasswordHash | str): input value (plain password or hash, or `None` if empty).
+            value (auth.PasswordHash | str | None): input value (plain password or hash, or `None` if empty).
             dialect (Any): dialect (not used).
 
         Returns:
             str: password hash.
         """
-        return self._convert(value).hashed_password
+        converted_value = self._convert(value)
+        if converted_value is not None:
+            return converted_value.hashed_password
+        else:
+            return None
 
     def process_result_value(
         self, value: str | None, dialect
@@ -188,7 +192,7 @@ class Encrypted(TypeDecorator):
             str | None: encrypted password or `None` if empty.
         """
         converted_value = self._convert(value)
-        if converted_value:
+        if converted_value is not None:
             return converted_value.encrypted_password
         else:
             return None
@@ -481,7 +485,7 @@ class Stats(CommonTable):
         Returns:
             str: string representation.
         """
-        return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
+        return f"<STAT:{self.date} - HP:{self.hungry_people} - G:{self.guest}>"
 
 
 class Birthdays(CommonTable):
@@ -522,7 +526,7 @@ class Birthdays(CommonTable):
         Returns:
             str: string representation.
         """
-        return f"<STAT:{self.id} - HP:{self.hungry_people} - HG:{self.hungry_guests}>"
+        return f"<BIRTHDAY:{self.user} - {self.date}>"
 
 
 class Flags(CommonTable):
@@ -609,7 +613,7 @@ class PrivilegedUsers(CommonTable):
         Returns:
             str: string representation.
         """
-        return f"<PRIVILEGED_USER:{self.id}>"
+        return f"<PRIVILEGED_USER:{self.user}>"
 
 
 class Credentials(CommonTable):
