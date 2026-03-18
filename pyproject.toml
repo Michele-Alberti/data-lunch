@@ -38,6 +38,7 @@ dev = {file = ['requirements/dev-requirements.txt']}
 docs = {file = ['requirements/docs-requirements.txt']}
 
 [tool.black]
+target-version = ["py311"]
 line-length = 79
 include = '\.pyi?$'
 exclude = '''
