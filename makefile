@@ -62,6 +62,8 @@ help:
 	@echo -e " ${WHITE}  clean-folders       :${NC} cleans all folders nb checkpoints, pycache & pytest folders"
 	@echo -e " ${WHITE}  clean-docker        :${NC} cleans docker containers and images"
 	@echo -e " ${WHITE}  clean               :${NC} runs clean-notebooks, clean-docker, clean-folders, clean-k8s"
+	@echo -e " ${YELLOW}TESTS -------------------------------------------------------------------------------------------${NC}"
+	@echo -e " ${WHITE}  tests               :${NC} run tests"
 	@echo -e " ${YELLOW}DOCS -------------------------------------------------------------------------------------------${NC}"
 	@echo -e " ${WHITE}  mkdocs-build        :${NC} build docs with mkdocs command"
 	@echo -e " ${WHITE}  mkdocs-serve        :${NC} run mkdocs test server"
@@ -282,6 +284,12 @@ clean-docker:
 	@echo -e "${GREEN}done${NC}"
 
 clean: clean-docker clean-folders
+
+# Tests rules -----------------------------------------------------------------
+test:
+	@echo -e "${YELLOW}run tests suite${NC}"
+	pytest -v --cov
+	@echo -e "${GREEN}done${NC}"
 
 # Docs rules ------------------------------------------------------------------
 mkdocs-build:
