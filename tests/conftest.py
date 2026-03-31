@@ -7,7 +7,7 @@ from unittest import mock
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_environment_variables():
-    with mock.patch.dict(os.environ, clear=True):
+    with pytest.MonkeyPatch.context() as mp:
         env_vars = {
             "PANEL_APP": "data-lunch-test-app",
             "PANEL_ENV": "production",
@@ -15,11 +15,10 @@ def setup_environment_variables():
             "DATA_LUNCH_OAUTH_ENC_KEY": "n7M__09XF8DhRW9dxs7hFVZoPScXxlj6La7r9U240xc=",
             "DOCKER_USERNAME": "docker_user",
         }
-        mp = pytest.MonkeyPatch()
         for k, v in env_vars.items():
             mp.setenv(k, v)
         # Yield ensures that environment variables are removed after the test
-        yield
+        yield mp
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +31,7 @@ def test_config(setup_environment_variables):
     hydra_overrides = [
         "panel=no_sched_clean",
         "db=sqlite",
-        "server=no_auth",
+        "server=basic_auth",
         f"db.shared_data_folder={shared_data_path}",
         "db.ext_storage_upload.enabled=false",
     ]

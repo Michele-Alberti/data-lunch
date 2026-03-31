@@ -31,9 +31,16 @@ def db_connector(test_config):
     # Create a PrivilegedUsers record first (FK constraint)
     session = db_connector.create_session()
     with session:
-        normal_user = PrivilegedUsers(user="normal_user", admin=False)
-        admin_user = PrivilegedUsers(user="admin_user", admin=True)
-        session.add_all([normal_user, admin_user])
+        normal_user = [
+            PrivilegedUsers(user="normal_user", admin=False),
+            Credentials(user="normal_user", password_hash="password"),
+        ]
+        admin_user = [
+            PrivilegedUsers(user="admin_user", admin=True),
+            Credentials(user="admin_user", password_hash="password"),
+        ]
+        guest_user = [Credentials(user="guest", password_hash="password")]
+        session.add_all([*normal_user, *admin_user, *guest_user])
         session.commit()
     yield db_connector
     Data.metadata.drop_all(db_connector.create_engine())
@@ -55,6 +62,19 @@ class TestCli:
         assert (
             "Command line interface for managing Data-Lunch" in result.output
         )
+
+    def test_users_list(self, runner, test_config, db_connector):
+        """Test users list command."""
+        with (
+            patch("dlunch.cli.compose") as mock_compose,
+            patch("dlunch.cli.initialize"),
+        ):
+            mock_compose.return_value = test_config
+            result = runner.invoke(cli, ["users", "list"])
+            assert result.exit_code == 0
+            assert "normal_user" in result.output
+            assert "admin_user" in result.output
+            assert "guest" in result.output
 
     def test_users_list_privileged_only(
         self, runner, test_config, db_connector
@@ -90,8 +110,80 @@ class TestCli:
                 "User 'testuser_normal' added (admin: False)" in result.output
             )
 
-    def test_db_init(self, runner, test_config):
-        """Test db init command."""
+    def test_users_remove(self, runner, test_config, db_connector):
+        """Test users remove command."""
+        with (
+            patch("dlunch.cli.compose") as mock_compose,
+            patch("dlunch.cli.initialize"),
+        ):
+            mock_compose.return_value = test_config
+
+            result = runner.invoke(
+                cli, ["users", "remove", "admin_user", "--yes"]
+            )
+            assert result.exit_code == 0
+            assert (
+                "User 'admin_user' removed (auth: 1, cred: 1)" in result.output
+            )
+
+            result = runner.invoke(
+                cli, ["users", "remove", "normal_user", "--yes"]
+            )
+            assert result.exit_code == 0
+            assert (
+                "User 'normal_user' removed (auth: 1, cred: 1)"
+                in result.output
+            )
+
+            result = runner.invoke(cli, ["users", "remove", "guest", "--yes"])
+            assert result.exit_code == 0
+            assert "User 'guest' removed (auth: 0, cred: 1)" in result.output
+
+    def test_credentials_add(self, runner, test_config, db_connector):
+        """Test credentials add command."""
+        with (
+            patch("dlunch.cli.compose") as mock_compose,
+            patch("dlunch.cli.initialize"),
+        ):
+            mock_compose.return_value = test_config
+
+            result = runner.invoke(
+                cli, ["credentials", "add", "pippo", "password"]
+            )
+            assert result.exit_code == 0
+            assert "User 'pippo' added" in result.output
+
+    def test_credentials_remove(self, runner, test_config, db_connector):
+        """Test credentials remove command."""
+        with (
+            patch("dlunch.cli.compose") as mock_compose,
+            patch("dlunch.cli.initialize"),
+        ):
+            mock_compose.return_value = test_config
+
+            result = runner.invoke(
+                cli, ["users", "remove", "admin_user", "--yes"]
+            )
+            assert result.exit_code == 0
+            assert (
+                "User 'admin_user' removed (auth: 1, cred: 1)" in result.output
+            )
+
+            result = runner.invoke(
+                cli, ["users", "remove", "normal_user", "--yes"]
+            )
+            assert result.exit_code == 0
+            assert (
+                "User 'normal_user' removed (auth: 1, cred: 1)"
+                in result.output
+            )
+
+            result = runner.invoke(cli, ["users", "remove", "guest", "--yes"])
+            assert result.exit_code == 0
+            assert "User 'guest' removed (auth: 0, cred: 1)" in result.output
+
+    def test_db_init_delete(self, runner, test_config):
+        """Test db init and delete command."""
         with (
             patch("dlunch.cli.compose") as mock_compose,
             patch("dlunch.cli.initialize"),
@@ -120,8 +212,9 @@ class TestCli:
                 )
 
             # Clean
-            db_connector = DatabaseConnector(config=test_config)
-            Data.metadata.drop_all(db_connector.create_engine())
+            result = runner.invoke(cli, ["db", "delete", "--yes"])
+            assert result.exit_code == 0
+            assert "Database deleted" in result.output
 
     def test_db_clean(self, runner, test_config, db_connector):
         """Test db clean command."""
@@ -131,5 +224,34 @@ class TestCli:
         ):
             mock_compose.return_value = test_config
 
-            result = runner.invoke(cli, ["db", "clean"], input="y\n")
+            result = runner.invoke(cli, ["db", "clean", "--yes"])
             assert result.exit_code == 0
+            assert "done" in result.output
+
+    def test_db_drop(self, runner, test_config, db_connector):
+        """Test db table drop command."""
+        with (
+            patch("dlunch.cli.compose") as mock_compose,
+            patch("dlunch.cli.initialize"),
+        ):
+            mock_compose.return_value = test_config
+
+            result = runner.invoke(
+                cli, ["db", "table", "drop", "stats", "--yes"]
+            )
+            assert result.exit_code == 0
+            assert "Table 'stats' deleted" in result.output
+
+    def test_generate_secrets(self, runner, test_config):
+        """Test db table drop command."""
+        with (
+            patch("dlunch.cli.compose") as mock_compose,
+            patch("dlunch.cli.initialize"),
+        ):
+            mock_compose.return_value = test_config
+
+            result = runner.invoke(cli, ["utils", "generate-secrets"])
+            assert result.exit_code == 0
+            assert "COOKIE SECRET:" in result.output
+            assert "ENCRIPTION KEY:" in result.output
+            assert "Done" in result.output

@@ -1,8 +1,9 @@
 """Unit tests for dlunch.auth module."""
 
 import pytest
-from unittest.mock import Mock, patch
+from passlib.context import CryptContext
 from sqlalchemy import delete
+from unittest.mock import Mock, patch
 
 from dlunch.auth import PasswordHash, PasswordEncrypt, AuthContext, AuthUser
 from dlunch.models import DatabaseConnector, Credentials, PrivilegedUsers, Data
@@ -74,7 +75,8 @@ class TestPasswordHash:
         return_value=(True, "testpassword_new_hash"),
     )
     def test_verify_and_update_with_update(self, mock_pwd_context):
-        """Test verify_and_update when update is needed."""
+        """Test verify_and_update when update is needed.
+        CryptContext accept only one hashing scheme, so mock is required."""
         password = "testpassword"
         password_old_hash = "testpassword_old_hash"
         ph = PasswordHash(password_old_hash)

@@ -103,10 +103,7 @@ class TestEncryptedTypeDecorator:
         """Test validator."""
         enc_type = Encrypted()
         result = enc_type.validator("input")
-        assert (
-            result.encrypted_password
-            == auth.PasswordEncrypt.from_str("input").encrypted_password
-        )
+        assert result.decrypt() == "input"
 
 
 class TestMenu:

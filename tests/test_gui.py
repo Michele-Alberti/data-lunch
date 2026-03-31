@@ -1,7 +1,7 @@
 """Unit tests for dlunch.gui module."""
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock, call
+from unittest.mock import Mock, patch, PropertyMock
 import omegaconf
 import pandas as pd
 
@@ -31,6 +31,14 @@ class TestPerson:
         return config
 
     @pytest.fixture
+    def mock_guest_user(self):
+        """Mock auth user."""
+        auth_user = Mock(spec=AuthUser)
+        auth_user.is_guest.return_value = True
+        auth_user.name = "testuser"
+        return auth_user
+
+    @pytest.fixture
     def mock_auth_user(self):
         """Mock auth user."""
         auth_user = Mock(spec=AuthUser)
@@ -38,24 +46,13 @@ class TestPerson:
         auth_user.name = "testuser"
         return auth_user
 
-    def test_init_default(self, test_config):
+    def test_init_default(self, mock_config, mock_guest_user):
         """Test Person initialization with defaults."""
-        # This test uses test_config instead of mock_config to ensure that the default values are set correctly
-        # since the Person class calls hydra instantiate that fails if is not an OmegaConf object.
-        # Using omegaconf.open_dict to allow modifications to the test_config fixture
-        with omegaconf.open_dict(test_config):
-            with patch.dict(
-                test_config.panel,
-                {
-                    "lunch_times_options": ["12:30", "13:00"],
-                    "guest_types": ["Guest", "VIP"],
-                },
-            ):
-                person = Person(config=test_config)
-                assert person.username == ""
-                assert person.lunch_time == "12:30"
-                assert person.guest == "Guest"
-                assert not person.takeaway
+        person = Person(config=mock_config, auth_user=mock_guest_user)
+        assert person.username == ""
+        assert person.lunch_time == "12:30"
+        assert person.guest == "Guest"
+        assert not person.takeaway
 
     def test_init_with_privileged_user(self, mock_config, mock_auth_user):
         """Test Person initialization with privileged user."""
@@ -70,21 +67,13 @@ class TestPerson:
         person = Person(config=mock_config, auth_user=mock_guest_auth)
         assert person.username == ""
 
-    def test_param_objects_set(self, test_config):
+    def test_param_objects_set(self, mock_config, mock_auth_user):
         """Test that param objects are set from config."""
-        with omegaconf.open_dict(test_config):
-            with patch.dict(
-                test_config.panel,
-                {
-                    "lunch_times_options": ["12:30", "13:00"],
-                    "guest_types": ["Guest", "VIP"],
-                },
-            ):
-                person = Person(config=test_config)
-                assert "12:30" in person.param.lunch_time.objects
-                assert "13:00" in person.param.lunch_time.objects
-                assert "Guest" in person.param.guest.objects
-                assert "VIP" in person.param.guest.objects
+        person = Person(config=mock_config, auth_user=mock_auth_user)
+        assert "12:30" in person.param.lunch_time.objects
+        assert "13:00" in person.param.lunch_time.objects
+        assert "Guest" in person.param.guest.objects
+        assert "VIP" in person.param.guest.objects
 
 
 class TestPersonBirthday:
