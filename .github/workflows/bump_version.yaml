@@ -30,7 +30,7 @@ jobs:
           echo "pre_release=$pre_release" >> $GITHUB_OUTPUT
           echo "pre-release: $pre_release"
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
@@ -52,7 +52,7 @@ jobs:
       url: https://github.com/Michele-Alberti/data-lunch/commits/development
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with: 
           fetch-depth: 0
           ref: main
