@@ -1,15 +1,15 @@
 repos:
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.0
+    rev: 26.10.1
     hooks:
       - id: black
         language_version: python3
   - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
+    rev: 7.4.1
     hooks:
       - id: flake8
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.13.9
+    rev: v4.19.2
     hooks:
       - id: commitizen
         stages: [commit-msg]
